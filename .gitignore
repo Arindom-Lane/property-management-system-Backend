@@ -1,2 +1,7 @@
 project/node_modules
+<<<<<<< HEAD
 package-lock.json
+=======
+project/package.json
+project/package-lock.json
+>>>>>>> origin/main

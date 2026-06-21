@@ -5,3 +5,5 @@ package-lock.json
 project/package.json
 project/package-lock.json
 >>>>>>> origin/main
+/project/node_modules
+/project/dist

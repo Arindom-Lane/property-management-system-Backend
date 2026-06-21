@@ -1,23 +1,32 @@
-import { Controller, Get, Param } from '@nestjs/common';
-import {StaffService} from './staff.service';
-
-
+import { Controller, Get, Param, Query } from '@nestjs/common';
+import { StaffService } from './staff.service';
 
 @Controller('staff')
 export class StaffController {
-    constructor(private readonly staffService: StaffService) {}
+  constructor(private readonly staffService: StaffService) {}
 
-    @Get()
-    getAllStaff() {
-        return this.staffService.getAllStaff();
-    }
+  @Get('search')
+  getStaffByQuery(
+    @Query('id') id: string,
 
-    @Get(':id')
-    getStaffById2(@Param('id') id: string) :Object {
-        return this.staffService.getStaffById2(id);
-    }
-    @Get('getAllstaff/:id/getName/:name')
-    getStaffByIdandNme(@Param('id') id: string, @Param('name') name: string) :object {
-        return this.staffService.getStaffByIdandNme(id, name);
-    }
+  ): object {
+    return this.staffService.getStaffByQuery(id);
+  }
+  // 1. Get all staff
+  // URL: http://localhost:3000/staff
+  @Get()
+  getAllStaff() {
+    return this.staffService.getAllStaff();
+  }
+
+  // 2. Using ROUTE PARAMETERS (@Param)
+  // URL: http://localhost:3000/staff/123
+  @Get(':id')
+  getStaffById(@Param('id') id: string): object {
+    return this.staffService.getStaffById(id);
+  }
+
+  // 3. Using QUERY PARAMETERS (@Query)
+  // URL: http://localhost:3000/staff/search?id=123&name=Alex
+  
 }

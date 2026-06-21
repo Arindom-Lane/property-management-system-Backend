@@ -10,13 +10,13 @@ exports.StaffService = void 0;
 const common_1 = require("@nestjs/common");
 let StaffService = class StaffService {
     getAllStaff() {
-        return "This will return all staff members.";
+        return 'This will return all staff members.';
     }
-    getStaffById2(id) {
-        return { id: id, name: "John Doe", position: "Manager" };
+    getStaffById(id) {
+        return { id, name: 'John Doe', position: 'Manager' };
     }
-    getStaffByIdandNme(id, name) {
-        return { id: id, name: name, position: "Staff Manager" };
+    getStaffByQuery(id) {
+        return { id: id, name: 'Alex', position: 'Staff Manager (Found via Query)' };
     }
 };
 exports.StaffService = StaffService;

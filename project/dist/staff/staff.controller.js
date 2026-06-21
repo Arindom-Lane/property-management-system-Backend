@@ -20,17 +20,24 @@ let StaffController = class StaffController {
     constructor(staffService) {
         this.staffService = staffService;
     }
+    getStaffByQuery(id) {
+        return this.staffService.getStaffByQuery(id);
+    }
     getAllStaff() {
         return this.staffService.getAllStaff();
     }
-    getStaffById2(id) {
-        return this.staffService.getStaffById2(id);
-    }
-    getStaffByIdandNme(id, name) {
-        return this.staffService.getStaffByIdandNme(id, name);
+    getStaffById(id) {
+        return this.staffService.getStaffById(id);
     }
 };
 exports.StaffController = StaffController;
+__decorate([
+    (0, common_1.Get)('search'),
+    __param(0, (0, common_1.Query)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Object)
+], StaffController.prototype, "getStaffByQuery", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
@@ -43,15 +50,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Object)
-], StaffController.prototype, "getStaffById2", null);
-__decorate([
-    (0, common_1.Get)('getAllstaff/:id/getName/:name'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Param)('name')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
-    __metadata("design:returntype", Object)
-], StaffController.prototype, "getStaffByIdandNme", null);
+], StaffController.prototype, "getStaffById", null);
 exports.StaffController = StaffController = __decorate([
     (0, common_1.Controller)('staff'),
     __metadata("design:paramtypes", [staff_service_1.StaffService])

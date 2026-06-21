@@ -1,4 +1,4 @@
 project/node_modules
 project/package.json
 project/package-lock.json
-/project/dist
+project/dist

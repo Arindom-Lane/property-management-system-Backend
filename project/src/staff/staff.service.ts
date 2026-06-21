@@ -14,4 +14,5 @@ export class StaffService {
     getStaffByIdandNme(id: string, name: string) : object{
         return {id: id, name: name, position: "Staff Manager"};
     }
+    
 }

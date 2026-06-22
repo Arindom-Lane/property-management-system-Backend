@@ -1,5 +1,6 @@
-import { Controller,Get,Param,Query } from '@nestjs/common';
+import { Controller,Get,Param,Post,Query, UsePipes, ValidationPipe ,Body} from '@nestjs/common';
 import { LandlordService } from './landlord.service';
+import { LandlordDto } from './landlord.dto';
 
 @Controller('landlord')
 export class LandlordController {
@@ -23,5 +24,11 @@ export class LandlordController {
   @Get('getlandlordbyidandname')
   getLandlordByIDandName(@Query('id') id: number, @Query('name') name: string): object {
     return this.landlordService.getLandlordByIDandName(id, name);
+  }
+
+  @UsePipes(new ValidationPipe())
+  @Post('createemail')
+  createLandlord(@Body() landlordDto: LandlordDto): string {
+    return this.landlordService.createLandlord(landlordDto);
   }
 }

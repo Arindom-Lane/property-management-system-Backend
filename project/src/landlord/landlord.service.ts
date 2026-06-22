@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { LandlordDto as landlordDto } from './landlord.dto';
 
 @Injectable()
 export class LandlordService {
@@ -17,5 +18,9 @@ export class LandlordService {
 
   getLandlordByIDandName(id: number, name: string): object {
     return { name: name, id: id };
+  }
+
+  createLandlord(landlordDto: landlordDto): string {
+    return landlordDto.email + " " + landlordDto.pass + " " + landlordDto.gender + " " + landlordDto.phone;
   }
 }

@@ -15,8 +15,8 @@ export class LandlordController {
     return this.landlordService.getAllLandlord();
   }
 
-  @Get('getlandlordbyid/:myid')
-  getLandlordByID(@Param('myid') id: number, @Query('name') name: string): object {
+  @Get('getlandlordbyid/:myid/getbyname')
+  getLandlordByID(@Param('myid') id: number, @Param('name') name: string): object {
     return this.landlordService.getLandlordByID(id, name);
   }
 

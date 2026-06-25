@@ -13,4 +13,16 @@ export class StaffService {
   getStaffByQuery(id: string): object {
     return { id: id, name: 'Alex', position: 'Staff Manager (Found via Query)' };
   }
+
+  createUser(body: object): object {
+    return {
+      message: 'User created successfully'
+    }
+  }
+
+
+
+
+
+
 }

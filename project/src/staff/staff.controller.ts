@@ -30,13 +30,36 @@ export class StaffController {
   //   return body;
   // }
 
-  @Post(':id')
-createUser(@Param('id') id:string, @Body('name') name: string) {
-  return {
-    username: name
-  };
-}
 
+  //SIngle value form within a object
+//   @Post(':id')
+// createUser(@Param('id') id:string, @Body('name') name: string) {
+//   return {
+//     username: name
+//   };
+// }
+
+
+    @Post()
+    createUser(
+      @Body('name') name: string,
+      @Body('age') age: number,
+    ) {
+      return {
+        name,
+        age,
+      };
+    }
+
+
+
+    @Post('register')
+    register(@Body() body: object): object {
+    return {
+        message: 'User Registered',
+        user: body,
+       };
+    }
 
   
 }

@@ -70,6 +70,8 @@ export class StaffController {
       @Param('id') id:number, 
       @Body() staffData: staffDataDto): any{
        console.log(staffData.name);
+       console.log(staffData.age);
+       console.log(staffData.email);
        return staffData;
       ;
     }

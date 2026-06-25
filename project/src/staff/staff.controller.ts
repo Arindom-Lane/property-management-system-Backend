@@ -1,5 +1,6 @@
 import { Controller, Get, Param, Post, Query,Body } from '@nestjs/common';
 import { StaffService } from './staff.service';
+import { staffDataDto } from './staff.staffData.dto';
 
 @Controller('staff')
 export class StaffController {
@@ -40,18 +41,16 @@ export class StaffController {
 // }
 
 
-    @Post()
-    createUser(
-      @Body('name') name: string,
-      @Body('age') age: number,
-    ) {
-      return {
-        name,
-        age,
-      };
-    }
-
-
+    // @Post()
+    // createUser(
+    //   @Body('name') name: string,
+    //   @Body('age') age: number,
+    // ) {
+    //   return {
+    //     name,
+    //     age,
+    //   };
+    // }
 
     @Post('register')
     register(@Body() body: object): object {
@@ -61,5 +60,33 @@ export class StaffController {
        };
     }
 
-  
-}
+    // @Post()
+    // creatStaffViaDTO(@Body() staffData: object): any{
+    //   console.log(staffData);}
+    // }
+
+    @Post(':id')
+    creatStaffViaDTO(
+      @Param('id') id:number, 
+      @Body() staffData: staffDataDto): any{
+       console.log(staffData.name);
+      ;
+    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  }

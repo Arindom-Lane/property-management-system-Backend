@@ -70,9 +70,10 @@ export class StaffController {
       @Param('id') id:number, 
       @Body() staffData: staffDataDto): any{
        console.log(staffData.name);
+       return staffData;
       ;
     }
-    
+
 
 
 

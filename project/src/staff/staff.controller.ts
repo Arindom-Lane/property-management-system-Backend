@@ -1,6 +1,7 @@
 import { Controller, Get, Param, Post, Query,Body } from '@nestjs/common';
 import { StaffService } from './staff.service';
 import { staffDataDto } from './staff.staffData.dto';
+import {}
 
 @Controller('staff')
 export class StaffController {
@@ -73,8 +74,9 @@ export class StaffController {
        console.log(staffData.age);
        console.log(staffData.email);
        return staffData;
-      ;
     }
+
+    
 
 
 

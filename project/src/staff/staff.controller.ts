@@ -1,7 +1,7 @@
-import { Controller, Get, Param, Post, Query,Body } from '@nestjs/common';
+import { Controller, Get, Param, Post, Query,Body, UsePipes } from '@nestjs/common';
 import { StaffService } from './staff.service';
 import { staffDataDto } from './staff.staffData.dto';
-import {}
+import { ValidationPipe } from '@nestjs/common';
 
 @Controller('staff')
 export class StaffController {
@@ -66,6 +66,7 @@ export class StaffController {
     //   console.log(staffData);}
     // }
 
+    @UsePipes(ValidationPipe)
     @Post(':id')
     creatStaffViaDTO(
       @Param('id') id:number, 

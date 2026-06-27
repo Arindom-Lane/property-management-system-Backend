@@ -66,15 +66,33 @@ export class StaffController {
     //   console.log(staffData);}
     // }
 
+    // @UsePipes(ValidationPipe)
+    // @Post(':id')
+    // creatStaffViaDTO(
+    //   @Param('id') id:number, 
+    //   @Body() staffData: staffDataDto): any{
+    //   //  console.log(staffData.name);
+    //   //  console.log(staffData.age);
+    //   //  console.log(staffData.email);
+    //    return staffData;
+    // }
+
+
     @UsePipes(ValidationPipe)
     @Post(':id')
-    creatStaffViaDTO(
-      @Param('id') id:number, 
-      @Body() staffData: staffDataDto): any{
-       console.log(staffData.name);
-       console.log(staffData.age);
-       console.log(staffData.email);
-       return staffData;
+    userCategory(
+      @Param('id') id: number, 
+      @Body() staffData: staffDataDto): any 
+    {
+      return staffData;
+      /* \
+      {
+  "email": "arindom@gmail.aiub.edu",
+  "password":"ab234cabC",
+  "gender": "male",
+  "phone": "19876543211"
+}
+  */
     }
 
     

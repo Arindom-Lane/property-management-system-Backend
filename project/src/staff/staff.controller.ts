@@ -1,7 +1,9 @@
-import { Controller, Get, Param, Post, Query,Body, UsePipes } from '@nestjs/common';
+import { Controller, Get, Param, Post, Query,Body, UsePipes, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { StaffService } from './staff.service';
 import { staffDataDto } from './staff.staffData.dto';
 import { ValidationPipe } from '@nestjs/common';
+import { Express } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express/multer/interceptors/file.interceptor';
 
 @Controller('staff')
 export class StaffController {
@@ -54,6 +56,8 @@ export class StaffController {
     // }
 
     @Post('register')
+    @UseInterceptors(FileInterceptor('file'))
+ 
     register(@Body() body: object): object {
     return {
         message: 'User Registered',
@@ -80,9 +84,12 @@ export class StaffController {
 
     @UsePipes(ValidationPipe)
     @Post(':id')
+    @UseInterceptors(FileInterceptor('file'))
+
     userCategory(
       @Param('id') id: number, 
-      @Body() staffData: staffDataDto): any 
+      @Body() staffData: staffDataDto
+      @UploadedFile() file: Express.Multer.File): any 
     {
       return staffData;
       /* \

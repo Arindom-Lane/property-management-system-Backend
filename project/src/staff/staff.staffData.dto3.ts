@@ -19,7 +19,7 @@ import {
   Min,
 } from "class-validator";
 
-export class staffDataDto2 {
+export class staffDataDto3 {
   @IsAlphanumeric()
   @IsAlpha()
   name?: string;
@@ -30,4 +30,6 @@ export class staffDataDto2 {
 
   @Matches(/^01[3-9]\d{8}$/)
   phone?: string;
+
+  file?: string;
 }

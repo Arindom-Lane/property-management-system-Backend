@@ -8,13 +8,14 @@ import {
   UsePipes,
   UseInterceptors,
   UploadedFile,
+  Res,
+  ValidationPipe,
 } from "@nestjs/common";
 import { StaffService } from "./staff.service";
 import { staffDataDto } from "./staff.staffData.dto";
-import { ValidationPipe } from "@nestjs/common";
-import { Express } from "express";
-import { FileInterceptor } from "@nestjs/platform-express/multer/interceptors/file.interceptor";
-import { staffDataDto2 } from "./staff.staffData.dto2";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { MulterError, diskStorage } from "multer";
+import { staffDataDto3 } from "./staff.staffData.dto3";
 import { staffDataDto4 } from "./staff.staffData.dto4";
 
 @Controller("staff")
@@ -102,19 +103,43 @@ export class StaffController {
   */
   }
 
-  @UsePipes(ValidationPipe)
   @Post("task3")
-  task2(
-    @Param("task4") task4: number,
-
-    @Body() staffData2: staffDataDto2,
-  ): any {
-    return staffData2;
-  }
-
   @UsePipes(ValidationPipe)
-  @Post("task4")
-  task3(@Param("task4") task4: number, @Body() staffData4: staffDataDto4): any {
-    return staffData4;
+  @UseInterceptors(
+    FileInterceptor("file", {
+      fileFilter: (req, file, cb) => {
+        if (file.originalname.match(/\.(pdf)$/i)) {
+          cb(null, true);
+        } else {
+          cb(
+            new MulterError(
+              "LIMIT_UNEXPECTED_FILE",
+              "Only pdf files are allowed",
+            ),
+            false,
+          );
+        }
+      },
+      limits: {
+        fileSize: 1024 * 1024 * 5,
+      },
+      storage: diskStorage({
+        destination: "./uploads",
+        filename: (req, file, cb) => {
+          cb(null, `${Date.now()}-${file.originalname}`);
+        },
+      }),
+    }),
+  )
+  task3(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() staffData3: staffDataDto3,
+  ): any {
+    if (file) {
+      staffData3.file = file.filename;
+    }
+    return {
+      data: staffData3,
+    };
   }
 }

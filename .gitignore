@@ -1,4 +1,24 @@
-/project/node_modules
-/project/package.json
-/project/package-lock.json
-/project/dist
+# NestJS project
+/project/dist/
+/project/node_modules/
+
+# Environment files
+/project/.env
+/project/.env.*
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Coverage
+/project/coverage/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -18,6 +18,11 @@ let StaffService = class StaffService {
     getStaffByQuery(id) {
         return { id: id, name: 'Alex', position: 'Staff Manager (Found via Query)' };
     }
+    createUser(body) {
+        return {
+            message: 'User created successfully'
+        };
+    }
 };
 exports.StaffService = StaffService;
 exports.StaffService = StaffService = __decorate([

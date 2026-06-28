@@ -9,6 +9,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LandlordService = void 0;
 const common_1 = require("@nestjs/common");
 let LandlordService = class LandlordService {
+    getLandlord() {
+        return 'All Landlord';
+    }
+    getAllLandlord() {
+        return { app: 'abc', id: '12' };
+    }
+    getLandlordByID(id, name) {
+        return { name: name, id: id };
+    }
+    getLandlordByIDandName(id, name) {
+        return { name: name, id: id };
+    }
 };
 exports.LandlordService = LandlordService;
 exports.LandlordService = LandlordService = __decorate([

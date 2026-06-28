@@ -15,6 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StaffController = void 0;
 const common_1 = require("@nestjs/common");
 const staff_service_1 = require("./staff.service");
+const staff_staffData_dto_1 = require("./staff.staffData.dto");
+const common_2 = require("@nestjs/common");
+const file_interceptor_1 = require("@nestjs/platform-express/multer/interceptors/file.interceptor");
 let StaffController = class StaffController {
     staffService;
     constructor(staffService) {
@@ -28,6 +31,15 @@ let StaffController = class StaffController {
     }
     getStaffById(id) {
         return this.staffService.getStaffById(id);
+    }
+    register(body) {
+        return {
+            message: 'User Registered',
+            user: body,
+        };
+    }
+    userCategory(id, staffData) {
+        return staffData;
     }
 };
 exports.StaffController = StaffController;
@@ -51,6 +63,24 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Object)
 ], StaffController.prototype, "getStaffById", null);
+__decorate([
+    (0, common_1.Post)('register'),
+    (0, common_1.UseInterceptors)((0, file_interceptor_1.FileInterceptor)('file')),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Object)
+], StaffController.prototype, "register", null);
+__decorate([
+    (0, common_1.UsePipes)(common_2.ValidationPipe),
+    (0, common_1.Post)(':id'),
+    (0, common_1.UseInterceptors)((0, file_interceptor_1.FileInterceptor)('file')),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, staff_staffData_dto_1.staffDataDto]),
+    __metadata("design:returntype", Object)
+], StaffController.prototype, "userCategory", null);
 exports.StaffController = StaffController = __decorate([
     (0, common_1.Controller)('staff'),
     __metadata("design:paramtypes", [staff_service_1.StaffService])

@@ -88,8 +88,7 @@ export class StaffController {
 
     userCategory(
       @Param('id') id: number, 
-      @Body() staffData: staffDataDto
-      @UploadedFile() file: Express.Multer.File): any 
+      @Body() staffData: staffDataDto): any 
     {
       return staffData;
       /* \

@@ -16,7 +16,6 @@ import { staffDataDto } from "./staff.staffData.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { MulterError, diskStorage } from "multer";
 import { staffDataDto3 } from "./staff.staffData.dto3";
-import { staffDataDto4 } from "./staff.staffData.dto4";
 
 @Controller("staff")
 export class StaffController {

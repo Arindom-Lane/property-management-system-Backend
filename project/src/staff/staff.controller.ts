@@ -82,26 +82,7 @@ export class StaffController {
     // }
 
 
-    @UsePipes(ValidationPipe)
-    @Post(':id')
-    @UseInterceptors(FileInterceptor('file'))
-
-    userCategory(
-      @Param('id') id: number, 
-      @Body() staffData: staffDataDto
-      @UploadedFile() file: Express.Multer.File): any 
-    {
-      return staffData;
-      /* \
-      {
-  "email": "arindom@gmail.aiub.edu",
-  "password":"ab234cabC",
-  "gender": "male",
-  "phone": "19876543211"
-}
-  */
-    }
-
+    
     
 
 

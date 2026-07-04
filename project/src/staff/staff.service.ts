@@ -1,8 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { StaffData } from './staffData.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class StaffService {
-  getAllStaff() {
+  constructor(@InjectRepository(StaffData) private staffRepository: Repository<StaffData>){}
+    getAllStaff() {
     return 'This will return all staff members.';
   }
 

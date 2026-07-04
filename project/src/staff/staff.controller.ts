@@ -32,7 +32,7 @@ export class StaffController {
   }
 
   @Get(":id")
-  getStaffById(@Param("id") id: string): object {
+  getStaffById(@Param("id") id: number): object {
     return this.staffService.getStaffById(id);
   }
 

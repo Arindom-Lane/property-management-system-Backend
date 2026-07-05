@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { staffData } from './staffData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 

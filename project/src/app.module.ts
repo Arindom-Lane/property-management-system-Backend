@@ -5,7 +5,7 @@ import { AdminModule } from './admin/admin.module';
 import { LandlordModule } from './landlord/landlord.module';
 import { TenantModule } from './tenant/tenant.module';
 import { StaffModule } from './staff/staff.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm'; //npm install --save @nestjs/typeorm typeorm pg
 
 
 @Module({

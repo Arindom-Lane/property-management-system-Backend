@@ -4,6 +4,5 @@ import {staffData } from './staff.entity'
 
 @Injectable()
 export class StaffService {
-  constructor(private staffRepository: Repository<staffData>){}
 
 }

@@ -1,28 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import {staffData } from './staff.entity'
 
 @Injectable()
 export class StaffService {
-  getAllStaff() {
-    return 'This will return all staff members.';
-  }
-
-  getStaffById(id: string): object {
-    return { id, name: 'John Doe', position: 'Manager' };
-  }
-
-  getStaffByQuery(id: string): object {
-    return { id: id, name: 'Alex', position: 'Staff Manager (Found via Query)' };
-  }
-
-  createUser(body: object): object {
-    return {
-      message: 'User created successfully'
-    }
-  }
-
-
-
-
-
+  constructor(private staffRepository: Repository<staffData>){}
 
 }

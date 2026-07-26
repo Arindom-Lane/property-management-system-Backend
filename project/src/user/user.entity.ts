@@ -21,7 +21,7 @@ export class User{
     @Column()
     passowrd: string;
 
-    @Column({type: 'enum', enum userRole, default: userRole.tenant})
+    @Column({type: 'enum', enum: userRole, default: userRole.tenant})
     role: string;
 
     //(Format: YYYY-MM-DD HH:MM:SS.microseconds)

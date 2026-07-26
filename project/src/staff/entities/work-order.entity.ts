@@ -1,16 +1,20 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-export enum status {
+import { Column, Entity, PrimaryGeneratedColumn,OneToOne,JoinColumn } from "typeorm";
+import { Worker } from "./worker.entity";
+export enum orderStatus {
   active = "active",
   inactive = "inactive",
+  pending = "pending",
+  done = "complete"
 }
+
 
 @Entity()
 export class workOrder {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: "enum", enum: status, default: status.inactive })
-  status: status;
+  @Column({ type: "enum", enum: orderStatus, default: orderStatus.inactive })
+  workStatus: orderStatus;
 
   @Column()
   labor_cost: number;
@@ -18,7 +22,7 @@ export class workOrder {
   @Column()
   materials_cost: number;
 
-  @ManyToOne(() => Worker, (worker) => worker.workOrders)
-  @JoinColumn({ name: "worker_id" }) // 3. This puts the foreign key column exactly where it belongs
-  worker: Worker;
+  @OneToOne(() => Worker, (worker) => worker.workOrders, {cascade: true})
+  @JoinColumn()
+  worker?: Worker;
 }

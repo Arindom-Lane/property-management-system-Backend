@@ -1,13 +1,8 @@
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
-export class CreateWorkerDto {
+export class CreateCategoryDto {
   @IsString()
   @IsNotEmpty()
-  @MaxLength(100)
+  @MaxLength(50)
   name: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(30)
-  phone: string;
 }

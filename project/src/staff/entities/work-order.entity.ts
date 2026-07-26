@@ -1,12 +1,18 @@
-import { Column, Entity, PrimaryGeneratedColumn,OneToOne,JoinColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
+  OneToMany,
+} from "typeorm";
 import { Worker } from "./worker.entity";
 export enum orderStatus {
   active = "active",
   inactive = "inactive",
   pending = "pending",
-  done = "complete"
+  done = "complete",
 }
-
 
 @Entity()
 export class workOrder {
@@ -22,7 +28,9 @@ export class workOrder {
   @Column()
   materials_cost: number;
 
-  @OneToOne(() => Worker, (worker) => worker.workOrders, {cascade: true})
+  @ManyToOne(() => Worker, (worker) => worker.workOrders, {
+    nullable: true,
+  })
   @JoinColumn()
-  worker?: Worker;
+  worker: Worker;
 }

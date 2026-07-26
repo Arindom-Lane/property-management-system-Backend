@@ -64,15 +64,6 @@ export class StaffService {
       throw new NotFoundException("Worker not found");
     }
 
-    const existingOrder = await this.workOrderRepo.findOne({
-      where: { worker: { id: dto.workerId } },
-      relations: { worker: true },
-    });
-
-    if (existingOrder) {
-      throw new BadRequestException("Worker already has an order, busy");
-    }
-
     const order = this.workOrderRepo.create({
       workStatus: dto.workStatus ?? WorkOrderStatus.inactive,
       labor_cost: dto.labor_cost,
@@ -87,67 +78,66 @@ export class StaffService {
   }
 
   async dispatchWorker(workOrderId: number, dto: DispatchWorkOrderDto) {
-  const order = await this.workOrderRepo.findOne({
-    where: { id: workOrderId },
-    relations: { worker: true },
-  });
-
-  if (!order) {
-    return 'Order not found';
-  }
-
-  
-
-  const worker = await this.workerRepository.findOne({
-    where: { id: dto.workerId },
-  });
-
-  if (!worker) {
-    return 'Worker not found';
-  }
-  if(order.worker?.id != dto.workerId ){
-    return `worker ${worker.name} is not assigned to this job, remove and retry`
-  }
-
-  
-
-  order.workStatus = WorkOrderStatus.active; 
-
-  worker.status = WorkerStatus.busy;
-
-  await this.workerRepository.save(worker);
-  await this.workOrderRepo.save(order);
-
-  return await this.workOrderRepo.findOne({
-    where: { id: workOrderId },
-    relations: { worker: true },
-  });
-}
-
-async removeWorkerFromOrder(id: number){
-  const order = await this.workOrderRepo.findOne({
-    where: {id: id}
-  })
-  if(!order){
-    return "Order not found";
-  }
-
-  if (order.worker) {
-    const worker = await this.workerRepository.findOne({
-      where: { id: order.worker.id },
+    const order = await this.workOrderRepo.findOne({
+      where: { id: workOrderId },
+      relations: { worker: true },
     });
 
-    if (worker) {
-      worker.status = WorkerStatus.active;
-      await this.workerRepository.save(worker);
+    if (!order) {
+      return 'Order not found';
     }
-  }
-  order.worker = null;
-  order.workStatus = WorkOrderStatus.pending;
-  await this.workOrderRepo.save(order);
-  return order;
-}
 
+    if(order.workStatus == WorkOrderStatus.done){
+      return "The order is already complete."
+    }
+
+    const worker = await this.workerRepository.findOne({
+      where: { id: dto.workerId },
+    });
+
+    if (!worker) {
+      return 'Worker not found';
+    }  
+
+    order.worker = worker;
+    order.workStatus = WorkOrderStatus.active; 
+    worker.status = WorkerStatus.busy;
+
+    await this.workerRepository.save(worker);
+    await this.workOrderRepo.save(order);
+
+    return await this.workOrderRepo.findOne({
+      where: { id: workOrderId },
+      relations: { worker: true },
+    });
+  }
+
+  async removeWorkerFromOrder(id: number){
+    const order = await this.workOrderRepo.findOne({
+      where: {id: id},
+      relations: { worker: true } 
+    });
+    
+    if(!order){
+      return "Order not found";
+    }
+
+    if (order.worker) {
+      const worker = await this.workerRepository.findOne({
+        where: { id: order.worker.id },
+      });
+
+      if (worker) {
+        worker.status = WorkerStatus.active;
+        await this.workerRepository.save(worker);
+      }
+    }
+    order.worker = null;
+    order.workStatus = WorkOrderStatus.pending;
+    await this.workOrderRepo.save(order);
+    return order;
+  }
+  
   async completeWorkOrder(id: number, dto: CompleteWorkOrderDto) {
     const order = await this.workOrderRepo.findOne({
       where: { id },
@@ -175,4 +165,8 @@ async removeWorkerFromOrder(id: number){
 
     return this.workOrderRepo.save(order);
   }
+
+  
 }
+
+

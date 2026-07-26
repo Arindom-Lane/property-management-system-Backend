@@ -1,13 +1,22 @@
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString,IsMobilePhone } from 'class-validator';
+import { Worker } from '../entities/worker.entity';
+export enum Status {
+  active = 'active',
+  inactive = 'inactive',
+}
 
 export class CreateWorkerDto {
   @IsString()
-  @IsNotEmpty()
-  @MaxLength(100)
+  @IsNotEmpty({ message: 'Worker name is required' })
   name: string;
 
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(30)
+
+  @IsMobilePhone()
+  @IsNotEmpty({ message: 'Phone number is required' })
   phone: string;
+
+
+  @IsOptional()
+  @IsEnum(Status, { message: 'Status must be active or inactive' })
+  status?: Status;
 }

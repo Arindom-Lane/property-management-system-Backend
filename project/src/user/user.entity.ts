@@ -10,7 +10,7 @@ export enum userRole{
 @Entity('User')
 export class User{
     @PrimaryGeneratedColumn()
-    id: string;
+    id: number;
 
     @Column({type: 'varchar'})
     name: string;
@@ -29,6 +29,4 @@ export class User{
     @CreateDateColumn() 
     created_at: Date;
 
-
-    
 }

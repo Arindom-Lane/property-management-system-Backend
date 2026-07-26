@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { StaffController } from './staff/staff.controller';
+import { StaffModule } from './staff/staff.module';
 
 
 @Module({
@@ -14,8 +16,8 @@ password: 'admin',
 database: 'property_Management_system',
 autoLoadEntities: true,
 synchronize: true,
-}),],
-  controllers: [AppController],
+}), StaffModule,],
+  controllers: [AppController, StaffController],
   providers: [AppService],
 
 })

@@ -1,16 +1,14 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AdminModule } from './admin/admin.module';
-import { LandlordModule } from './landlord/landlord.module';
-import { TenantModule } from './tenant/tenant.module';
+import { StaffController } from './staff/staff.controller';
 import { StaffModule } from './staff/staff.module';
 import { TypeOrmModule } from '@nestjs/typeorm'; //npm install --save @nestjs/typeorm typeorm pg
 
 
 
 @Module({
-  imports: [AdminModule, LandlordModule, TenantModule, StaffModule, TypeOrmModule.forRoot({
+  imports: [TypeOrmModule.forRoot({
 type: 'postgres',
 host: 'localhost',
 port: 5432,
@@ -20,8 +18,8 @@ password: 'admin', // please keep the password: admin
 database: 'landlord',
 autoLoadEntities: true,
 synchronize: true,
-}),],
-  controllers: [AppController],
+}), StaffModule,],
+  controllers: [AppController, StaffController],
   providers: [AppService],
 
 })

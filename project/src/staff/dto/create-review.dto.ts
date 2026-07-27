@@ -12,5 +12,7 @@ export class CreateReviewDto {
   comment?: string;
 
   @IsNotEmpty()
-  landlordId: number;
+  landlordId?: number;
 }
+
+

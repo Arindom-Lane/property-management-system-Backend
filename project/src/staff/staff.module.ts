@@ -7,6 +7,7 @@ import { workOrder } from './entities/work-order.entity';
 import {Review} from "./entities/review.entity"
 import { LandlordEntity } from "../landlord/entities/landloard.entity"
 import {Transaction } from "./entities/transaction.entity"
+import {LandlordModule} from '../landlord/landlord.module';
 
 
 @Module({
@@ -14,8 +15,8 @@ import {Transaction } from "./entities/transaction.entity"
     TypeOrmModule.forFeature([
       Worker,
       workOrder,
-      Review,Transaction,
-    ]),
+      Review,Transaction,LandlordEntity,
+    ]),LandlordModule,
   ],
   controllers: [StaffController],
   providers: [StaffService],

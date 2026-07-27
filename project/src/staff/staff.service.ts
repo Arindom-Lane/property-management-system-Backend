@@ -19,6 +19,8 @@ import { CreateWorkOrderDto, orderStatus } from "./dto/create-work-oder.dto";
 import { CompleteWorkOrderDto } from "./dto/complete-work-order.dto";
 import { Review } from "./entities/review.entity";
 import { CreateReviewDto } from "./dto/create-review.dto";
+import { LandlordEntity } from "../landlord/entities/landloard.entity";
+import { privateDecrypt } from "crypto";
 
 @Injectable()
 export class StaffService {
@@ -29,6 +31,8 @@ export class StaffService {
     private readonly workOrderRepo: Repository<workOrder>,
     @InjectRepository(Review)
     private readonly reviewRepo: Repository<Review>,
+    @InjectRepository(LandlordEntity)
+    private readonly landLoardRepo: Repository<LandlordEntity>,
   ) {}
 
   async createWorker(data: CreateWorkerDto): Promise<Worker> {
@@ -56,7 +60,14 @@ export class StaffService {
   }
 
   async findAllWorkOrders(): Promise<workOrder[]> {
-    return await this.workOrderRepo.find({ relations: { worker: true } });
+    return await this.workOrderRepo.find({
+      relations: {
+        worker: true,
+        review: true,
+        landlord: true,
+        transactions: true,
+      },
+    });
   }
 
   async createWorkOrder(dto: CreateWorkOrderDto) {
@@ -224,7 +235,48 @@ export class StaffService {
     return { message: `Order ${id} has been deleted` };
   }
 
-  async createReview(id:number, dto: CreateReviewDto){
+  async getAllLandLoards() {
+    return await this.landLoardRepo.find();
+  }
 
+  async createReview(id: number, dto: CreateReviewDto) {
+    const order = await this.workOrderRepo.findOne({
+      where: { id: id },
+      relations: { review: true },
+    });
+    if (!order) {
+      throw new NotFoundException("Wroker order not found");
+    }
+    if (order.workStatus !== WorkOrderStatus.done) {
+      throw new BadRequestException("Work is not finished");
+    }
+    if (order.review) {
+      throw new BadRequestException("review exists");
+    }
+
+    const review = this.reviewRepo.create({
+      rating: dto.rating,
+      comment: dto.comment,
+      workOrder: order,
+      landlord: { id: dto.landlordId } as LandlordEntity,
+    });
+    return await this.reviewRepo.save(review);
+  }
+  async getReviewByOrder(id: number) {
+    const order = await this.workOrderRepo.findOne({
+      where: { id: id },
+    });
+    if (!order) {
+      throw new NotFoundException(`Work order ${id} not found`);
+    }
+
+    if (!order.review) {
+      throw new NotFoundException(`Review for work order ${id} not found`);
+    }
+    const review = await this.reviewRepo.findOne({
+      where: { id: order?.review?.id },
+      relations: { workOrder: true, landlord: true },
+    });
+    return review;
   }
 }

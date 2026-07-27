@@ -25,13 +25,11 @@ export class Transaction {
   @CreateDateColumn()
   created_at: Date;
 
-  // Connected to the Work Order that generated this bill
   @ManyToOne(() => workOrder, (order) => order.transactions, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'work_order_id' })
   workOrder: workOrder;
 
-  // Connected to the Landlord who must pay
-  @ManyToOne(() => LandlordEntity, { onDelete: 'CASCADE' })
+  @ManyToOne(() => LandlordEntity)
   @JoinColumn({ name: 'landlord_id' })
   landlord: LandlordEntity;
 }

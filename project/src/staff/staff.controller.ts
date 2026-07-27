@@ -86,11 +86,20 @@ export class StaffController {
     return this.staffService.deleteOrder(id);
   }
 
+  @Get('landloards')
+  getAllLandLoards(){
+    return this.staffService.getAllLandLoards();
+  }
+
   @Post('work-orders/:id/review')
 createReview(
   @Param('id', ParseIntPipe) id: number,
   @Body() dto: CreateReviewDto,
 ) {
   return this.staffService.createReview(id, dto);
+}
+@Get('work-orders/:id/review')
+getReviewByOrder(@Param('id', ParseIntPipe) id: number) {
+  return this.staffService.getReviewByOrder(id);
 }
 }

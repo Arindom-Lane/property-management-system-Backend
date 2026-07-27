@@ -4,13 +4,15 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   JoinColumn,
-  ManyToOne,OneToMany,
+  ManyToOne,
+  OneToMany,
 } from "typeorm";
 import { Worker } from "./worker.entity";
 import { IsOptional } from "class-validator";
-import {Review} from "./review.entity"
+import { Review } from "./review.entity";
 import { LandlordEntity } from "../../landlord/entities/landlord.entity";
 import { PropertyEntity } from "src/landlord/entities/property.entity";
+import { Transaction } from "./transaction.entity";
 
 export enum orderStatus {
   active = "active",
@@ -51,19 +53,18 @@ export class workOrder {
   ///property of admin
 
   @ManyToOne(() => LandlordEntity)
-  @JoinColumn({ name: 'landlord_id' })
+  @JoinColumn({ name: "landlord_id" })
   landlord?: LandlordEntity;
 
   @OneToOne(() => Review, (review) => review.workOrder)
   review?: Review;
 
-  @ManyToOne(() => PropertyEntity, (property) => property.workOrders, { nullable: true })
-  @JoinColumn({ name: 'property_id' })
+  @ManyToOne(() => PropertyEntity, (property) => property.workOrders, {
+    nullable: true,
+  })
+  @JoinColumn({ name: "property_id" })
   property?: PropertyEntity;
 
   @OneToMany(() => Transaction, (transaction) => transaction.workOrder)
   transactions?: Transaction[];
-
-
-  
 }

@@ -20,12 +20,10 @@ export class LandlordDto {
 
   @IsString()
   @MaxLength(20)
-  @IsOptional()
   phone_number?: string;
 
   @IsString()
   @MaxLength(500)
-  @IsOptional()
   address?: string;
 }
 

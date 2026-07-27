@@ -9,7 +9,7 @@ export class LandlordEntity {
   @Column()
   name?: string;
 
-  @Column({ unique: true })
+  @Column()
   email?: string;
 
   @Column()
@@ -20,9 +20,6 @@ export class LandlordEntity {
 
   @Column()
   address?: string;
-
-  @Column({ default: 'landlord' })
-  role?: string;
 
   @Column({ default: 'active' })
   status?: 'active' | 'suspended';

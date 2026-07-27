@@ -40,7 +40,7 @@ export class workOrder {
   @JoinColumn()
   worker?: Worker;
 
-  @ManyToOne(() => LandlordEntity, { nullable: true })
+  @ManyToOne(() => LandlordEntity)
   @JoinColumn({ name: 'landlord_id' })
   landlord?: LandlordEntity;
 

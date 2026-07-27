@@ -15,7 +15,7 @@ port: 5432,
 username: 'postgres',
 password: 'admin', // please keep the password: admin
 // admin is the default passowrd, keep it as is
-database: 'landlord',
+database: 'property_Management_system',
 autoLoadEntities: true,
 synchronize: true,
 }), StaffModule,],

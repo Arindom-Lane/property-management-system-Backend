@@ -7,6 +7,7 @@ import { PropertyEntity } from './entities/property.entity';
 import { WorkOrderEntity } from './entities/work_order.entity';
 
 
+
 @Module({
   imports: [TypeOrmModule.forFeature([LandlordEntity,PropertyEntity,WorkOrderEntity])],
   controllers: [LandlordController],

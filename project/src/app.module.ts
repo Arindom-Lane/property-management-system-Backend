@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { StaffController } from './staff/staff.controller';
 import { StaffModule } from './staff/staff.module';
 import { TypeOrmModule } from '@nestjs/typeorm'; //npm install --save @nestjs/typeorm typeorm pg
+import { LandlordModule } from './landlord/landlord.module';
 
 
 
@@ -18,7 +19,7 @@ password: 'admin', // please keep the password: admin
 database: 'property_Management_system',
 autoLoadEntities: true,
 synchronize: true,
-}), StaffModule,],
+}), StaffModule, LandlordModule],
   controllers: [AppController, StaffController],
   providers: [AppService],
 

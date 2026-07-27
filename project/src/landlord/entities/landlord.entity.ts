@@ -1,7 +1,6 @@
 import { Entity,PrimaryGeneratedColumn,Column,CreateDateColumn,UpdateDateColumn, OneToMany } from 'typeorm';
 import { PropertyEntity } from './property.entity';
-import { WorkOrderEntity } from './work_order.entity';
-
+import {workOrder} from "../../staff/entities/work-order.entity"
 @Entity('landlords')
 export class LandlordEntity {
   @PrimaryGeneratedColumn()
@@ -39,8 +38,8 @@ export class LandlordEntity {
   @OneToMany(() => PropertyEntity, property => property.landlord, { cascade: true })
   property?: PropertyEntity[];
 
-  @OneToMany(() => WorkOrderEntity, workOrder => workOrder.landlord, { cascade: true })
-  workOrders?: WorkOrderEntity[];
+  @OneToMany(() => workOrder, workOrder => workOrder.landlord, { cascade: true })
+  workOrders?: workOrder[];
 
 
 }

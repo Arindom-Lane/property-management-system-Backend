@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber, IsOptional,Min } from "class-validator";
+import { IsEnum, IsNumber, IsOptional,IsString,Min } from "class-validator";
 export enum orderStatus {
   active = "active",
   inactive = "inactive",
@@ -21,4 +21,11 @@ export class CreateWorkOrderDto {
 
   @IsNumber()
   workerId?: number;
+
+  @IsNumber()
+  property_id?: number;
+
+  @IsString()
+  issue?: string;
+
 }

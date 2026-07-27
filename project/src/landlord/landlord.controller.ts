@@ -72,7 +72,7 @@ export class LandlordController {
     return this.LandlordService.createPropertyForLandlord(landlordId, propertyData);
   }
 
-  @Get('/:landlordId')
+  @Get('landlordId')
   async getLandlordWithProperties(@Param('landlordId', ParseIntPipe) landlordId: number) {
     return this.LandlordService.getLandlordWithProperties(landlordId);
   }
@@ -80,9 +80,11 @@ export class LandlordController {
 
 
 
-   @Post('work_orders')
-     createWorkOrder(@Body() dto: CreateWorkOrderDto) {
-       return this.LandlordService.createWorkOrder(dto);
+
+
+   @Post(':id/work_orders')
+     async createWorkOrder(@Param('id', ParseIntPipe) id: number, @Body() dto: CreateWorkOrderDto) {
+       return this.LandlordService.createWorkOrder(id,dto);
      }
 
 }

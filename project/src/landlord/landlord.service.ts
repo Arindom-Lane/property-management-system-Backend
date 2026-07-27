@@ -85,10 +85,17 @@ export class LandlordService {
   });
 }
 
-async createWorkOrder(dto: CreateWorkOrderDto) {
-    const order = this.workOrderRepo.create(dto);
-    const saved = await this.workOrderRepo.save(order);
-    return saved;
+async createWorkOrder(landlordId: number, dto: CreateWorkOrderDto): Promise<workOrder> {
+  const landlord = await this.landlordRepository.findOne({ where: { id: landlordId } });
+  if (!landlord) {
+    throw new NotFoundException('Landlord not found');
   }
 
+  const workOrder = this.workOrderRepo.create({ ...dto, landlord });
+  return this.workOrderRepo.save(workOrder);
+
+
+  
+
+}
 }

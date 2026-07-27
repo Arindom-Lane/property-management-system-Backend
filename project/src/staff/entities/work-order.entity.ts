@@ -23,6 +23,9 @@ export class workOrder {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column()
+  property_id?: number;
+
   @Column({ type: "enum", enum: orderStatus, default: orderStatus.inactive })
   workStatus: orderStatus;
 
@@ -31,6 +34,9 @@ export class workOrder {
 
   @Column()
   materials_cost: number;
+
+  @Column()
+  issue: string;
 
   @IsOptional()
   @ManyToOne(() => Worker, (worker) => worker.workOrders, {
@@ -41,7 +47,6 @@ export class workOrder {
 
   ///property of admin
 
-  //isuue column
 
   @ManyToOne(() => LandlordEntity, { nullable: true })
   @JoinColumn({ name: 'landlord_id' })

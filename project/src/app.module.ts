@@ -15,7 +15,8 @@ type: 'postgres',
 host: 'localhost',
 port: 5432,
 username: 'postgres',
-password: 'root',
+password: 'admin', // please keep the password: admin
+// admin is the default passowrd, keep it as is
 database: 'landlord',
 autoLoadEntities: true,
 synchronize: true,

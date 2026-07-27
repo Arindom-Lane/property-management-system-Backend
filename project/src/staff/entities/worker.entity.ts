@@ -4,9 +4,10 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
-  ManyToOne,
+  OneToMany,
 } from "typeorm";
 import { workOrder } from "./work-order.entity";
+
 
 export enum WorkerStatus {
   active = "active",
@@ -30,4 +31,6 @@ export class Worker {
 
   @OneToMany(() => workOrder, (order) => order.worker)
   workOrders: workOrder[];
+
+  
 }

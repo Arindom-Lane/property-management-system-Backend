@@ -32,7 +32,7 @@ export class StaffController {
     return this.staffService.findAllWorkers();
   }
 
-  @Put('updateWorkerName/:id')
+  @Patch('workers/:id')
   updateWorkerName(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateWorkerDto,
@@ -63,7 +63,7 @@ export class StaffController {
     return this.staffService.dispatchWorker(id, dto);
   }
 
-  @Patch('work-orders/:id/removeWorker')
+  @Patch('work-orders/:id/remove-worker')
   removeWorkerFromOrder(
     @Param('id', ParseIntPipe) id: number,
   ) {
@@ -76,5 +76,12 @@ export class StaffController {
     @Body() dto: CompleteWorkOrderDto,
   ) {
     return this.staffService.completeWorkOrder(id, dto);
+  }
+
+  @Delete('work-orders/:id')
+  deleteOrder(
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.staffService.deleteOrder(id);
   }
 }

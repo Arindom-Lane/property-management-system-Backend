@@ -13,12 +13,12 @@ export class CreateWorkOrderDto {
 
   @IsNumber()
   @Min(0)
-  labor_cost: number;
+  labor_cost?: number;
 
   @IsNumber()
   @Min(0)
-  materials_cost: number;
+  materials_cost?: number;
 
   @IsNumber()
-  workerId: number;
+  workerId?: number;
 }

@@ -4,9 +4,12 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   JoinColumn,
-  OneToMany,
+  ManyToOne,
 } from "typeorm";
 import { Worker } from "./worker.entity";
+import { IsOptional } from "class-validator";
+import {Review} from "./review.entity"
+
 export enum orderStatus {
   active = "active",
   inactive = "inactive",
@@ -28,9 +31,13 @@ export class workOrder {
   @Column()
   materials_cost: number;
 
+  @IsOptional()
   @ManyToOne(() => Worker, (worker) => worker.workOrders, {
     nullable: true,
   })
   @JoinColumn()
-  worker: Worker;
+  worker?: Worker;
+
+  @OneToOne(() => Review, (review) => review.workOrder)
+  review: Review;
 }

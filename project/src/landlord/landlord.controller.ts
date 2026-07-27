@@ -87,4 +87,20 @@ export class LandlordController {
        return this.LandlordService.createWorkOrder(id,dto);
      }
 
+
+
+
+    @Post('property/:propertyId/work-orders')
+async createWorkOrderForProperty(
+  @Param('propertyId', ParseIntPipe) propertyId: number,
+  @Body() dto: CreateWorkOrderDto,
+) {
+  dto.property_id = propertyId;
+
+  return this.LandlordService.createWorkOrderForProperty(
+    propertyId,
+    dto,
+  );
+}
+
 }

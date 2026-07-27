@@ -91,11 +91,26 @@ async createWorkOrder(landlordId: number, dto: CreateWorkOrderDto): Promise<work
     throw new NotFoundException('Landlord not found');
   }
 
-  const workOrder = this.workOrderRepo.create({ ...dto, landlord });
+  const workOrder = await this.workOrderRepo.create({ ...dto, landlord });
+  return this.workOrderRepo.save(workOrder);
+}
+
+async createWorkOrderForProperty(
+  propertyId: number,
+  dto: CreateWorkOrderDto,
+): Promise<workOrder> {
+
+  const property = await this.propertyRepository.findOne({ where: { id: propertyId } });
+  if (!property) {
+    throw new NotFoundException('Property not found for the given landlord');
+  }
+
+  const workOrder = await this.workOrderRepo.create({ ...dto, property });
   return this.workOrderRepo.save(workOrder);
 
 
-  
 
 }
+
+
 }

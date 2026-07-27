@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Like, Repository } from 'typeorm';
-import { LandlordEntity } from './entities/landloard.entity';
-import { CreateLandlordDto } from './landlord.dto';
+import { LandlordEntity } from './entities/landlord.entity';
+import { LandlordDto } from './dto/landlord.dto';
+import { PropertyEntity } from './entities/property.entity';
 @Injectable()
 export class LandlordService {
   constructor(
     @InjectRepository(LandlordEntity)
     private landlordRepository: Repository<LandlordEntity>,
+    @InjectRepository(PropertyEntity)
+    private propertyRepository: Repository<PropertyEntity>,
   ) {}
   
 
@@ -15,13 +18,14 @@ export class LandlordService {
 
 
 
-  async createLandlord(dto: CreateLandlordDto): Promise<LandlordEntity> {
+
+  async createLandlord(dto: LandlordDto): Promise<LandlordEntity> {
     const landlord = this.landlordRepository.create(dto);
     return this.landlordRepository.save(landlord);
 
   }
 
-  async loginLandlord(loginData: CreateLandlordDto): Promise<LandlordEntity | null> {
+  async loginLandlord(loginData: LandlordDto): Promise<LandlordEntity | null> {
     const { email, password } = loginData;
     const landlord = await this.landlordRepository.findOne({
       where: { email, password },
@@ -34,7 +38,7 @@ export class LandlordService {
     return landlord || null;
   }
 
-  async updateLandlord(id: number, updateData: CreateLandlordDto): Promise<LandlordEntity | null> {
+  async updateLandlord(id: number, updateData: LandlordDto): Promise<LandlordEntity | null> {
     const landlord = await this.landlordRepository.findOne({ where: { id } });
     if (!landlord) {
       return null;
@@ -52,8 +56,29 @@ export class LandlordService {
 
 
 
-  
-  
+  async getPropertiesByLandlordId(landlordId: number): Promise<PropertyEntity[]> {
+    return this.propertyRepository.find({ where: { landlord: { id: landlordId } } });
+  }
 
   
+  
+  async createPropertyForLandlord(landlordId: number, propertyData: Partial<PropertyEntity>): Promise<PropertyEntity > {
+    const landlord = await this.landlordRepository.findOne({ where: { id: landlordId } });
+    if (!landlord) {
+      throw new Error('landlord not found'); 
+    }
+    const property = this.propertyRepository.create({ ...propertyData, landlord });
+    return this.propertyRepository.save(property);
+  }
+
+  async getLandlordWithProperties(
+  landlordId: number,): Promise<LandlordEntity | null> {
+  return this.landlordRepository.findOne({
+    where: { id: landlordId },
+    relations: {
+      property: true,
+    },
+  });
+}
+
 }

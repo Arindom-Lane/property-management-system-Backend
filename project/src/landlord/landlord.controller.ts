@@ -12,7 +12,8 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { LandlordService } from './landlord.service';
-import { CreateLandlordDto } from './landlord.dto';
+import { LandlordDto } from './dto/landlord.dto';
+import { PropertyEntity } from './entities/property.entity';
 
 
 @Controller('landlord')
@@ -25,13 +26,13 @@ export class LandlordController {
 
   @Post('register')
   @UsePipes(new ValidationPipe())
-   createLandlord(@Body() dto: CreateLandlordDto) {
+   createLandlord(@Body() dto: LandlordDto) {
     return this.LandlordService.createLandlord(dto);
   }
 
   @Post('login')
   @UsePipes(new ValidationPipe())
-  async loginLandlord(@Body() loginData: CreateLandlordDto) {
+  async loginLandlord(@Body() loginData: LandlordDto) {
     return this.LandlordService.loginLandlord(loginData);
   }
 
@@ -44,7 +45,7 @@ export class LandlordController {
   @UsePipes(new ValidationPipe())
   async updateLandlord(
     @Param('id',ParseIntPipe) id: number,
-    @Body() updateData: CreateLandlordDto,
+    @Body() updateData: LandlordDto,
   ) {
     return this.LandlordService.updateLandlord(id, updateData);
   }
@@ -57,6 +58,22 @@ export class LandlordController {
     return this.LandlordService.deleteLandlord(id);
   }
 
+  @Get(':landlordId/properties')
+  async getPropertiesByLandlordId(@Param('landlordId', ParseIntPipe) landlordId: number) {
+    return this.LandlordService.getPropertiesByLandlordId(landlordId);
+  }
 
+  @Post(':landlordId/properties')
+  async createPropertyForLandlord(
+    @Param('landlordId', ParseIntPipe) landlordId: number,
+    @Body() propertyData: Partial<PropertyEntity>,
+  ) {
+    return this.LandlordService.createPropertyForLandlord(landlordId, propertyData);
+  }
+
+  @Get('/:landlordId')
+  async getLandlordWithProperties(@Param('landlordId', ParseIntPipe) landlordId: number) {
+    return this.LandlordService.getLandlordWithProperties(landlordId);
+  }
 
 }

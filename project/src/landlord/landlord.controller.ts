@@ -15,7 +15,7 @@ import { LandlordService } from "./landlord.service";
 import { LandlordDto } from "./dto/landlord.dto";
 import { PropertyEntity } from "./entities/property.entity";
 import { CreateWorkOrderDto } from "../staff/dto/create-work-oder.dto";
-import{CreateReviewDto} from '../staff/dto/create-review.dto'
+import { CreateReviewDto } from "../staff/dto/create-review.dto";
 
 @Controller("landlord")
 export class LandlordController {
@@ -96,5 +96,14 @@ export class LandlordController {
     @Body() dto: CreateReviewDto,
   ) {
     return this.LandlordService.createReview(id, dto);
+  }
+  @Post("property/:propertyId/work-orders")
+  async createWorkOrderForProperty(
+    @Param("propertyId", ParseIntPipe) propertyId: number,
+    @Body() dto: CreateWorkOrderDto,
+  ) {
+    dto.property_id = propertyId;
+
+    return this.LandlordService.createWorkOrderForProperty(propertyId, dto);
   }
 }

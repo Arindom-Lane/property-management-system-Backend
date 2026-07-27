@@ -137,4 +137,19 @@ export class LandlordService {
 
     return await this.reviwRepo.save(review);
   }
+
+  async createWorkOrderForProperty(
+    propertyId: number,
+    dto: CreateWorkOrderDto,
+  ): Promise<workOrder> {
+    const property = await this.propertyRepository.findOne({
+      where: { id: propertyId },
+    });
+    if (!property) {
+      throw new NotFoundException("Property not found for the given landlord");
+    }
+
+    const workOrder = await this.workOrderRepo.create({ ...dto, property });
+    return this.workOrderRepo.save(workOrder);
+  }
 }

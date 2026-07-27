@@ -9,8 +9,8 @@ import {
 import { Worker } from "./worker.entity";
 import { IsOptional } from "class-validator";
 import {Review} from "./review.entity"
-import { LandlordEntity } from "../../landlord/entities/landlord.entity"
-import {Transaction } from "./transaction.entity"
+import { LandlordEntity } from "../../landlord/entities/landlord.entity";
+import { PropertyEntity } from "src/landlord/entities/property.entity";
 
 export enum orderStatus {
   active = "active",
@@ -25,6 +25,7 @@ export class workOrder {
   id: number;
 
   @Column()
+  @IsOptional()
   property_id?: number;
 
   @Column({ type: "enum", enum: orderStatus, default: orderStatus.inactive })
@@ -37,6 +38,7 @@ export class workOrder {
   materials_cost: number;
 
   @Column()
+  @IsOptional()
   issue: string;
 
   @IsOptional()
@@ -54,6 +56,10 @@ export class workOrder {
 
   @OneToOne(() => Review, (review) => review.workOrder)
   review?: Review;
+
+  @ManyToOne(() => PropertyEntity, (property) => property.workOrders, { nullable: true })
+  @JoinColumn({ name: 'property_id' })
+  property?: PropertyEntity;
 
   @OneToMany(() => Transaction, (transaction) => transaction.workOrder)
   transactions?: Transaction[];

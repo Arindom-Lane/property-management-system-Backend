@@ -4,13 +4,13 @@ import { LandlordService } from './landlord.service';
 import { LandlordController } from './landlord.controller';
 import { LandlordEntity } from './entities/landlord.entity';
 import { PropertyEntity } from './entities/property.entity';
-import {StaffModule} from "../staff/staff.module"
+import { Review } from '../staff/entities/review.entity'
 import { workOrder } from 'src/staff/entities/work-order.entity';
 
 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([LandlordEntity,PropertyEntity,workOrder]), StaffModule],
+  imports: [TypeOrmModule.forFeature([LandlordEntity,PropertyEntity,workOrder,Review])],
   controllers: [LandlordController],
   providers: [LandlordService],
   exports: [LandlordService],

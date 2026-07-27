@@ -1,7 +1,6 @@
 import { IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
 
 export class CreateReviewDto {
-  @IsNotEmpty()
   @IsInt()
   @Min(1)
   @Max(5)
@@ -11,8 +10,7 @@ export class CreateReviewDto {
   @IsString()
   comment?: string;
 
+  @IsInt()
   @IsNotEmpty()
-  landlordId?: number;
+  landlordId: number;
 }
-
-

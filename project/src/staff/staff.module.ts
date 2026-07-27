@@ -16,7 +16,7 @@ import {LandlordModule} from '../landlord/landlord.module';
       Worker,
       workOrder,
       Review,Transaction,LandlordEntity,
-    ]),LandlordModule,
+    ])
   ],
   controllers: [StaffController],
   providers: [StaffService],

@@ -10,4 +10,4 @@ export class CompleteWorkOrderDto {
   @Min(0)
   @IsNotEmpty()
   materials_cost: number;
-}
+} 

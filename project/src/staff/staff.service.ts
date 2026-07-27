@@ -13,7 +13,6 @@ import {
   orderStatus as WorkOrderStatus,
 } from "./entities/work-order.entity";
 import { CreateWorkerDto } from "./dto/create-worker.dto";
-import { UpdateWorkerDto } from "./dto/update-worker.dto";
 import { DispatchWorkOrderDto } from "./dto/dispatch-work-order.dto";
 import { CreateWorkOrderDto, orderStatus } from "./dto/create-work-oder.dto";
 import { CompleteWorkOrderDto } from "./dto/complete-work-order.dto";
@@ -45,7 +44,7 @@ export class StaffService {
     return await this.workerRepository.find();
   }
 
-  async updateWorkerName(id: number, updateWorkerDto: UpdateWorkerDto) {
+  async updateWorkerName(id: number, updateWorkerDto: CreateWorkerDto) {
     await this.workerRepository.update(id, updateWorkerDto);
     return await this.workerRepository.findOne({ where: { id } });
   }
@@ -240,29 +239,7 @@ export class StaffService {
     return await this.landLoardRepo.find();
   }
 
-  async createReview(id: number, dto: CreateReviewDto) {
-    const order = await this.workOrderRepo.findOne({
-      where: { id: id },
-      relations: { review: true },
-    });
-    if (!order) {
-      throw new NotFoundException("Wroker order not found");
-    }
-    if (order.workStatus !== WorkOrderStatus.done) {
-      throw new BadRequestException("Work is not finished");
-    }
-    if (order.review) {
-      throw new BadRequestException("review exists");
-    }
-
-    const review = this.reviewRepo.create({
-      rating: dto.rating,
-      comment: dto.comment,
-      workOrder: order,
-      landlord: { id: dto.landlordId } as LandlordEntity,
-    });
-    return await this.reviewRepo.save(review);
-  }
+ 
   async getReviewByOrder(id: number) {
     const order = await this.workOrderRepo.findOne({
       where: { id: id },
@@ -276,7 +253,7 @@ export class StaffService {
     }
     const review = await this.reviewRepo.findOne({
       where: { id: order?.review?.id },
-      relations: { workOrder: true, landlord: true },
+      relations: { workOrder: true },
     });
     return review;
   }

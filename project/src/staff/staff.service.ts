@@ -19,7 +19,7 @@ import { CreateWorkOrderDto, orderStatus } from "./dto/create-work-oder.dto";
 import { CompleteWorkOrderDto } from "./dto/complete-work-order.dto";
 import { Review } from "./entities/review.entity";
 import { CreateReviewDto } from "./dto/create-review.dto";
-import { LandlordEntity } from "../landlord/entities/landloard.entity";
+import { LandlordEntity } from "../landlord/entities/landlord.entity";
 import { privateDecrypt } from "crypto";
 
 @Injectable()

@@ -5,7 +5,7 @@ import { StaffService } from './staff.service';
 import { Worker } from './entities/worker.entity';
 import { workOrder } from './entities/work-order.entity';
 import {Review} from "./entities/review.entity"
-import { LandlordEntity } from "../landlord/entities/landloard.entity"
+import { LandlordEntity } from "../landlord/entities/landlord.entity"
 import {Transaction } from "./entities/transaction.entity"
 import {LandlordModule} from '../landlord/landlord.module';
 

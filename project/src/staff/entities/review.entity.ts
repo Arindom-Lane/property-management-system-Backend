@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { workOrder } from './work-order.entity';
-import { LandlordEntity } from '../../landlord/entities/landloard.entity';
+import { LandlordEntity } from '../../landlord/entities/landlord.entity';
 
 @Entity()
 export class Review {

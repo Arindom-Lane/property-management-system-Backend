@@ -9,6 +9,8 @@ import {
   Patch,
   Post,
   Put,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 
 import { StaffService } from './staff.service';
@@ -24,6 +26,7 @@ export class StaffController {
   constructor(private readonly staffService: StaffService) {}
 
   @Post('workers')
+  @UsePipes(new ValidationPipe())
   createWorker(@Body() dto: CreateWorkerDto) {
     return this.staffService.createWorker(dto);
   }

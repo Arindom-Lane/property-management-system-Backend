@@ -1,21 +1,26 @@
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  JoinColumn,
-  OneToOne,
-} from "typeorm";
-import { workOrder } from "./work-order.entity";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { workOrder } from './work-order.entity';
+import { LandlordEntity } from '../../landlord/entities/landloard.entity';
 
-@Entity('Review')
+@Entity('reviews')
 export class Review {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: "varchar", length: 400 })
-  workReview: string;
+  @Column({ type: 'int' })
+  rating: number; // 1 to 5
 
-  @OneToOne(() => workOrder, (workOrder) => workOrder.review)
-  @JoinColumn({ name: "work_order_id" }) // This enforces the UNIQUE constraint
+  @Column({ type: 'text', nullable: true })
+  comment: string;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @OneToOne(() => workOrder, (order) => order.review,  { cascade: true })
+  @JoinColumn({ name: 'work_order_id' })
   workOrder: workOrder;
+
+  @ManyToOne(() => LandlordEntity, { cascade: true })
+  @JoinColumn({ name: 'landlord_id' })
+  landlord: LandlordEntity;
 }

@@ -5,7 +5,7 @@ import {
   BadRequestException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository,Not  } from "typeorm";
+import { Repository, Not } from "typeorm";
 
 import { Worker, WorkerStatus } from "./entities/worker.entity";
 import {
@@ -17,6 +17,8 @@ import { UpdateWorkerDto } from "./dto/update-worker.dto";
 import { DispatchWorkOrderDto } from "./dto/dispatch-work-order.dto";
 import { CreateWorkOrderDto, orderStatus } from "./dto/create-work-oder.dto";
 import { CompleteWorkOrderDto } from "./dto/complete-work-order.dto";
+import { Review } from "./entities/review.entity";
+import { CreateReviewDto } from "./dto/create-review.dto";
 
 @Injectable()
 export class StaffService {
@@ -25,6 +27,8 @@ export class StaffService {
     private readonly workerRepository: Repository<Worker>,
     @InjectRepository(workOrder)
     private readonly workOrderRepo: Repository<workOrder>,
+    @InjectRepository(Review)
+    private readonly reviewRepo: Repository<Review>,
   ) {}
 
   async createWorker(data: CreateWorkerDto): Promise<Worker> {
@@ -73,10 +77,8 @@ export class StaffService {
 
     if (order.workStatus === WorkOrderStatus.done) {
       throw new BadRequestException("The order is already complete.");
-    }
-    else if(order.worker){
+    } else if (order.worker) {
       throw new BadRequestException("The order already has a worker.");
-
     }
 
     const worker = await this.workerRepository.findOne({
@@ -101,100 +103,19 @@ export class StaffService {
   }
 
   async removeWorkerFromOrder(id: number) {
-  const order = await this.workOrderRepo.findOne({
-    where: { id },
-    relations: { worker: true },
-  });
-
-  if (!order) {
-    throw new NotFoundException('Order not found');
-  }
-
-  if (!order.worker) {
-    return order;
-  }
-  const workerId = order.worker.id;
-  const otherActiveCount = await this.workOrderRepo.count({
-    where: {
-      worker: { id: workerId },
-      workStatus: Not(WorkOrderStatus.done),
-      id: Not(id),
-    },
-  });
-
-  const worker = await this.workerRepository.findOne({ where: { id: workerId } });
-  if (worker) {
-    if (otherActiveCount === 0) {
-      worker.status = WorkerStatus.active;
-    } else {
-      worker.status = WorkerStatus.busy;
-    }
-    await this.workerRepository.save(worker);
-  }
-
-  order.worker = null;
-  order.workStatus = WorkOrderStatus.pending;
-  await this.workOrderRepo.save(order);
-
-  return order;
-}
-
- async completeWorkOrder(id: number, dto: CompleteWorkOrderDto) {
-  const order = await this.workOrderRepo.findOne({
-    where: { id },
-    relations: { worker: true },
-  });
-
-  if (!order) {
-    throw new NotFoundException("Work order not found");
-  }
-
-  order.labor_cost += dto.labor_cost;
-  order.materials_cost += dto.materials_cost;
-  order.workStatus = WorkOrderStatus.done;
-
-  if (order.worker) {
-    const worker = await this.workerRepository.findOne({
-      where: { id: order.worker.id },
-      relations: { workOrders: true },
+    const order = await this.workOrderRepo.findOne({
+      where: { id },
+      relations: { worker: true },
     });
 
-    if (worker) {
-      const otherActiveCount = await this.workOrderRepo.count({
-        where: {
-          worker: { id: worker.id },
-          workStatus: Not(WorkOrderStatus.done),
-          id: Not(id),
-        },
-      });
-
-      if (otherActiveCount === 0) {
-        worker.status = WorkerStatus.active;
-        await this.workerRepository.save(worker);
-      } else {
-        worker.status = WorkerStatus.busy;
-        await this.workerRepository.save(worker);
-      }
+    if (!order) {
+      throw new NotFoundException("Order not found");
     }
-  }
 
-  return this.workOrderRepo.save(order);
-}
-
-
-async deleteOrder(id: number) {
-  const order = await this.workOrderRepo.findOne({
-    where: { id },
-    relations: { worker: true },
-  });
-
-  if (!order) {
-    throw new NotFoundException(`Order with id ${id} not found`);
-  }
-
-  if (order.worker) {
+    if (!order.worker) {
+      return order;
+    }
     const workerId = order.worker.id;
-
     const otherActiveCount = await this.workOrderRepo.count({
       where: {
         worker: { id: workerId },
@@ -203,7 +124,9 @@ async deleteOrder(id: number) {
       },
     });
 
-    const worker = await this.workerRepository.findOne({ where: { id: workerId } });
+    const worker = await this.workerRepository.findOne({
+      where: { id: workerId },
+    });
     if (worker) {
       if (otherActiveCount === 0) {
         worker.status = WorkerStatus.active;
@@ -212,11 +135,96 @@ async deleteOrder(id: number) {
       }
       await this.workerRepository.save(worker);
     }
+
+    order.worker = null;
+    order.workStatus = WorkOrderStatus.pending;
+    await this.workOrderRepo.save(order);
+
+    return order;
   }
 
-  await this.workOrderRepo.delete(id);
+  async completeWorkOrder(id: number, dto: CompleteWorkOrderDto) {
+    const order = await this.workOrderRepo.findOne({
+      where: { id },
+      relations: { worker: true },
+    });
 
-  return { message: `Order ${id} has been deleted` };
-}
+    if (!order) {
+      throw new NotFoundException("Work order not found");
+    }
 
+    order.labor_cost += dto.labor_cost;
+    order.materials_cost += dto.materials_cost;
+    order.workStatus = WorkOrderStatus.done;
+
+    if (order.worker) {
+      const worker = await this.workerRepository.findOne({
+        where: { id: order.worker.id },
+        relations: { workOrders: true },
+      });
+
+      if (worker) {
+        const otherActiveCount = await this.workOrderRepo.count({
+          where: {
+            worker: { id: worker.id },
+            workStatus: Not(WorkOrderStatus.done),
+            id: Not(id),
+          },
+        });
+
+        if (otherActiveCount === 0) {
+          worker.status = WorkerStatus.active;
+          await this.workerRepository.save(worker);
+        } else {
+          worker.status = WorkerStatus.busy;
+          await this.workerRepository.save(worker);
+        }
+      }
+    }
+
+    return this.workOrderRepo.save(order);
+  }
+
+  async deleteOrder(id: number) {
+    const order = await this.workOrderRepo.findOne({
+      where: { id },
+      relations: { worker: true },
+    });
+
+    if (!order) {
+      throw new NotFoundException(`Order with id ${id} not found`);
+    }
+
+    if (order.worker) {
+      const workerId = order.worker.id;
+
+      const otherActiveCount = await this.workOrderRepo.count({
+        where: {
+          worker: { id: workerId },
+          workStatus: Not(WorkOrderStatus.done),
+          id: Not(id),
+        },
+      });
+
+      const worker = await this.workerRepository.findOne({
+        where: { id: workerId },
+      });
+      if (worker) {
+        if (otherActiveCount === 0) {
+          worker.status = WorkerStatus.active;
+        } else {
+          worker.status = WorkerStatus.busy;
+        }
+        await this.workerRepository.save(worker);
+      }
+    }
+
+    await this.workOrderRepo.delete(id);
+
+    return { message: `Order ${id} has been deleted` };
+  }
+
+  async createReview(id:number, dto: CreateReviewDto){
+
+  }
 }

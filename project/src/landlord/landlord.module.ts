@@ -2,12 +2,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LandlordService } from './landlord.service';
 import { LandlordController } from './landlord.controller';
-import { Categories, LandlordEntity, Properties } from './landlord.entity';
-import { Blocks } from './landlord.entity';
-import { Buildings } from './landlord.entity';
+import { LandlordEntity } from './entities/landloard.entity';
+
 
 @Module({
-  imports: [TypeOrmModule.forFeature([LandlordEntity, Blocks, Buildings, Categories, Properties])],
+  imports: [TypeOrmModule.forFeature([LandlordEntity])],
   controllers: [LandlordController],
   providers: [LandlordService],
   exports: [LandlordService],

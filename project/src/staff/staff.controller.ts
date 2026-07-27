@@ -17,6 +17,7 @@ import { UpdateWorkerDto } from './dto/update-worker.dto';
 import { CompleteWorkOrderDto } from './dto/complete-work-order.dto';
 import { DispatchWorkOrderDto } from './dto/dispatch-work-order.dto';
 import { CreateWorkOrderDto } from './dto/create-work-oder.dto';
+import { CreateReviewDto } from './dto/create-review.dto';
 
 @Controller('staff')
 export class StaffController {
@@ -84,4 +85,12 @@ export class StaffController {
   ) {
     return this.staffService.deleteOrder(id);
   }
+
+  @Post('work-orders/:id/review')
+createReview(
+  @Param('id', ParseIntPipe) id: number,
+  @Body() dto: CreateReviewDto,
+) {
+  return this.staffService.createReview(id, dto);
+}
 }

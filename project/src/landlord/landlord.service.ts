@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Like, Repository } from 'typeorm';
-import { LandlordEntity } from './landlord.entity';
+import { LandlordEntity } from './entities/landloard.entity';
 import { CreateLandlordDto } from './landlord.dto';
 @Injectable()
 export class LandlordService {

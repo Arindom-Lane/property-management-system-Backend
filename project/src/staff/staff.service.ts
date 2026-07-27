@@ -35,6 +35,7 @@ export class StaffService {
     private readonly landLoardRepo: Repository<LandlordEntity>,
   ) {}
 
+
   async createWorker(data: CreateWorkerDto): Promise<Worker> {
     const newWorker = this.workerRepository.create(data);
     return await this.workerRepository.save(newWorker);

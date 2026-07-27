@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { StaffController } from './staff/staff.controller';
 import { StaffModule } from './staff/staff.module';
-import {LandlordModule} from './landlord/landlord.module'
+import { TypeOrmModule } from '@nestjs/typeorm'; //npm install --save @nestjs/typeorm typeorm pg
 
 
 @Module({
@@ -16,9 +16,9 @@ username: 'postgres',
 password: 'admin',
 database: 'property_Management_system',
 autoLoadEntities: true,
-synchronize: true,
-}), StaffModule,LandlordModule],
-  controllers: [AppController, StaffController],
+synchronize: false,
+}),],
+  controllers: [AppController],
   providers: [AppService],
 
 })

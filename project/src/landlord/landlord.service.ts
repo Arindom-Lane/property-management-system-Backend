@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Like, Repository } from 'typeorm';
 import { LandlordEntity } from './entities/landlord.entity';
 import { LandlordDto } from './dto/landlord.dto';
 import { PropertyEntity } from './entities/property.entity';
+import { CreateWorkOrderDto } from '../staff/dto/create-work-oder.dto';
+import { workOrder } from '../staff/entities/work-order.entity';
 @Injectable()
 export class LandlordService {
   constructor(
@@ -11,6 +13,8 @@ export class LandlordService {
     private landlordRepository: Repository<LandlordEntity>,
     @InjectRepository(PropertyEntity)
     private propertyRepository: Repository<PropertyEntity>,
+    @InjectRepository(workOrder)
+    private workOrderRepo: Repository<workOrder>,
   ) {}
   
 
@@ -80,5 +84,11 @@ export class LandlordService {
     },
   });
 }
+
+async createWorkOrder(dto: CreateWorkOrderDto) {
+    const order = this.workOrderRepo.create(dto);
+    const saved = await this.workOrderRepo.save(order);
+    return saved;
+  }
 
 }

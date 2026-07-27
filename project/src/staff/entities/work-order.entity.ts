@@ -4,11 +4,12 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   JoinColumn,
-  ManyToOne,
+  ManyToOne,OneToMany,
 } from "typeorm";
 import { Worker } from "./worker.entity";
 import { IsOptional } from "class-validator";
 import {Review} from "./review.entity"
+import { LandlordEntity } from "../../landlord/entities/landlord.entity";
 
 export enum orderStatus {
   active = "active",
@@ -38,6 +39,17 @@ export class workOrder {
   @JoinColumn()
   worker?: Worker;
 
+  ///property of admin
+
+  //isuue column
+
+  @ManyToOne(() => LandlordEntity, { nullable: true })
+  @JoinColumn({ name: 'landlord_id' })
+  landlord?: LandlordEntity;
+
   @OneToOne(() => Review, (review) => review.workOrder)
-  review: Review;
+  review?: Review;
+
+
+  
 }

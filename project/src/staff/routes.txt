@@ -107,7 +107,7 @@ GET     /staff/work-orders/1/review
 
 
 
-------------landlord---------
+------------landlord-------------
 
 
 
@@ -120,8 +120,6 @@ POST      http://localhost:3000/landlord/register
   "phone_number": "01712345678",
   "address": "Dhaka, Bangladesh"
 }
-
-
 
 
 16. landllord makes a work order

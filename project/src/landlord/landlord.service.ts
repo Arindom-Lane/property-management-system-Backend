@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Like, Repository } from 'typeorm';
 import { LandlordEntity } from './entities/landlord.entity';
@@ -6,6 +6,7 @@ import { LandlordDto } from './dto/landlord.dto';
 import { PropertyEntity } from './entities/property.entity';
 import { CreateWorkOrderDto } from '../staff/dto/create-work-oder.dto';
 import { workOrder } from '../staff/entities/work-order.entity';
+import * as bcrypt from 'bcrypt'; // Import bcrypt for password hashing
 @Injectable()
 export class LandlordService {
   constructor(
@@ -23,18 +24,36 @@ export class LandlordService {
 
 
 
-  async createLandlord(dto: LandlordDto): Promise<LandlordEntity> {
-    const landlord = this.landlordRepository.create(dto);
-    return this.landlordRepository.save(landlord);
+  async createLandlord(data: LandlordDto): Promise<LandlordEntity> {
 
+    const IsLandlord = await this.landlordRepository.findOne({
+      where: {email: data.email,
+        phone_number: data.phone_number
+      },
+    })
+    if(IsLandlord) {
+      throw new ForbiddenException("Your account exists. YOu are not allowed");
+    }
+
+    const salt = 10;
+
+    const hashedPassword = await bcrypt.hash(
+      data.password,
+      salt,
+    );
+    const newLandlord = this.landlordRepository.create({ ...data, password: hashedPassword });
+    return this.landlordRepository.save(newLandlord);
   }
-
+  
   async loginLandlord(loginData: LandlordDto): Promise<LandlordEntity | null> {
     const { email, password } = loginData;
     const landlord = await this.landlordRepository.findOne({
-      where: { email, password },
+      where: { email },
     });
-    return landlord || null;
+    if (landlord && await bcrypt.compare(password, landlord.password)) {
+      return landlord;
+    }
+    return null;
   }
   
   async getLandlordById(id: number): Promise<LandlordEntity | null> {

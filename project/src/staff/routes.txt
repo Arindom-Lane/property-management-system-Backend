@@ -142,7 +142,10 @@ POST    landlord/work-orders/1/review
 
 }
 
-
+{
+  "email": "machoPicho.morgan@example.com",
+  "password": "po"
+}
 
 
 
@@ -159,3 +162,38 @@ create property
   "price": 25000,
   "status": "active"
 }
+
+
+
+
+
+
+
+
+
+
+
+-----------------JWT--------------
+
+localhost:3000/auth/login
+
+{
+  "email": "machoPicho.morgan@example.com",
+  "password": "po"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

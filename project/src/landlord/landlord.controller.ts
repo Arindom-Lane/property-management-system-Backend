@@ -82,6 +82,7 @@ export class LandlordController {
   }
 
   @Post(":id/work_orders")
+  @UsePipes(new ValidationPipe())
   async createWorkOrder(
     @Param("id", ParseIntPipe) id: number,
     @Body() dto: CreateWorkOrderDto,

@@ -20,6 +20,10 @@ import { Review } from "./entities/review.entity";
 import { CreateReviewDto } from "./dto/create-review.dto";
 import { LandlordEntity } from "../landlord/entities/landlord.entity";
 import { privateDecrypt } from "crypto";
+import { promises } from "dns";
+import { StaffEntity } from "./entities/staff.entity";
+import { staffDto } from "./dto/staff.dto";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class StaffService {
@@ -32,8 +36,43 @@ export class StaffService {
     private readonly reviewRepo: Repository<Review>,
     @InjectRepository(LandlordEntity)
     private readonly landLoardRepo: Repository<LandlordEntity>,
-  ) {}
+    @InjectRepository(StaffEntity)
+    private readonly staffRepo: Repository<StaffEntity>,
+  ) { }
 
+  async createStaff(data: staffDto): Promise<StaffEntity> {
+
+    const saltRounds = 10;
+
+    const hashedPassword = await bcrypt.hash(
+      data.password,
+      saltRounds,
+    );
+
+
+    const staff = this.staffRepo.create({ ...data, password: hashedPassword });
+    return await this.staffRepo.save(staff);
+  }
+
+  async viewAllStaff() {
+    return await this.staffRepo.find();
+  }
+
+  async loginStaff(dto: staffDto) {
+    const staff = await this.staffRepo.findOne({
+      where: { email: dto.email }
+    })
+    if (!staff) throw new NotFoundException("Email not found");
+
+    const isPasswordCorrect = await bcrypt.compare(
+      dto.password,
+      staff.password,
+    );
+
+    if (!isPasswordCorrect) throw new BadRequestException("Invalid passowrd")
+
+    return staff;
+  }
 
   async createWorker(data: CreateWorkerDto): Promise<Worker> {
     const newWorker = this.workerRepository.create(data);
@@ -239,7 +278,7 @@ export class StaffService {
     return await this.landLoardRepo.find();
   }
 
- 
+
   async getReviewByOrder(id: number) {
     const order = await this.workOrderRepo.findOne({
       where: { id: id },

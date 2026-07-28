@@ -15,15 +15,33 @@ import {
 
 import { StaffService } from "./staff.service";
 import { CreateWorkerDto } from "./dto/create-worker.dto";
-import { UpdateWorkerDto } from "./dto/update-worker.dto";
 import { CompleteWorkOrderDto } from "./dto/complete-work-order.dto";
 import { DispatchWorkOrderDto } from "./dto/dispatch-work-order.dto";
 import { CreateWorkOrderDto } from "./dto/create-work-oder.dto";
-import { CreateReviewDto } from "./dto/create-review.dto";
+import { staffDto } from "./dto/staff.dto";
+import { retry } from "rxjs";
 
 @Controller("staff")
 export class StaffController {
   constructor(private readonly staffService: StaffService) {}
+
+  @Post('createStaff')
+  @UsePipes(new ValidationPipe)
+  createStaff(@Body() dto: staffDto){
+    return this.staffService.createStaff(dto);
+  }
+
+  @Get('viewAllStaff')
+  viewAllStaff(){
+    return this.staffService.viewAllStaff();
+  }
+
+  @Post("loginStaff")
+  @UsePipes(new ValidationPipe)
+  loginStaff(@Body() dto: staffDto){
+    return this.staffService.loginStaff(dto);
+  }
+  
 
   @Post("workers")
   @UsePipes(new ValidationPipe())

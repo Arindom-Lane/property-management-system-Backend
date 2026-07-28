@@ -1,8 +1,8 @@
 // staff.service.ts
 import {
-  Injectable,Inject,
+  Injectable, Inject,
   NotFoundException,
-  BadRequestException,ForbiddenException,
+  BadRequestException, ForbiddenException,
   UnauthorizedException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -37,7 +37,7 @@ export class StaffService {
     private readonly landLoardRepo: Repository<LandlordEntity>,
     @InjectRepository(StaffEntity)
     private readonly staffRepo: Repository<StaffEntity>,
-    @Inject(MailService)
+
     private readonly mailService: MailService,
 
   ) { }
@@ -45,11 +45,12 @@ export class StaffService {
   async createStaff(data: staffDto): Promise<StaffEntity> {
 
     const IsStaff = await this.staffRepo.findOne({
-      where: {email: data.email,
+      where: {
+        email: data.email,
         phone_number: data.phone_number
       },
     })
-    if(IsStaff) {
+    if (IsStaff) {
       throw new ForbiddenException("Your account exists. YOu are not allowed");
     }
 
@@ -63,14 +64,14 @@ export class StaffService {
 
     const staff = this.staffRepo.create({ ...data, password: hashedPassword });
 
-    await this.mailService.sendWelcomeMail (
-      staff.email,
-      staff.name,
+    await this.mailService.sendWelcomeMail(
+      data.email,
+      data.name,
     );
 
     await this.staffRepo.save(staff);
 
-    
+
 
     return staff;
   }

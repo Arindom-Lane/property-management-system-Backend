@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString, IsPhoneNumber, IsMobilePhone } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, IsPhoneNumber, IsMobilePhone, isPhoneNumber } from 'class-validator';
 import { WorkerStatus } from '../entities/worker.entity'; 
 
 export class CreateWorkerDto {
@@ -8,7 +8,7 @@ export class CreateWorkerDto {
 
   @IsMobilePhone()
   @IsNotEmpty({ message: 'Phone number is required' })
-  phone: number;
+  phone: string;
 
   @IsOptional()
   @IsEnum(WorkerStatus, { message: 'Status must be available, busy, or inactive' })

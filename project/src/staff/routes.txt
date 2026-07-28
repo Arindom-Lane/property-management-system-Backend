@@ -1,0 +1,163 @@
+
+
+1.  create staff
+POST    localhost:3000/staff/createStaff
+
+{
+  "name": "Arindom",
+  "email": "Arindom.morgan@example.com",
+  "password": "SecurePassword123!",
+  "phone_number": "01724345432",
+  "address": "123 Tech Boulevard, Suite 400, New York, NY 10001"
+}
+
+
+2.  get all staff
+GET     localhost:3000/staff/viewAllStaff
+
+
+3.  login as a staff
+POST    localhost:3000/staff/loginStaff
+{
+  "name": "Arindom",
+  "email": "Arindom.morgan@example.com",
+  "password": "SecurePassword123!",
+  "phone_number": "01724345432",
+  "address": "123 Tech Boulevard, Suite 400, New York, NY 10001"
+}
+
+
+4.  Create Worker
+POST    /staff/workers
+{
+  "name": "Bob the Repairman",
+  "phone": "01898765432",
+  "status": "active"
+}
+
+
+
+5.  Get all workers
+GET   /staff/workers
+
+
+
+6.   Update workers
+Patch   /staff/workers/1
+{
+  "name": "Bob Smith",
+  "phone": "01722222222",
+  "status": "busy"
+}
+
+
+7. DELETE worker
+DELETE    /staff/workers/1
+
+
+8.  Get All Work Orders
+GET     /staff/work-orders
+
+
+9.  Create Work Order
+POST    /staff/work-orders
+{
+  "workStatus": "pending",
+  "labor_cost": 150.00,
+  "materials_cost": 45.50,
+  "property_id": 1,
+  "workerId": 1,
+  "issue": "Kitchen sink pipe bursting and leaking water"
+}
+
+
+10. Dispatch Worker to Work Order (activate Order)
+PATCH   /staff/work-orders/1/dispatch
+{
+  "workerId": 1
+}
+
+
+
+11. Remove worker from order
+PATCH   /staff/work-orders/1/remove-worker
+
+
+
+12. Complete Work Order
+PATCH   /staff/work-orders/1/complete
+{
+  "labor_cost": 200.00,
+  "materials_cost": 65.00
+}
+
+
+13. Delete Work Order
+DELETE    /staff/work-orders/1
+
+
+14. Get all landllord
+GET     /staff/landloards
+
+
+15. Get review for work Order
+GET     /staff/work-orders/1/review
+
+
+
+
+
+------------landlord---------
+
+
+
+15.   create landlord
+POST      http://localhost:3000/landlord/register
+{
+  "name": "ayan Hossain",
+  "email": "arko@example.com",
+  "password": "12345678",
+  "phone_number": "01712345678",
+  "address": "Dhaka, Bangladesh"
+}
+
+
+
+
+16. landllord makes a work order
+POST      http://localhost:3000/landlord/9/work_orders
+{
+  "property_id": 1,
+  "workStatus": "inactive",
+  "labor_cost": 500,
+  "materials_cost": 300,
+  "issue": "Water pipe leakage in the kitchen"
+}
+
+
+17. landlord makes review
+POST    landlord/work-orders/1/review
+{
+  "rating" : 5,
+  "comment": "good",
+  "landlordId": 1
+
+}
+
+
+
+
+
+create property
+      http://localhost:3000/landlord/1/properties
+
+{
+  "building_id": 1,
+  "owner_id": 1,
+  "current_tenant_id": 0,
+  "floor_number": 3,
+  "house_number": "3A",
+  "house_type": "Apartment",
+  "price": 25000,
+  "status": "active"
+}

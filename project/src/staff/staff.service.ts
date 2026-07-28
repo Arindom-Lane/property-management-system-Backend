@@ -135,7 +135,6 @@ export class StaffService {
         review: true,
         landlord: true,
         transactions: true,
-        property: true,
       },
     });
   }

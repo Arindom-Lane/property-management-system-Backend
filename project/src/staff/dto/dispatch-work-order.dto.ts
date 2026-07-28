@@ -1,7 +1,6 @@
-import { IsNotEmpty,IsOptional } from "class-validator";
+import { IsNotEmpty } from "class-validator";
 
 export class DispatchWorkOrderDto {
-  @IsOptional()
   @IsNotEmpty()
-  workerId?: number;
+  workerId: number;
 }

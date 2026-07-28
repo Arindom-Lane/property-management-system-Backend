@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Entity,PrimaryGeneratedColumn,Column,CreateDateColumn,UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
 import { LandlordEntity } from './landlord.entity';
 import { workOrder } from 'src/staff/entities/work-order.entity';
 
@@ -8,26 +8,26 @@ export class PropertyEntity {
     id?: number;
 
     @Column()
-    building_id?: number;
-
+    building_id?:number;
+        
     @Column()
     owner_id?: number;
 
     @Column()
     current_tenant_id?: number;
-
+    
     @Column()
     floor_number?: number;
 
     @Column()
-    house_number?: string;
+    house_number?: string;  
 
     @Column()
     house_type?: string;
-
+    
     @Column()
     price?: number;
-
+    
     @Column()
     status?: 'pending' | 'active' | 'rejected';
 
@@ -41,7 +41,7 @@ export class PropertyEntity {
     @ManyToOne(() => LandlordEntity, landlord => landlord.property, { onDelete: 'CASCADE' })
     landlord?: LandlordEntity;
 
-    @OneToMany(() => workOrder, (workOrder) => workOrder.property, { cascade: true })
+    @OneToMany(() => workOrder, workOrder => workOrder.property_id, { cascade: true })
     workOrders?: workOrder[];
 
 

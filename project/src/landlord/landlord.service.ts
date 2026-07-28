@@ -23,7 +23,7 @@ export class LandlordService {
     private workOrderRepo: Repository<workOrder>,
     @InjectRepository(Review)
     private reviwRepo: Repository<Review>,
-  ) { }
+  ) {}
 
   //////////login and register a landlord
 
@@ -108,24 +108,7 @@ export class LandlordService {
       throw new NotFoundException("Landlord not found");
     }
 
-    let property: PropertyEntity | null = null;
-    if (dto.property_id) {
-      property = await this.propertyRepository.findOne({
-        where: { id: dto.property_id, landlord: { id: landlordId } },
-      });
-      if (!property) {
-        throw new NotFoundException(
-          `Property with ID ${dto.property_id} not found for this landlord`,
-        );
-      }
-    }
-
-    const workOrder = this.workOrderRepo.create({
-      ...dto,
-      landlord,
-      property: property || undefined,
-    });
-
+    const workOrder = await this.workOrderRepo.create({ ...dto, landlord });
     return await this.workOrderRepo.save(workOrder);
   }
 

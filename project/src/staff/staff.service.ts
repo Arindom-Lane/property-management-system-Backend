@@ -24,6 +24,7 @@ import { staffDto } from "./dto/staff.dto";
 import * as bcrypt from "bcrypt";
 import { MailService } from "../mail/mail.service";
 
+
 @Injectable()
 export class StaffService {
   constructor(
@@ -74,6 +75,13 @@ export class StaffService {
 
 
     return staff;
+  }
+
+  async findStaff(id: number){
+    return await this.staffRepo.findOne({
+      where: {id: id}
+    });
+
   }
 
   async viewAllStaff() {

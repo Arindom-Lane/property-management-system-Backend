@@ -6,7 +6,11 @@ import { LandlordDto } from './dto/landlord.dto';
 import { PropertyEntity } from './entities/property.entity';
 import { CreateWorkOrderDto } from '../staff/dto/create-work-oder.dto';
 import { workOrder } from '../staff/entities/work-order.entity';
-import * as bcrypt from 'bcrypt'; // Import bcrypt for password hashing
+import * as bcrypt from 'bcrypt'; 
+import { CreateReviewDto } from '../staff/dto/create-review.dto';
+import { Review } from '../staff/entities/review.entity';
+import { BadRequestException } from '@nestjs/common/exceptions';
+
 @Injectable()
 export class LandlordService {
   constructor(
@@ -62,10 +66,6 @@ export class LandlordService {
     return landlord || null;
   }
 
-  async getLandlordById(id: number): Promise<LandlordEntity | null> {
-    const landlord = await this.landlordRepository.findOne({ where: { id } });
-    return (await landlord) || null;
-  }
 
   async updateLandlord(
     id: number,

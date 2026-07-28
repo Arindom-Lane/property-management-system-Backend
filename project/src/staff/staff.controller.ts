@@ -19,8 +19,7 @@ import { CompleteWorkOrderDto } from "./dto/complete-work-order.dto";
 import { DispatchWorkOrderDto } from "./dto/dispatch-work-order.dto";
 import { CreateWorkOrderDto } from "./dto/create-work-oder.dto";
 import { staffDto } from "./dto/staff.dto";
-import { UseGuards } from "@nestjs/common";
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+
 
 @Controller("staff")
 export class StaffController {
@@ -33,7 +32,7 @@ export class StaffController {
   }
 
 
-  @UseGuards(JwtAuthGuard)
+
   @Get('viewAllStaff')
   viewAllStaff(){
     return this.staffService.viewAllStaff();
@@ -56,7 +55,7 @@ export class StaffController {
     return this.staffService.createWorker(dto);
   }
 
-  @UseGuards(JwtAuthGuard)
+
   @Get("workers")
   findAllWorkers() {
     return this.staffService.findAllWorkers();

@@ -6,21 +6,21 @@ export class LandlordDto {
   @IsString()
   @MaxLength(255)
   @IsNotEmpty()
-  name?: string;
+  name: string;
 
   @IsEmail()
   @MaxLength(255)
   @IsNotEmpty()
-  email?: string;
+  email: string;
 
   @IsString()
   @MaxLength(255)
   @IsNotEmpty()
-  password?: string;
+  password: string;
 
   @IsString()
   @MaxLength(20)
-  phone_number?: string;
+  phone_number: string;
 
   @IsString()
   @MaxLength(500)

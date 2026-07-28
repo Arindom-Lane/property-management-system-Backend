@@ -7,28 +7,28 @@ export class LandlordEntity {
   id?: number;
 
   @Column()
-  name?: string;
+  name: string;
 
   @Column()
-  email?: string;
+  email: string;
 
   @Column()
-  password?: string;
+  password: string;
 
   @Column()
-  phone_number?: string;
+  phone_number: string;
 
   @Column()
-  address?: string;
+  address: string;
 
   @Column({ default: 'active' })
-  status?: 'active' | 'suspended';
+  status: 'active' | 'suspended';
 
   @CreateDateColumn()
-  created_at?: Date;
+  created_at: Date;
 
   @UpdateDateColumn()
-  updated_at?: Date;
+  updated_at: Date;
 
 
 

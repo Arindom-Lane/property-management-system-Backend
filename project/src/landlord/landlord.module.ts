@@ -10,7 +10,7 @@ import { workOrder } from 'src/staff/entities/work-order.entity';
 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([LandlordEntity,PropertyEntity,workOrder,Review])],
+  imports: [TypeOrmModule.forFeature([LandlordEntity,PropertyEntity,workOrder]), StaffModule,],
   controllers: [LandlordController],
   providers: [LandlordService],
   exports: [LandlordService],

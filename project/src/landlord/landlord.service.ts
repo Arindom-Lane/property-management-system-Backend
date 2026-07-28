@@ -1,17 +1,12 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { ILike, Like, Repository } from "typeorm";
-import { LandlordEntity } from "./entities/landlord.entity";
-import { LandlordDto } from "./dto/landlord.dto";
-import { PropertyEntity } from "./entities/property.entity";
-import { CreateWorkOrderDto } from "../staff/dto/create-work-oder.dto";
-import { workOrder } from "../staff/entities/work-order.entity";
-import { CreateReviewDto } from "src/staff/dto/create-review.dto";
-import { Review } from "src/staff/entities/review.entity";
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ILike, Like, Repository } from 'typeorm';
+import { LandlordEntity } from './entities/landlord.entity';
+import { LandlordDto } from './dto/landlord.dto';
+import { PropertyEntity } from './entities/property.entity';
+import { CreateWorkOrderDto } from '../staff/dto/create-work-oder.dto';
+import { workOrder } from '../staff/entities/work-order.entity';
+import * as bcrypt from 'bcrypt'; // Import bcrypt for password hashing
 @Injectable()
 export class LandlordService {
   constructor(
@@ -27,17 +22,44 @@ export class LandlordService {
 
   //////////login and register a landlord
 
-  async createLandlord(dto: LandlordDto): Promise<LandlordEntity> {
-    const landlord = this.landlordRepository.create(dto);
-    return await this.landlordRepository.save(landlord);
-  }
 
+
+
+  async createLandlord(data: LandlordDto): Promise<LandlordEntity> {
+
+    const IsLandlord = await this.landlordRepository.findOne({
+      where: {email: data.email,
+        phone_number: data.phone_number
+      },
+    })
+    if(IsLandlord) {
+      throw new ForbiddenException("Your account exists. YOu are not allowed");
+    }
+
+    const salt = 10;
+
+    const hashedPassword = await bcrypt.hash(
+      data.password,
+      salt,
+    );
+    const newLandlord = this.landlordRepository.create({ ...data, password: hashedPassword });
+    return this.landlordRepository.save(newLandlord);
+  }
+  
   async loginLandlord(loginData: LandlordDto): Promise<LandlordEntity | null> {
     const { email, password } = loginData;
     const landlord = await this.landlordRepository.findOne({
-      where: { email, password },
+      where: { email },
     });
-    return (await landlord) || null;
+    if (landlord && await bcrypt.compare(password, landlord.password)) {
+      return landlord;
+    }
+    return null;
+  }
+  
+  async getLandlordById(id: number): Promise<LandlordEntity | null> {
+    const landlord = await this.landlordRepository.findOne({ where: { id } });
+    return landlord || null;
   }
 
   async getLandlordById(id: number): Promise<LandlordEntity | null> {

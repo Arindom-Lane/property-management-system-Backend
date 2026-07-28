@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  UnauthorizedException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, Not } from "typeorm";
@@ -17,10 +18,7 @@ import { DispatchWorkOrderDto } from "./dto/dispatch-work-order.dto";
 import { CreateWorkOrderDto, orderStatus } from "./dto/create-work-oder.dto";
 import { CompleteWorkOrderDto } from "./dto/complete-work-order.dto";
 import { Review } from "./entities/review.entity";
-import { CreateReviewDto } from "./dto/create-review.dto";
 import { LandlordEntity } from "../landlord/entities/landlord.entity";
-import { privateDecrypt } from "crypto";
-import { promises } from "dns";
 import { StaffEntity } from "./entities/staff.entity";
 import { staffDto } from "./dto/staff.dto";
 import * as bcrypt from "bcrypt";
@@ -69,7 +67,7 @@ export class StaffService {
       staff.password,
     );
 
-    if (!isPasswordCorrect) throw new BadRequestException("Invalid passowrd")
+    if (!isPasswordCorrect) throw new UnauthorizedException("Invalid passowrd")
 
     return staff;
   }

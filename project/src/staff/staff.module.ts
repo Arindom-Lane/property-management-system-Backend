@@ -8,6 +8,7 @@ import { Review } from "./entities/review.entity";
 import { LandlordEntity } from "../landlord/entities/landlord.entity";
 import { Transaction } from "./entities/transaction.entity";
 import { StaffEntity } from "./entities/staff.entity";
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { StaffEntity } from "./entities/staff.entity";
     ])
   ],
   controllers: [StaffController],
-  providers: [StaffService],
+  providers: [StaffService,MailService],
   exports: [StaffService],
 })
 export class StaffModule { }

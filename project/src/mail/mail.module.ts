@@ -11,8 +11,8 @@ import { MailService } from "./mail.service";
         secure: false,
 
         auth: {
-          user: "YOUR_EMAIL@gmail.com",
-          pass: "YOUR_APP_PASSWORD",
+          user: "brinto793@gmail.com",
+          pass: "zekj ejzu xhhr cuof",
         },
       },
     }),

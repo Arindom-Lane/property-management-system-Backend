@@ -32,6 +32,8 @@ export class StaffController {
     return this.staffService.createStaff(dto);
   }
 
+  
+
 
   @UseGuards(JwtAuthGuard)
   @Get('viewAllStaff')
@@ -133,5 +135,10 @@ export class StaffController {
   @Get("work-orders/:id/review")
   getReviewByOrder(@Param("id", ParseIntPipe) id: number) {
     return this.staffService.getReviewByOrder(id);
+  }
+
+  @Delete("deleteReview/:id")
+  deleteReview(@Param("id", ParseIntPipe) id: number) {
+    return this.staffService.deleteReview(id);
   }
 }

@@ -83,6 +83,18 @@ export class StaffService {
 
   }
 
+  async deleteReview(id: number){
+    const review = await this.reviewRepo.findOne({
+      where:{id: id}
+    })
+
+    if(!review) throw new NotFoundException("Review not found");
+
+    await this.reviewRepo.delete(id);
+
+    return `${review.id} has been deleted`;
+  }
+
   async viewAllStaff() {
     return await this.staffRepo.find();
   }

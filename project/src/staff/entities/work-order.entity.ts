@@ -53,7 +53,7 @@ export class workOrder {
   @JoinColumn({ name: "landlord_id" })
   landlord?: LandlordEntity;
 
-  @OneToOne(() => Review, (review) => review.workOrder, {cascade: true})
+  @OneToOne(() => Review, (review) => review.workOrder)
   review?: Review;
 
   @ManyToOne(() => PropertyEntity, (property) => property.workOrders, {

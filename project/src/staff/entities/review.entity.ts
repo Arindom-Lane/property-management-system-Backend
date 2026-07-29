@@ -22,7 +22,9 @@ export class Review {
   @CreateDateColumn()
   created_at: Date;
 
-  @OneToOne(() => workOrder, (order) => order.review)
+  @OneToOne(() => workOrder, (order) => order.review, {
+    onDelete: "CASCADE",
+  })
   @JoinColumn({ name: "work_order_id" })
   workOrder: workOrder;
 

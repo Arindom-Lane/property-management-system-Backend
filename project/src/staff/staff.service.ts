@@ -1,4 +1,3 @@
-// staff.service.ts
 import {
   Injectable, Inject,
   NotFoundException,
@@ -23,6 +22,7 @@ import { StaffEntity } from "./entities/staff.entity";
 import { staffDto } from "./dto/staff.dto";
 import * as bcrypt from "bcrypt";
 import { MailService } from "../mail/mail.service";
+
 
 @Injectable()
 export class StaffService {
@@ -76,6 +76,25 @@ export class StaffService {
     return staff;
   }
 
+  async findStaff(id: number) {
+    return await this.staffRepo.findOne({
+      where: { id: id }
+    });
+
+  }
+
+  async deleteReview(id: number){
+    const review = await this.reviewRepo.findOne({
+      where:{id: id}
+    })
+
+    if(!review) throw new NotFoundException("Review not found");
+
+    await this.reviewRepo.delete(id);
+
+    return `${review.id} has been deleted`;
+  }
+
   async viewAllStaff() {
     return await this.staffRepo.find();
   }
@@ -127,6 +146,7 @@ export class StaffService {
         review: true,
         landlord: true,
         transactions: true,
+        property: true,
       },
     });
   }
@@ -185,7 +205,9 @@ export class StaffService {
     }
 
     if (!order.worker) {
-      return order;
+      throw new BadRequestException(
+        "No worker is assigned to this work order",
+      );
     }
     const workerId = order.worker.id;
     const otherActiveCount = await this.workOrderRepo.count({

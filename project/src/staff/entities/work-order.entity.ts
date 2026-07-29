@@ -26,9 +26,6 @@ export class workOrder {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  @IsOptional()
-  property_id?: number;
 
   @Column({ type: "enum", enum: orderStatus, default: orderStatus.inactive })
   workStatus: orderStatus;
@@ -61,6 +58,7 @@ export class workOrder {
 
   @ManyToOne(() => PropertyEntity, (property) => property.workOrders, {
     nullable: true,
+    onDelete: "SET NULL",
   })
   @JoinColumn({ name: "property_id" })
   property?: PropertyEntity;

@@ -41,7 +41,7 @@ export class PropertyEntity {
     @ManyToOne(() => LandlordEntity, landlord => landlord.property, { onDelete: 'CASCADE' })
     landlord?: LandlordEntity;
 
-    @OneToMany(() => workOrder, workOrder => workOrder.property_id, { cascade: true })
+    @OneToMany(() => workOrder, workOrder => workOrder.property, { cascade: true })
     workOrders?: workOrder[];
 
 

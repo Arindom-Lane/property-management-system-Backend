@@ -26,9 +26,6 @@ export class workOrder {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  @IsOptional()
-  property_id?: number;
 
   @Column({ type: "enum", enum: orderStatus, default: orderStatus.inactive })
   workStatus: orderStatus;

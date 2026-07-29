@@ -1,4 +1,3 @@
-// staff.service.ts
 import {
   Injectable, Inject,
   NotFoundException,
@@ -77,9 +76,9 @@ export class StaffService {
     return staff;
   }
 
-  async findStaff(id: number){
+  async findStaff(id: number) {
     return await this.staffRepo.findOne({
-      where: {id: id}
+      where: { id: id }
     });
 
   }
@@ -194,7 +193,9 @@ export class StaffService {
     }
 
     if (!order.worker) {
-      return order;
+      throw new BadRequestException(
+        "No worker is assigned to this work order",
+      );
     }
     const workerId = order.worker.id;
     const otherActiveCount = await this.workOrderRepo.count({

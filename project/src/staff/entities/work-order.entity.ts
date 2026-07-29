@@ -58,7 +58,6 @@ export class workOrder {
 
   @ManyToOne(() => PropertyEntity, (property) => property.workOrders, {
     nullable: true,
-    onDelete: "SET NULL",
   })
   @JoinColumn({ name: "property_id" })
   property?: PropertyEntity;

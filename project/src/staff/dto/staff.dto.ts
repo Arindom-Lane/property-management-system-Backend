@@ -18,7 +18,7 @@ export class staffDto {
   @IsNotEmpty()
   password: string;
 
-  @IsString()
+  @IsMobilePhone()
   @MaxLength(20)
   phone_number: string;
 

@@ -24,7 +24,7 @@ export class Worker {
   name: string;
 
   @Column({ type: "int", unique: true })
-  phone: number;
+  phone: string;
 
   @Column({ type: "enum", enum: WorkerStatus, default: WorkerStatus.active })
   status: WorkerStatus;

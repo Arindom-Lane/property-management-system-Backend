@@ -9,12 +9,11 @@ import { LandlordEntity } from "../landlord/entities/landlord.entity";
 import { Transaction } from "./entities/transaction.entity";
 import { StaffEntity } from "./entities/staff.entity";
 import { MailService } from 'src/mail/mail.service';
-import { AuthModule } from "../auth/auth.module";
-import{JwtAuthGuard} from '../auth/guards/jwt-auth.guard'
-import { JwtService } from "@nestjs/jwt";
+
+
 
 @Module({
-  imports: [AuthModule,
+  imports: [
     TypeOrmModule.forFeature([
       Worker,
       workOrder,
@@ -22,7 +21,7 @@ import { JwtService } from "@nestjs/jwt";
     ])
   ],
   controllers: [StaffController],
-  providers: [StaffService,MailService,JwtAuthGuard,JwtService],
+  providers: [StaffService,MailService],
   exports: [StaffService],
 })
 export class StaffModule { }

@@ -20,7 +20,6 @@ export class CreateWorkOrderDto {
   materials_cost?: number;
 
   @IsNumber()
-  @IsOptional()
   workerId?: number;
 
   @IsNumber()

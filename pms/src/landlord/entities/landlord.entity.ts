@@ -3,7 +3,7 @@ import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGenerate
 import { PropertyEntity } from './property.entity';
 import { TransactionEntity } from './transaction.entity';
 
-export enum UserStatus {
+export enum LandlordStatus {
     active = 'active',
     inactive = 'inactive',
 }
@@ -19,29 +19,24 @@ export class LandlordEntity  {
     @Column()
     name: string;
 
-    @Column()
+    @Column({ unique: true })
     email: string;
 
     @Column()
-    Phone: string;
+    phone: string;
 
     @Column()
-    password: string;
+    password_hash: string;
 
     @Column({
         type: "enum",
-        enum: UserStatus,
-        default: UserStatus.active,
+        enum: LandlordStatus,
+        default: LandlordStatus.active,
     })
-
-    @Column()
-    created_by: string;
-
-    @CreateDateColumn()
-    created_at: Date;
+    status: LandlordStatus;
 
     @ManyToOne(() => AdminEntity, (admin) => admin.id)
-    admin: AdminEntity;
+    created_by: AdminEntity;
 
     @OneToMany(() => PropertyEntity, (property) => property.landlord_id)
     properties: PropertyEntity[];
@@ -49,5 +44,7 @@ export class LandlordEntity  {
     @OneToMany(() => TransactionEntity, (transaction) => transaction.landlord_id)
     transactions: TransactionEntity[];
 
+    @CreateDateColumn()
+    created_at: Date;
 
 }

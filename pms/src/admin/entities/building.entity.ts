@@ -1,5 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn,CreateDateColumn, ManyToOne} from 'typeorm';
 import { AdminEntity } from './admin.entity';
+import { BlockEntity } from './block.entity';
 
 @Entity('buildings')
 
@@ -11,16 +12,13 @@ export class BuildingEntity  {
     @Column()
     name: string;
     
-    @Column()
-    block_id: number;
+    @ManyToOne(()=> BlockEntity, (block) => block.id)
+    block_id: BlockEntity;
 
-    @Column()
-    created_by: string;
+    @ManyToOne(() => AdminEntity, (admin) => admin.id)
+    created_by: AdminEntity;
 
     @CreateDateColumn()
     created_at: Date;
 
-    @ManyToOne(() => AdminEntity, (admin) => admin.id)
-    admin: AdminEntity;
-    
 }

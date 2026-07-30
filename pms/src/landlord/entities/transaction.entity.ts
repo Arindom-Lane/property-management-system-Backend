@@ -1,7 +1,10 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { LandlordEntity } from './landlord.entity';
+import { PropertyEntity } from './property.entity';
+import { TenantEntity } from 'src/tenant/entities/tenant.entity';
+import { WorkOrder } from 'src/staff/entities/work_order.entity';
 
-export enum type {
+export enum Trnsaction_type {
     rent = 'rent',
     electricity = 'electricity',
     water = 'water',
@@ -30,32 +33,32 @@ export enum created_by_type {
 
 @Entity('transactions')
 
-export class TransactionEntity  {
+export class TransactionEntity {
 
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column({
-            type: "enum",
-            enum: type,
-            default: type.rent,
-        })
-    type: type;
+        type: "enum",
+        enum: Trnsaction_type,
+        default: Trnsaction_type.rent,
+    })
+    type: Trnsaction_type;
 
-    @Column(type:'decimal')
+    @Column(type: 'decimal')
     amount: number;
-    
-    @Column()
-    property_id: number;
 
-    @Column()
-    landlord_id: number;
+    @ManyToOne(() => PropertyEntity, (property) => property.id)
+    property_id: PropertyEntity;
 
-    @Column()
-    tenant_id: number;
+    @ManyToOne(() => LandlordEntity, (landlord) => landlord.id)
+    landlord_id?: LandlordEntity;
 
-    @Column()
-    work_order_id?: number;
+    @ManyToOne(() => TenantEntity, (tanent) => tanent.id)
+    tenant_id?: TenantEntity;
+
+    @OneToOne(() => WorkOrder, (workOder) => workOder.id)
+    work_order_id: WorkOrder;
 
     @Column({
         type: "enum",
@@ -64,9 +67,6 @@ export class TransactionEntity  {
     })
     payer_type: payer_type;
 
-
-    @Column()
-    payer_id: number;
 
     @Column({
         type: "enum",
@@ -80,26 +80,12 @@ export class TransactionEntity  {
         enum: created_by_type,
         default: created_by_type.landlord,
     })
-    created_by_type: created_by_type;
-
-    @Column()
-    created_by_id: number;
+    created_by_type?: created_by_type;
 
     @CreateDateColumn()
     created_at: Date;
 
     @CreateDateColumn()
     paid_at?: Date;
-
-
-    @ManyToOne(() => LandlordEntity, (landlord) => landlord.id)
-    landlord: LandlordEntity;
-
-
-
-
-
-
-
 
 }

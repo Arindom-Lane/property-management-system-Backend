@@ -1,6 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn,CreateDateColumn, ManyToOne} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn,CreateDateColumn, ManyToOne, OneToMany} from 'typeorm';
 import { AdminEntity } from './admin.entity';
-import { AdminEntity } from './admin.entity';
+import { BuildingEntity } from './building.entity';
 
 @Entity('blocks')
 
@@ -15,12 +15,13 @@ export class BlockEntity  {
     @Column()
     address: string;
 
-    @Column()
-    created_by: string;
+    @ManyToOne (() => AdminEntity, (admin) => admin.id)
+    created_by: AdminEntity;
     
     @CreateDateColumn()
     created_at: Date;
 
-    @ManyToOne (() => AdminEntity, (admin) => admin.id)
-    admin: AdminEntity;
+    @OneToMany(()=> BuildingEntity, (building) => building.id)
+    building: BuildingEntity;
+    
 }

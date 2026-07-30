@@ -13,14 +13,14 @@ export class AdminEntity  {
     @Column()
     name: string;
 
-    @Column()
+    @Column({ unique: true })
     email: string;
 
     @Column()
     password_hash: string;
 
-    @Column()
-    created_by: string;
+    @OneToMany(() => AdminEntity, (admin) => admin.id)
+    created_by?: AdminEntity[];
 
     @CreateDateColumn()
     created_at: Date;

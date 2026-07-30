@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { LandlordEntity } from 'src/landlord/entities/landlord.entity';
+import { BuildingEntity } from 'src/admin/entities/building.entity';
 
 export enum ListingStatus {
     not_listed = 'not_listed',
@@ -18,11 +19,11 @@ export class PropertyEntity  {
     @Column()
     unit_number: string;
 
-    @Column()
-    building_id: number;
+    @ManyToOne(()=> BuildingEntity, (building) => building.id)
+    building_id: BuildingEntity;
 
-    @Column()
-    landlord_id: number;
+    @ManyToOne(() => LandlordEntity, (landlord) => landlord.id)
+    landlord: LandlordEntity;
 
     @Column(type: 'decimal', precision: 10, scale: 2)
     rent_amount: number;
@@ -52,7 +53,4 @@ export class PropertyEntity  {
 
     @CreateDateColumn()
     created_at: Date;
-
-    @ManyToOne(() => LandlordEntity, (landlord) => landlord.id)
-    landlord: LandlordEntity;
 }

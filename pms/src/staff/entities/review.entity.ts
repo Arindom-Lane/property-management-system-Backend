@@ -1,17 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany, Index, OneToOne } from 'typeorm';
-import { WorkOrder } from './work_order.entity'
-
-
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne } from 'typeorm';
+import { WorkOrder } from './work_order.entity';
 
 @Entity('Review')
 export class ReviewEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @OneToOne(() => WorkOrder, WorkOrder => WorkOrder.ReviewEntity)
-    WorkOrder: WorkOrder;
-
-    //tanent
+    // Inverse side of the OneToOne relationship. 
+    // No @JoinColumn here, it lives on the WorkOrder.
+    @OneToOne(() => WorkOrder, workOrder => workOrder.review)
+    workOrder: WorkOrder;
 
     @Column()
     rating: string;
@@ -21,9 +19,4 @@ export class ReviewEntity {
 
     @CreateDateColumn()
     created_at: Date;
-
-
 }
-
-
-

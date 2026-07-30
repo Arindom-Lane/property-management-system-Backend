@@ -1,9 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn,CreateDateColumn, ManyToOne} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { AdminEntity } from './admin.entity';
 import { BlockEntity } from './block.entity';
+import { PropertyEntity } from 'src/landlord/entities/property.entity';
 
 @Entity('buildings')
-
 export class BuildingEntity  {
 
     @PrimaryGeneratedColumn()
@@ -12,13 +12,17 @@ export class BuildingEntity  {
     @Column()
     name: string;
     
-    @ManyToOne(()=> BlockEntity, (block) => block.id)
+    @ManyToOne(() => BlockEntity)
+    @JoinColumn({ name: 'block_id' }) // Added JoinColumn
     block_id: BlockEntity;
 
-    @ManyToOne(() => AdminEntity, (admin) => admin.id)
+    @ManyToOne(() => AdminEntity)
+    @JoinColumn({ name: 'created_by_id' }) // Added JoinColumn
     created_by: AdminEntity;
+
+    @OneToMany(() => PropertyEntity, (property) => property.building_id)
+    property: PropertyEntity[];
 
     @CreateDateColumn()
     created_at: Date;
-
 }

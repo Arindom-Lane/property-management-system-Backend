@@ -1,14 +1,15 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-export enum UserStatus {
-    active = 'active',
-    inactive = 'inactive',
+export enum ListingStatus {
+    not_listed = 'not_listed',
+    for_rent = 'for_rent',
+    for_sale = 'for_sale',
 }
 
 
-@Entity('landlords')
+@Entity('property')
 
-export class LandlordEntity  {
+export class PropertyEntity  {
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -33,9 +34,17 @@ export class LandlordEntity  {
 
     @Column({
         type: "enum",
-        enum: UserStatus,
-        default: UserStatus.active,
+        enum: ListingStatus,
+        default: ListingStatus.not_listed,
     })
+    listing_status: ListingStatus;
+
+    @Column({
+        type: "enum",
+        enum: Status,
+        default: Status.vacant,
+    })
+    status: Status;
 
     @Column()
     created_by: string;

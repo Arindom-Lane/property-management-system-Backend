@@ -1,9 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn,ManyToOne, JoinColumn,OneToMany, Index } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany, Index, OneToOne } from 'typeorm';
+import { ReviewEntity } from './review.entity';
+
+
+
 export enum OrderStatus {
     PENDING = "pending",
     ASSIGNED = "assigned",
     IN_PROGRESS = "in_progress",
-    TENANT_CONFIRMED= "tanent_confirmed",
+    TENANT_CONFIRMED = "tanent_confirmed",
     COMPLETE = "complete"
 }
 
@@ -20,19 +24,25 @@ export class WorkOrder {
     //staff_id
     //worker id
 
+    @OneToOne(() => ReviewEntity, ReviewEntity => ReviewEntity.WorkOrder, {
+        cascade: true
+    })
+    @JoinColumn()
+    ReviewEntity: ReviewEntity;
+
     @Column()
     created_by_type: string;
 
     @Column()
     created_by_id: number;
 
-    @Column({type: "decimal"})
+    @Column({ type: "decimal" })
     material_cost: number;
 
-    @Column({type: "decimal"})
+    @Column({ type: "decimal" })
     labor_cost: number;
 
-    
+
 
     @Column({
         type: "enum",

@@ -1,8 +1,8 @@
 import { Column, Entity, PrimaryGeneratedColumn,CreateDateColumn} from 'typeorm';
 
-@Entity('admins')
+@Entity('blocks')
 
-export class AdminEntity  {
+export class BlockEntity  {
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -11,14 +11,11 @@ export class AdminEntity  {
     name: string;
 
     @Column()
-    email: string;
-
-    @Column()
-    password_hash: string;
+    address: string;
 
     @Column()
     created_by: string;
-
+    
     @CreateDateColumn()
     created_at: Date;
 }

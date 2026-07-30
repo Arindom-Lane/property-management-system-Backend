@@ -1,24 +1,23 @@
 import { Column, Entity, PrimaryGeneratedColumn,CreateDateColumn} from 'typeorm';
 
-@Entity('admins')
+@Entity('buildings')
 
-export class AdminEntity  {
+export class BuildingEntity  {
 
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
     name: string;
-
+    
     @Column()
-    email: string;
-
-    @Column()
-    password_hash: string;
+    block_id: number;
 
     @Column()
     created_by: string;
 
     @CreateDateColumn()
     created_at: Date;
+
+    
 }

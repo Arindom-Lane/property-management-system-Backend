@@ -45,7 +45,7 @@ export class WorkOrder {
     @JoinColumn({ name: 'worker_id' })
     worker: WorkerEntity;
 
-    // --- Properly mapped Review Relationship ---
+
     @OneToOne(() => ReviewEntity, review => review.workOrder, {
         cascade: true
     })

@@ -4,10 +4,12 @@ import {
   Column, 
   CreateDateColumn, 
   ManyToOne, 
-  JoinColumn 
+  JoinColumn, 
+  OneToMany
 } from 'typeorm';
 import { PropertyEntity } from 'src/landlord/entities/property.entity';
 import { LandlordEntity } from 'src/landlord/entities/landlord.entity';
+import { ReviewEntity } from 'src/staff/entities/review.entity';
 
 
 export enum TenantStatus {
@@ -61,4 +63,8 @@ export class TenantEntity {
 
   @CreateDateColumn()
   created_at: Date;
+  
+  @OneToMany(()=> ReviewEntity, (review)=> review.id)
+  @JoinColumn()
+  review: ReviewEntity;
 }

@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne, ManyToMany, ManyToOne } from 'typeorm';
 import { WorkOrder } from './work_order.entity';
+import { TenantEntity } from 'src/tenant/entities/tenant.entity';
 
 @Entity('Review')
 export class ReviewEntity {
@@ -19,4 +20,7 @@ export class ReviewEntity {
 
     @CreateDateColumn()
     created_at: Date;
+
+    @ManyToOne(()=> TenantEntity, (tanent)=> tanent.id)
+    tanent: TenantEntity;
 }

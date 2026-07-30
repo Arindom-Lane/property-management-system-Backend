@@ -1,16 +1,11 @@
 import { IsBoolean, IsDate, IsNumber, IsOptional, IsString, MaxLength } from 'class-validator';
 
-export class AdminDto {
+export class CreateBlockDTO {
 
     @IsString()
     name: string;
 
-    @IsNumber()
-    block_id: number;
-
     @IsString()
-    created_by: string;
+    address: string;
 
-    @IsDate()
-    created_at: Date;
 }

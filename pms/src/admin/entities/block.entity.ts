@@ -15,12 +15,12 @@ export class BlockEntity  {
     address: string;
 
     @ManyToOne(() => AdminEntity)
-    @JoinColumn({ name: 'created_by_id' }) // Added JoinColumn
+    @JoinColumn({ name: 'created_by_id' }) 
     created_by: AdminEntity;
     
     @CreateDateColumn()
     created_at: Date;
 
     @OneToMany(() => BuildingEntity, (building) => building.block_id)
-    building: BuildingEntity[]; // Changed to array since it's OneToMany
+    building: BuildingEntity[]; 
 }

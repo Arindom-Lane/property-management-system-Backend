@@ -1,5 +1,6 @@
+// create-worker.dto.ts
 import { IsString, IsEmail, IsNotEmpty, IsEnum, IsOptional, IsNumber } from 'class-validator';
-import { StaffStatus } from 'src/staff/entities/staff.entity';
+import { WorkerStatus } from '../entities/worker.entity'; 
 
 export class CreateWorkerDto {
     @IsString()
@@ -8,7 +9,8 @@ export class CreateWorkerDto {
 
     @IsEmail()
     @IsNotEmpty()
-    email: string;
+    @IsOptional()
+    email?: string;
 
     @IsString()
     @IsNotEmpty()
@@ -16,11 +18,11 @@ export class CreateWorkerDto {
 
     @IsString()
     @IsNotEmpty()
-    worker_area: string;
-
     @IsOptional()
-    @IsEnum(StaffStatus)
-    status?: StaffStatus;
+    worker_area?: string;
+
+    @IsEnum(WorkerStatus)
+    status?: WorkerStatus;
 
     @IsNumber()
     @IsNotEmpty()

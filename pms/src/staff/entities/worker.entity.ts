@@ -1,12 +1,15 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn,ManyToOne, JoinColumn,OneToMany, Index } from 'typeorm';
-export enum StaffStatus {
-    ACTIVE = "active",
-    DEACTIVE = "deactive",
+import { StaffEntity } from './staff.entity';
+
+
+export enum WorkerStatus {
+    FREE = "free",
+    BUSY = "busy",
 }
 
 
-@Entity('staff')
-export class StaffEntity {
+@Entity('worker')
+export class WorkerEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -21,21 +24,18 @@ export class StaffEntity {
     phone: string;
 
     @Column()
-    password_hash: string;
-
-    //   @Column()
-    //   role?: string;
+    worker_area: string;
 
     @Column({
         type: "enum",
-        enum: StaffStatus,
-        default: StaffStatus.ACTIVE,
+        enum: WorkerStatus,
+        default: WorkerStatus.FREE,
     })
-    status: StaffStatus;
+    status: WorkerStatus;
 
-    @ManyToOne(() => Admin)
+    @ManyToOne(() => StaffEntity)
     @JoinColumn({ name: 'created_by' })
-    created_by: Admin;
+    created_by: StaffEntity;
 
 
     @CreateDateColumn()

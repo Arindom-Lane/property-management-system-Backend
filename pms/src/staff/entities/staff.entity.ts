@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn,ManyToOne, JoinColumn,OneToMany, Index } from 'typeorm';
+import { AdminEntity } from 'src/admin/entities/admin.entity';
 export enum StaffStatus {
     ACTIVE = "active",
     DEACTIVE = "deactive",
@@ -33,9 +34,9 @@ export class StaffEntity {
     })
     status: StaffStatus;
 
-    @ManyToOne(() => Admin)
+    @ManyToOne(() => AdminEntity)
     @JoinColumn({ name: 'created_by' })
-    created_by: Admin;
+    created_by: AdminEntity;
 
 
     @CreateDateColumn()

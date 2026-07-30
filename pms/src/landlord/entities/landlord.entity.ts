@@ -38,10 +38,10 @@ export class LandlordEntity  {
     @ManyToOne(() => AdminEntity, (admin) => admin.id)
     created_by: AdminEntity;
 
-    @OneToMany(() => PropertyEntity, (property) => property.landlord_id)
+    @OneToMany(() => PropertyEntity, (property) => property.id)
     properties: PropertyEntity[];
 
-    @OneToMany(() => TransactionEntity, (transaction) => transaction.landlord_id)
+    @OneToMany(() => TransactionEntity, (transaction) => transaction.id)
     transactions: TransactionEntity[];
 
     @CreateDateColumn()

@@ -45,7 +45,7 @@ export class TransactionEntity {
     })
     type: Trnsaction_type;
 
-    @Column(type: 'decimal')
+    @Column({type: 'decimal'})
     amount: number;
 
     @ManyToOne(() => PropertyEntity, (property) => property.id)

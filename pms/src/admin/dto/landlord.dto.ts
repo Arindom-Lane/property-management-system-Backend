@@ -1,5 +1,5 @@
 import { IsBoolean, IsDate, IsEnum, IsMobilePhone, IsOptional, IsString, MaxLength } from 'class-validator';
-import { UserStatus } from '../../landlord/entities/landlord.entity';
+import { LandlordStatus } from '../../landlord/entities/landlord.entity';
 
 
 export class LandlordDto {
@@ -17,7 +17,7 @@ export class LandlordDto {
     password_hash: string;
 
 
-    @IsEnum(UserStatus)
+    @IsEnum(LandlordStatus)
     @IsString()
     status: string;
 

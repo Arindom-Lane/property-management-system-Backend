@@ -8,6 +8,12 @@ export enum ListingStatus {
     for_sale = 'for_sale',
 }
 
+export enum Status{
+    VACANT = "vacant",
+    OCCUPIED = "occupied",
+    SOLD = "sold",
+}
+
 
 @Entity('property')
 
@@ -25,7 +31,7 @@ export class PropertyEntity  {
     @ManyToOne(() => LandlordEntity, (landlord) => landlord.id)
     landlord: LandlordEntity;
 
-    @Column(type: 'decimal', precision: 10, scale: 2)
+    @Column({type: 'decimal', precision: 10, scale: 2})
     rent_amount: number;
 
     @Column()
@@ -44,7 +50,7 @@ export class PropertyEntity  {
     @Column({
         type: "enum",
         enum: Status,
-        default: Status.vacant,
+        default: Status.VACANT,
     })
     status: Status;
 

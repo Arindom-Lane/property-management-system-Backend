@@ -6,8 +6,9 @@ import {
   ManyToOne, 
   JoinColumn 
 } from 'typeorm';
-import { PropertyEntity } from '../property/property.entity'; // Adjust import path
-import { LandlordEntity } from '../landlord/landlord.entity'; // Adjust import path
+import { PropertyEntity } from 'src/landlord/entities/property.entity';
+import { LandlordEntity } from 'src/landlord/entities/landlord.entity';
+
 
 export enum TenantStatus {
   PENDING = 'PENDING',

@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany, Index, OneToOne } from 'typeorm';
-import {WorkOrder} from './work_order.entity'
+import { WorkOrder } from './work_order.entity'
 
 
 
@@ -11,29 +11,13 @@ export class ReviewEntity {
     @OneToOne(() => WorkOrder, WorkOrder => WorkOrder.ReviewEntity)
     WorkOrder: WorkOrder;
 
+    //tanent
 
     @Column()
-    @Index({ unique: true })
-    email: string;
+    rating: string;
 
     @Column()
-    phone: string;
-
-    @Column()
-    password_hash: string;
-
-
-    @Column({
-        type: "enum",
-        enum: StaffStatus,
-        default: StaffStatus.ACTIVE,
-    })
-    status: StaffStatus;
-
-    @ManyToOne(() => Admin)
-    @JoinColumn({ name: 'created_by' })
-    created_by: Admin;
-
+    comment: string;
 
     @CreateDateColumn()
     created_at: Date;

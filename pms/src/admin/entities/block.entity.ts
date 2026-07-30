@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn,CreateDateColumn} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn,CreateDateColumn, ManyToOne} from 'typeorm';
+import { AdminEntity } from './admin.entity';
+import { AdminEntity } from './admin.entity';
 
 @Entity('blocks')
 
@@ -18,4 +20,7 @@ export class BlockEntity  {
     
     @CreateDateColumn()
     created_at: Date;
+
+    @ManyToOne (() => AdminEntity, (admin) => admin.id)
+    admin: AdminEntity;
 }

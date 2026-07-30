@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { LandlordEntity } from './landlord.entity';
 
 export enum type {
     rent = 'rent',
@@ -89,6 +90,10 @@ export class TransactionEntity  {
 
     @CreateDateColumn()
     paid_at?: Date;
+
+
+    @ManyToOne(() => LandlordEntity, (landlord) => landlord.id)
+    landlord: LandlordEntity;
 
 
 

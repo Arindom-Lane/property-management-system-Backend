@@ -14,7 +14,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     port: 5432,
     username: 'postgres',
     password: 'admin', // please keep the password: admin
-    // admin is the default passowrd, keep it as is
+    // admin is the default passowrd, keep it as is in the postgreSQL as well
     database: 'property_Management_system',
     autoLoadEntities: true,
     synchronize: true,

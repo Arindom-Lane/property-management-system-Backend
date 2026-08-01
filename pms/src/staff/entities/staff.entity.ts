@@ -24,8 +24,6 @@ export class StaffEntity {
     @Column()
     password_hash: string;
 
-    //   @Column()
-    //   role?: string;
 
     @Column({
         type: "enum",
@@ -34,8 +32,8 @@ export class StaffEntity {
     })
     status: StaffStatus;
 
-    @ManyToOne(() => AdminEntity)
-    @JoinColumn({ name: 'created_by' })
+    @ManyToOne(() => AdminEntity, (admin) => admin.id)
+    @JoinColumn()
     created_by: AdminEntity;
 
 

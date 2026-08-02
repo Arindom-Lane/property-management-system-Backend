@@ -14,7 +14,7 @@ export class BuildingEntity  {
     
     @ManyToOne(() => BlockEntity)
     @JoinColumn({ name: 'block_id' }) // Added JoinColumn
-    block_id: BlockEntity;
+    block_id?: BlockEntity;
 
     @ManyToOne(() => AdminEntity)
     @JoinColumn({ name: 'created_by_id' }) // Added JoinColumn

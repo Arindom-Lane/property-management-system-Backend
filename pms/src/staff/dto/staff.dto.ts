@@ -33,6 +33,10 @@ export class staffDto {
   })
   password_hash: string;
 
+  @IsNumber()
+  @IsOptional()
+  created_by: number;
+
   @IsEnum(StaffStatus)
   status?: StaffStatus;
 }

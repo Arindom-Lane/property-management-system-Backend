@@ -12,6 +12,7 @@ import { WorkOrder } from "./entities/work_order.entity";
 import { ReviewEntity } from "./entities/review.entity";
 import { StaffEntity } from "./entities/staff.entity";
 import * as bcrypt from "bcrypt";
+import { AdminEntity } from "src/admin/entities/admin.entity";
 
 @Injectable()
 export class StaffService {
@@ -25,10 +26,21 @@ constructor(
     private readonly reviewRepo: Repository<ReviewEntity>,
     @InjectRepository(StaffEntity)
     private readonly staffRepo: Repository<StaffEntity>,
+    @InjectRepository(AdminEntity)
+    private readonly adminRepo: Repository<AdminEntity>,
 
     //private readonly mailService: MailService,
 
   ) { }
+
+  async findAdmin(id:number){
+    const admin = await this.adminRepo.findOne({
+      where:{id: id}
+    })
+
+    if (!admin) throw new NotFoundException("Admin not found!");
+    return admin;
+  }
 
   async createStaff(data: staffDto): Promise<StaffEntity> {
 
@@ -49,8 +61,10 @@ constructor(
       saltRounds,
     );
 
+    
+    const admin = await this.findAdmin(data.created_by);
 
-    const staff = this.staffRepo.create({ ...data, password_hash: hashedPassword });
+    const staff = await this.staffRepo.create({ ...data, password_hash: hashedPassword, created_by: admin});
 
     // await this.mailService.sendWelcomeMail(
     //   data.email,
@@ -87,6 +101,16 @@ constructor(
     return await this.staffRepo.find({
       relations: {created_by: true}
     });
+  }
+
+  async deleteStaff(id: number){
+    const staff = await this.staffRepo.findOne({
+      where: {id: id}
+    })
+    if(!staff) throw new NotFoundException("Staff not found");
+
+    return await this.staffRepo.delete(staff.id);
+
   }
 
 //   async loginStaff(dto: staffDto) {

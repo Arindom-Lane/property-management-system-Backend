@@ -30,7 +30,14 @@ export class StaffController {
   viewAllStaff() {
     return this.staffService.viewAllStaff();
   }
-/*
+
+  @Delete('/:staffId')
+  deleteStaff(@Param('staffId') id: number){
+    return this.staffService.deleteStaff(id);
+  }
+
+
+  /*
   @Post("loginStaff")
   @UsePipes(new ValidationPipe)
   loginStaff(@Body() dto: staffDto) {

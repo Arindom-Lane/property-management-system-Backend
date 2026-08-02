@@ -14,6 +14,7 @@ import {
 
 import { StaffService } from './staff.service';
 import { staffDto } from "./dto/staff.dto";
+import {CreateWorkOrderDto} from './dto/CreateWorkOrder.dto'
 
 @Controller('staff')
 export class StaffController {
@@ -81,14 +82,13 @@ export class StaffController {
   findAllWorkOrders() {
     return this.staffService.findAllWorkOrders();
   }
-/*
-  @UseGuards(JwtAuthGuard)
-  @Post("work-orders")
-  @UsePipes(new ValidationPipe())
-  createWorkOrder(@Body() dto: CreateWorkOrderDto) {
-    return this.staffService.createWorkOrder(dto);
-  }
 
+  @Post("work-orders/:id")
+  @UsePipes(new ValidationPipe())
+  createWorkOrder(@Param('id') id:number,@Body() dto: CreateWorkOrderDto) {
+    return this.staffService.createWorkOrder(id,dto);
+  }
+/*
   @UseGuards(JwtAuthGuard)
   @Patch("work-orders/:id/dispatch")
   @UsePipes(new ValidationPipe())

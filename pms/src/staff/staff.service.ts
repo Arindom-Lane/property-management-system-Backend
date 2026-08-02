@@ -13,6 +13,11 @@ import { ReviewEntity } from "./entities/review.entity";
 import { StaffEntity } from "./entities/staff.entity";
 import * as bcrypt from "bcrypt";
 import { AdminEntity } from "src/admin/entities/admin.entity";
+import { CreateWorkOrderDto } from "./dto/CreateWorkOrder.dto";
+import { IssueEntity } from "src/tenant/entities/issue.entity";
+import { PropertyEntity } from "src/landlord/entities/property.entity";
+import { LandlordEntity } from "src/landlord/entities/landlord.entity";
+import { TenantEntity } from "src/tenant/entities/tenant.entity";
 
 @Injectable()
 export class StaffService {
@@ -28,6 +33,14 @@ constructor(
     private readonly staffRepo: Repository<StaffEntity>,
     @InjectRepository(AdminEntity)
     private readonly adminRepo: Repository<AdminEntity>,
+    @InjectRepository(IssueEntity)
+    private readonly issueRepo: Repository<IssueEntity>,
+    @InjectRepository(PropertyEntity)
+    private readonly propertyRepo: Repository<PropertyEntity>,
+    @InjectRepository(LandlordEntity)
+    private readonly ladnlordRepo: Repository<LandlordEntity>,
+    @InjectRepository(TenantEntity)
+    private readonly tanentRepo: Repository<TenantEntity>,
 
     //private readonly mailService: MailService,
 
@@ -41,6 +54,47 @@ constructor(
     if (!admin) throw new NotFoundException("Admin not found!");
     return admin;
   }
+  async findIssue(id:number){
+    const issue = await this.issueRepo.findOne({
+      where:{id: id}
+    })
+
+    if (!issue) throw new NotFoundException("issue not found!");
+    return issue;
+  }
+  async findProperty(id:number){
+    const property = await this.propertyRepo.findOne({
+      where:{id: id}
+    })
+
+    if (!property) throw new NotFoundException("property not found!");
+    return property;
+  }
+  async findLandlord(id:number){
+    const landlord = await this.ladnlordRepo.findOne({
+      where:{id: id}
+    })
+
+    if (!landlord) throw new NotFoundException("landlord not found!");
+    return landlord;
+  }
+  async findTanent(id:number){
+    const tanent = await this.tanentRepo.findOne({
+      where:{id: id}
+    })
+
+    if (!tanent) throw new NotFoundException("tanent not found!");
+    return tanent;
+  }
+  async findWorker(id:number){
+    const worker = await this.workerRepo.findOne({
+      where:{id: id}
+    })
+
+    if (!worker) throw new NotFoundException("worker not found!");
+    return worker;
+  }
+
 
   async createStaff(data: staffDto): Promise<StaffEntity> {
 
@@ -115,6 +169,11 @@ constructor(
 
   async findAllWorkOrders(){
     return await this.workOrderRepo.find();
+  }
+
+  async createWorkOrder(id: number, body: CreateWorkOrderDto){
+
+
   }
 
 //   async loginStaff(dto: staffDto) {

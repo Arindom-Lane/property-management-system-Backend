@@ -18,6 +18,7 @@ import { IssueEntity } from "src/tenant/entities/issue.entity";
 import { PropertyEntity } from "src/landlord/entities/property.entity";
 import { LandlordEntity } from "src/landlord/entities/landlord.entity";
 import { TenantEntity } from "src/tenant/entities/tenant.entity";
+import {OrderStatus} from "./entities/work_order.entity"
 
 @Injectable()
 export class StaffService {
@@ -41,6 +42,7 @@ constructor(
     private readonly ladnlordRepo: Repository<LandlordEntity>,
     @InjectRepository(TenantEntity)
     private readonly tanentRepo: Repository<TenantEntity>,
+    
 
     //private readonly mailService: MailService,
 
@@ -53,6 +55,22 @@ constructor(
 
     if (!admin) throw new NotFoundException("Admin not found!");
     return admin;
+  }
+  async findWOrkOrder(id:number){
+    const workOrder = await this.workOrderRepo.findOne({
+      where:{id: id}
+    })
+
+    if (!workOrder) throw new NotFoundException("workOrder not found!");
+    return workOrder;
+  }
+  async findStaff(id:number){
+    const staff = await this.staffRepo.findOne({
+      where:{id: id}
+    })
+
+    if (!staff) throw new NotFoundException("staff not found!");
+    return staff;
   }
   async findIssue(id:number){
     const issue = await this.issueRepo.findOne({
@@ -171,10 +189,28 @@ constructor(
     return await this.workOrderRepo.find();
   }
 
-  async createWorkOrder(id: number, body: CreateWorkOrderDto){
+  async createWorkOrder(id: number, body: CreateWorkOrderDto) {
+  const staff = await this.findStaff(id);
+  const issue = await this.findIssue(body.issue_id);
+  const property = await this.findProperty(body.property_id);
+  const landlord = await this.findLandlord(body.landlord_id);
+  const tanent = await this.findTanent(body.tenant_id);
 
 
-  }
+  const workOrder = this.workOrderRepo.create({
+    issue: issue,
+    property: property,
+    landlord: landlord,
+    tenant: tanent,
+    staff: staff,
+    created_by_type: "staff",
+    created_by_id: staff.id,
+    status: OrderStatus.PENDING
+  });
+
+
+  return await this.workOrderRepo.save(workOrder);
+}
 
 //   async loginStaff(dto: staffDto) {
 //     const staff = await this.staffRepo.findOne({

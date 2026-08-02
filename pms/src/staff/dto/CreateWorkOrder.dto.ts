@@ -16,6 +16,10 @@ export class CreateWorkOrderDto {
   @IsNotEmpty()
   property_id: number;
 
+  @IsNumber()
+  @IsNotEmpty()
+  issue_id: number;
+
 
   @IsNumber()
   @IsNotEmpty()
@@ -24,17 +28,17 @@ export class CreateWorkOrderDto {
 
   @IsNumber()
   @IsOptional()
-  tenant_id?: number;
+  tenant_id: number;
 
 
   @IsNumber()
   @IsOptional()
-  staff_id?: number;
+  staff_id: number;
 
 
   @IsNumber()
   @IsOptional()
-  worker_id?: number;
+  worker_id: number;
 
 
   @IsNumber()

@@ -19,7 +19,9 @@ import { PropertyEntity } from "src/landlord/entities/property.entity";
 import { LandlordEntity } from "src/landlord/entities/landlord.entity";
 import { TenantEntity } from "src/tenant/entities/tenant.entity";
 import {OrderStatus} from "./entities/work_order.entity"
-
+import { WorkerStatus } from './entities/worker.entity'
+import {DispatchWorkerDto} from './dto/DispatchWorkOrder.dto'
+import {CreateWorkerDto}from './dto/CreateWorker.dto'
 @Injectable()
 export class StaffService {
 
@@ -228,10 +230,40 @@ constructor(
 //     return staff;
 //   }
 
-//   async createWorker(data: CreateWorkerDto): Promise<Worker> {
-//     const newWorker = this.workerRepository.create(data);
-//     return await this.workerRepository.save(newWorker);
-//   }
+  async createWorker(
+  staffId: number,
+  data: CreateWorkerDto
+): Promise<WorkerEntity> {
+
+  const staff = await this.findStaff(staffId);
+
+  const newWorker = this.workerRepo.create({
+    name: data.name,
+    email: data.email,
+    phone: data.phone,
+    worker_area: data.worker_area,
+    status: WorkerStatus.FREE,
+    created_by: staff,
+  });
+
+
+  await this.workerRepo.save(newWorker);
+
+
+  const worker = await this.workerRepo.findOne({
+    where: {
+      email: data.email,
+    },
+  });
+
+
+  if (!worker) {
+    throw new NotFoundException("Worker not found after creation");
+  }
+
+
+  return worker;
+}
 
 //   async findAllWorkers() {
 //     return await this.workerRepository.find();
@@ -264,48 +296,31 @@ constructor(
 //     });
 //   }
 
-//   async createWorkOrder(dto: CreateWorkOrderDto) {
-//     const order = this.workOrderRepo.create(dto);
-//     const saved = await this.workOrderRepo.save(order);
-//     return saved;
-//   }
 
-//   async dispatchWorker(workOrderId: number, dto: DispatchWorkOrderDto) {
-//     const order = await this.workOrderRepo.findOne({
-//       where: { id: workOrderId },
-//       relations: { worker: true },
-//     });
+  async dispatchWorker(workOrderId: number, dto: DispatchWorkerDto) {
+    const order = await this.findWOrkOrder(workOrderId); 
+    const worker = await this.findWorker(dto.worker_id)
 
-//     if (!order) {
-//       throw new NotFoundException("Order not found");
-//     }
+    if (order.status === OrderStatus.COMPLETE || order.status === OrderStatus.TENANT_CONFIRMED) {
+      throw new BadRequestException("The order is already complete.");
+    } else if(order.status === OrderStatus.ASSIGNED){
+      throw new BadRequestException("The order already has a worker");
+    }else if (order.worker) {
+      throw new BadRequestException("The order already has a worker.");
+    }
 
-//     if (order.workStatus === WorkOrderStatus.done) {
-//       throw new BadRequestException("The order is already complete.");
-//     } else if (order.worker) {
-//       throw new BadRequestException("The order already has a worker.");
-//     }
+    order.worker = worker;
+    order.status = OrderStatus.ASSIGNED;
+    worker.status = WorkerStatus.BUSY;
 
-//     const worker = await this.workerRepository.findOne({
-//       where: { id: dto.workerId },
-//     });
+    await this.workerRepo.save(worker);
+    await this.workOrderRepo.save(order);
 
-//     if (!worker) {
-//       throw new NotFoundException("Worker not found");
-//     }
-
-//     order.worker = worker;
-//     order.workStatus = WorkOrderStatus.active;
-//     worker.status = WorkerStatus.busy;
-
-//     await this.workerRepository.save(worker);
-//     await this.workOrderRepo.save(order);
-
-//     return await this.workOrderRepo.findOne({
-//       where: { id: workOrderId },
-//       relations: { worker: true },
-//     });
-//   }
+    return await this.workOrderRepo.findOne({
+      where: { id: workOrderId },
+      relations: { worker: true },
+    });
+  }
 
 //   async removeWorkerFromOrder(id: number) {
 //     const order = await this.workOrderRepo.findOne({

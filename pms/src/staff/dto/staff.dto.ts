@@ -10,13 +10,16 @@ import {
   IsNumber,
   IsStrongPassword,
   MinLength,
+  IsMobilePhone,
 } from 'class-validator';
 import { StaffStatus } from '../entities/staff.entity';
 
 export class staffDto {
   @IsString()
   @IsNotEmpty()
-  @IsAlpha()
+  @Matches(/^[a-zA-Z\s]+$/, {
+      message: 'Name can only contain letters and spaces',
+    })
   name: string;
 
   @IsEmail()
@@ -25,6 +28,7 @@ export class staffDto {
 
   @IsString()
   @IsNotEmpty()
+  @IsMobilePhone()
   phone: string;
 
   @MinLength(6)

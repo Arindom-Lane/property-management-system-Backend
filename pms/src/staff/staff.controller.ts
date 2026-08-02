@@ -15,6 +15,8 @@ import {
 import { StaffService } from './staff.service';
 import { staffDto } from "./dto/staff.dto";
 import {CreateWorkOrderDto} from './dto/CreateWorkOrder.dto'
+import {DispatchWorkerDto} from './dto/DispatchWorkOrder.dto'
+import { CreateWorkerDto } from "./dto/CreateWorker.dto";
 
 @Controller('staff')
 export class StaffController {
@@ -49,13 +51,13 @@ export class StaffController {
   // findStaff(@Param("id", ParseIntPipe) id: number,){
   //   return this.staffService.findStaff(id);
   // }
-  @UseGuards(JwtAuthGuard)
-  @Post("workers")
+*/
+  @Post("/:staffId/workers")
   @UsePipes(new ValidationPipe())
-  createWorker(@Body() dto: CreateWorkerDto) {
-    return this.staffService.createWorker(dto);
+  createWorker(@Body() dto: CreateWorkerDto,@Param('staffId') staffId: number) {
+    return this.staffService.createWorker(staffId, dto);
   }
-
+/*
   @UseGuards(JwtAuthGuard)
   @Get("workers")
   findAllWorkers() {
@@ -88,17 +90,16 @@ export class StaffController {
   createWorkOrder(@Param('id') id:number,@Body() dto: CreateWorkOrderDto) {
     return this.staffService.createWorkOrder(id,dto);
   }
-/*
-  @UseGuards(JwtAuthGuard)
+
   @Patch("work-orders/:id/dispatch")
   @UsePipes(new ValidationPipe())
   dispatchWorker(
     @Param("id", ParseIntPipe) id: number,
-    @Body() dto: DispatchWorkOrderDto,
+    @Body() body: DispatchWorkerDto
   ) {
-    return this.staffService.dispatchWorker(id, dto);
+    return this.staffService.dispatchWorker(id, body);
   }
-
+/*
   @UseGuards(JwtAuthGuard)
   @Patch("work-orders/:id/remove-worker")
   @UsePipes(new ValidationPipe())

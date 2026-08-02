@@ -10,7 +10,6 @@ import { WorkerEntity } from './worker.entity'; // Adjust path as needed
 export enum OrderStatus {
     PENDING = "pending",
     ASSIGNED = "assigned",
-    IN_PROGRESS = "in_progress",
     TENANT_CONFIRMED = "tenant_confirmed", // Fixed slight typo: tanent -> tenant
     COMPLETE = "complete"
 }

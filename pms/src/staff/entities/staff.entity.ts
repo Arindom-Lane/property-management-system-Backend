@@ -22,6 +22,7 @@ export class StaffEntity {
   id: number;
 
   @Column()
+    
   name: string;
 
   @Column()

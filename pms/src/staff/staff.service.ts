@@ -113,6 +113,10 @@ constructor(
 
   }
 
+  async findAllWorkOrders(){
+    return await this.workOrderRepo.find();
+  }
+
 //   async loginStaff(dto: staffDto) {
 //     const staff = await this.staffRepo.findOne({
 //       where: { email: dto.email }

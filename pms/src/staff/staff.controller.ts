@@ -75,13 +75,13 @@ export class StaffController {
   deleteWorker(@Param("id", ParseIntPipe) id: number) {
     return this.staffService.deleteWorker(id);
   }
+*/
 
-  @UseGuards(JwtAuthGuard)
   @Get("work-orders")
   findAllWorkOrders() {
     return this.staffService.findAllWorkOrders();
   }
-
+/*
   @UseGuards(JwtAuthGuard)
   @Post("work-orders")
   @UsePipes(new ValidationPipe())

@@ -6,9 +6,9 @@ import { LandlordModule } from './landlord/landlord.module';
 import { TenantModule } from './tenant/tenant.module';
 import { StaffModule } from './staff/staff.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthService } from './auth/auth.service';
-import { AuthController } from './auth/auth.controller';
-import { AuthModule } from './auth/auth.module';
+import { staffAuthService } from './staff/StaffAuth/staffAuth.service';
+import { staffAuthController } from './staff/StaffAuth/staffAuth.controller';
+import { StaffAuthModule  } from './staff/StaffAuth/staffAuth.module';
 
 @Module({
   imports: [AdminModule, LandlordModule, TenantModule, StaffModule, TypeOrmModule.forRoot({
@@ -21,8 +21,8 @@ import { AuthModule } from './auth/auth.module';
     database: 'property_Management_system',
     autoLoadEntities: true,
     synchronize: true,
-  }), AuthModule,],
-  controllers: [AppController, AuthController],
-  providers: [AppService, AuthService],
+  }), StaffAuthModule ,],
+  controllers: [AppController, staffAuthController],
+  providers: [AppService, staffAuthService],
 })
 export class AppModule { }

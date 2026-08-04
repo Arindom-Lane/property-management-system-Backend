@@ -6,7 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 
 
 @Injectable()
-export class AuthService {
+export class staffAuthService {
   constructor(
     private readonly staffService: StaffService,
   private readonly jwtService: JwtService) {}

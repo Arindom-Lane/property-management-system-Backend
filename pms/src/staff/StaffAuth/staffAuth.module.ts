@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
+import {staffAuthService } from './staffAuth.service';
+import {staffAuthController } from './staffAuth.controller';
 import { StaffModule } from 'src/staff/staff.module';
 import { JwtModule, } from '@nestjs/jwt';
 import { jwtConstants } from './secret/jwt-secret';
@@ -11,8 +11,8 @@ import { jwtConstants } from './secret/jwt-secret';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '100d' },
     })],
-  providers: [AuthService],
-  controllers: [AuthController],
+  providers: [staffAuthService],
+  controllers: [staffAuthController],
 
 })
-export class AuthModule {}
+export class StaffAuthModule  {}

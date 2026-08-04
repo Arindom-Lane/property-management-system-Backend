@@ -15,6 +15,7 @@ import { TenantEntity } from "src/tenant/entities/tenant.entity";
 @Module({
   imports: [TypeOrmModule.forFeature([ReviewEntity,StaffEntity,WorkOrder,WorkerEntity,AdminEntity,IssueEntity,PropertyEntity,LandlordEntity,TenantEntity])],
   providers: [StaffService],
-  controllers: [StaffController]
+  controllers: [StaffController],
+  exports: [StaffService]
 })
 export class StaffModule {}

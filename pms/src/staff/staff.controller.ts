@@ -10,36 +10,39 @@ import {
   Put,
   UsePipes,
   ValidationPipe,
-} from "@nestjs/common";
+  UseGuards,
+} from '@nestjs/common';
 
 import { StaffService } from './staff.service';
-import { staffDto } from "./dto/staff.dto";
-import {CreateWorkOrderDto} from './dto/CreateWorkOrder.dto'
-import {DispatchWorkerDto} from './dto/DispatchWorkOrder.dto'
-import { CreateWorkerDto } from "./dto/CreateWorker.dto";
+import { staffDto } from './dto/staff.dto';
+import { CreateWorkOrderDto } from './dto/CreateWorkOrder.dto';
+import { DispatchWorkerDto } from './dto/DispatchWorkOrder.dto';
+import { CreateWorkerDto } from './dto/CreateWorker.dto';
+import { AuthGuard } from './StaffAuth/guard/auth.guard';
+//
 
 @Controller('staff')
 export class StaffController {
   constructor(private readonly staffService: StaffService) {}
 
+  @UseGuards(AuthGuard)
   @Post('createStaff')
   @UsePipes(new ValidationPipe())
   createStaff(@Body() dto: staffDto) {
     return this.staffService.createStaff(dto);
   }
 
-  
+  @UseGuards(AuthGuard)
   @Get('viewAllStaff')
   viewAllStaff() {
     return this.staffService.viewAllStaff();
   }
 
+  @UseGuards(AuthGuard)
   @Delete('/:staffId')
-  deleteStaff(@Param('staffId') id: number){
+  deleteStaff(@Param('staffId') id: number) {
     return this.staffService.deleteStaff(id);
   }
-
-  
 
   /*
   @Post("loginStaff")
@@ -53,12 +56,17 @@ export class StaffController {
   //   return this.staffService.findStaff(id);
   // }
 */
-  @Post("/:staffId/workers")
+
+  @UseGuards(AuthGuard)
+  @Post('/:staffId/workers')
   @UsePipes(new ValidationPipe())
-  createWorker(@Body() dto: CreateWorkerDto,@Param('staffId') staffId: number) {
+  createWorker(
+    @Body() dto: CreateWorkerDto,
+    @Param('staffId') staffId: number,
+  ) {
     return this.staffService.createWorker(staffId, dto);
   }
-/*
+  /*
   @UseGuards(JwtAuthGuard)
   @Get("workers")
   findAllWorkers() {
@@ -81,26 +89,29 @@ export class StaffController {
   }
 */
 
-  @Get("work-orders")
+  @UseGuards(AuthGuard)
+  @Get('work-orders')
   findAllWorkOrders() {
     return this.staffService.findAllWorkOrders();
   }
 
-  @Post("work-orders/:id")
+  @UseGuards(AuthGuard)
+  @Post('work-orders/:id')
   @UsePipes(new ValidationPipe())
-  createWorkOrder(@Param('id') id:number,@Body() dto: CreateWorkOrderDto) {
-    return this.staffService.createWorkOrder(id,dto);
+  createWorkOrder(@Param('id') id: number, @Body() dto: CreateWorkOrderDto) {
+    return this.staffService.createWorkOrder(id, dto);
   }
 
-  @Patch("work-orders/:id/dispatch")
+  @UseGuards(AuthGuard)
+  @Patch('work-orders/:id/dispatch')
   @UsePipes(new ValidationPipe())
   dispatchWorker(
-    @Param("id", ParseIntPipe) id: number,
-    @Body() body: DispatchWorkerDto
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: DispatchWorkerDto,
   ) {
     return this.staffService.dispatchWorker(id, body);
   }
-/*
+  /*
   @UseGuards(JwtAuthGuard)
   @Patch("work-orders/:id/remove-worker")
   @UsePipes(new ValidationPipe())

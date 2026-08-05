@@ -38,7 +38,7 @@ export class LandlordEntity  {
     @ManyToOne(() => AdminEntity, (admin) => admin.id)
     created_by: AdminEntity;
 
-    @OneToMany(() => PropertyEntity, (property) => property.id)
+    @OneToMany(() => PropertyEntity, (property) => property.landlord)
     properties: PropertyEntity[];
 
     @OneToMany(() => TransactionEntity, (transaction) => transaction.id)

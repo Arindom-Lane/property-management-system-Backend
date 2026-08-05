@@ -1,5 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { LandlordDto } from './dto/landlord.dto';
+import type { UpdateLandlordDto } from './dto/update_landlord.dto';
 import { LandlordEntity } from './entities/landlord.entity';
 import { Repository } from 'typeorm/browser/repository/Repository.js';
 import { InjectRepository } from '@nestjs/typeorm/dist/common/typeorm.decorators';
@@ -45,5 +46,57 @@ constructor(
     }
 
 
+    //// update full profile
+
+    async updateLandlordProfile(id: number, UpdateLandlordDto: UpdateLandlordDto): Promise<LandlordEntity| null> {
+
+        const landlord = await this.landlordRepository.findOne({ where: { id } });
+
+        if (!landlord) {
+            throw new UnauthorizedException('Landlord not found');
+        }
+
+        await this.landlordRepository.update( { id, }, { ... UpdateLandlordDto });    
+        return this.landlordRepository.findOne({ where: { id:id } });
+       }
+
+
+       //////// update only password
+
+    async updateLandlordPassword(id: number, password_hash: string,newpassword:string): Promise<LandlordEntity> {
+        if (password_hash === newpassword) {
+            throw new UnauthorizedException('New password cannot be the same as the current password');
+        }
+
+        const landlord = await this.landlordRepository.findOne({ where: { id } });
+
+        if (!landlord) {
+            throw new UnauthorizedException('Landlord not found');
+        }
+
+        if (landlord.password_hash !== password_hash) {
+            throw new UnauthorizedException('Current password is incorrect');
+        }
+
+        landlord.password_hash = newpassword;
+        return this.landlordRepository.save(landlord);
+    }
+
+
+    //////  property
+
+    getLandlordProperties(id: number): Promise<LandlordEntity | null> {
+      const landlord = this.landlordRepository.findOne({
+        where: { id: id },
+        relations: { properties: true },
+      });
+      return landlord;
+    }
+
+    
+
+
 
 }
+
+

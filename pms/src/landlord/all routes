@@ -14,3 +14,29 @@ http://localhost:3000/landlord/register
 
 
 //   login //
+
+
+http://localhost:3000/landlord/login/:id
+
+
+
+//   update full profile // ( ja ja update korbe sei entity chan ge khali )
+
+http://localhost:3000/landlord/update/:id
+
+
+//   update only password // 
+
+http://localhost:3000/landlord/update_password/1
+
+{
+  "name": " Hossain",
+  "password_hash":"old pass",
+  "newpassword":"new pass"
+}
+
+
+// properties owned by landlord 
+
+http://localhost:3000/landlord/properties/:landlord_id
+

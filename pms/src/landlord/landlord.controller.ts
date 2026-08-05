@@ -1,7 +1,8 @@
-import { Controller, Post,Body, Get, Param } from '@nestjs/common';
+import { Controller, Post,Body, Get, Param, Put, Patch } from '@nestjs/common';
 import { LandlordService } from './landlord.service';
 import { LandlordEntity } from './entities/landlord.entity';
 import { LandlordDto } from './dto/landlord.dto';
+import type { UpdateLandlordDto } from './dto/update_landlord.dto';
 
 @Controller('landlord')
 export class LandlordController {
@@ -29,5 +30,28 @@ export class LandlordController {
         return this.landlordService.getLandlordProfile(id);
     }
 
+    //////// update full profile
+
+    @Put('update/:id')
+    updateLandlordProfile(@Param('id') id: number, @Body() UpdateLandlordDto: UpdateLandlordDto): Promise<LandlordEntity | null> {
+        return this.landlordService.updateLandlordProfile(id, UpdateLandlordDto);
+    }
+
+    //////// update only password
+
+    @Patch('update_password/:id')
+    updateLandlordPassword(@Param('id') id: number,@Body('name') name: string,@Body('password_hash') password_hash: string,@Body('newpassword') newpassword:string): Promise<LandlordEntity> {
+        return this.landlordService.updateLandlordPassword(id,password_hash,newpassword);
+    }
+
+
+    //////  proterty  
+
+    @Get('properties/:id')
+    getLandlordProperties(@Param('id') id: number): Promise<LandlordEntity | null> {
+        return this.landlordService.getLandlordProperties(id);
+    }
+
+    
 
 }

@@ -6,6 +6,7 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
+  OneToOne,
 } from 'typeorm';
 import { PropertyEntity } from 'src/landlord/entities/property.entity';
 import { LandlordEntity } from 'src/landlord/entities/landlord.entity';
@@ -50,7 +51,7 @@ export class TenantEntity {
   })
   status: TenantStatus;
 
-  @ManyToOne(() => PropertyEntity, { nullable: true })
+  @OneToOne(() => PropertyEntity, { nullable: true })
   @JoinColumn({ name: 'property_id' })
   property?: PropertyEntity | null;
 

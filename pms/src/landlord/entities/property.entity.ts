@@ -3,10 +3,12 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { LandlordEntity } from 'src/landlord/entities/landlord.entity';
 import { BuildingEntity } from 'src/admin/entities/building.entity';
+import { TenantEntity } from 'src/tenant/entities/tenant.entity';
 
 export enum ListingStatus {
   not_listed = 'not_listed',
@@ -56,4 +58,7 @@ export class PropertyEntity {
 
   @CreateDateColumn()
   created_at: Date;
+
+  @OneToOne(() => TenantEntity, (tenant) => tenant.property)
+  tenant: TenantEntity;
 }

@@ -1,30 +1,21 @@
-import { IsBoolean, IsDate, IsEnum, IsMobilePhone, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsDateString, IsEmail, IsEnum, IsMobilePhone, IsOptional, IsString } from 'class-validator';
 import { LandlordStatus } from '../entities/landlord.entity';
 
-
 export class LandlordDto {
+  @IsString()
+  name: string;
 
-    @IsString()
-    name: string;
+  @IsEmail()
+  email: string;
 
-    @IsString()
-    email: string;
+  @IsMobilePhone()
+  phone: string;
 
-    @IsMobilePhone()
-    Phone: string;
+  @IsString()
+  password_hash: string;
 
-    @IsString()
-    password_hash: string;
-
-
-    @IsEnum(LandlordStatus)
-    @IsString()
-    status: string;
-
-    @IsString()
-    created_by: string;
+  @IsEnum(LandlordStatus)
+  status: LandlordStatus;
 
 
-    @IsDate()
-    created_at: Date;
 }

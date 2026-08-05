@@ -1,0 +1,16 @@
+//     create // 
+
+
+http://localhost:3000/landlord/register
+
+{
+  "name": "mosabbir Hossain",
+  "email": "mosabbirhossain003@gmail.com",
+  "password_hash": "iomojijio",
+  "phone": "01714246425",
+  "address": "Dhaka, Bangladesh",
+  "status":"active"
+}
+
+
+//   login //

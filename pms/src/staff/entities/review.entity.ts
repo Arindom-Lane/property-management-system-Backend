@@ -1,26 +1,25 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne, ManyToMany, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne, ManyToOne, JoinColumn } from 'typeorm';
 import { WorkOrder } from './work_order.entity';
 import { TenantEntity } from 'src/tenant/entities/tenant.entity';
 
-@Entity('Review')
+@Entity('review')
 export class ReviewEntity {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    // Inverse side of the OneToOne relationship. 
-    // No @JoinColumn here, it lives on the WorkOrder.
-    @OneToOne(() => WorkOrder, workOrder => workOrder.review)
-    workOrder: WorkOrder;
+  @OneToOne(() => WorkOrder, (workOrder) => workOrder.review)
+  workOrder: WorkOrder;
 
-    @Column()
-    rating: string;
+  @Column()
+  rating: string;
 
-    @Column()
-    comment: string;
+  @Column({ nullable: true })
+  comment: string;
 
-    @CreateDateColumn()
-    created_at: Date;
+  @CreateDateColumn()
+  created_at: Date;
 
-    @ManyToOne(()=> TenantEntity, (tanent)=> tanent.id)
-    tanent: TenantEntity;
+  @ManyToOne(() => TenantEntity, (tenant) => tenant.reviews, { nullable: true })
+  @JoinColumn({ name: 'tenant_id' })
+  tenant?: TenantEntity | null;
 }

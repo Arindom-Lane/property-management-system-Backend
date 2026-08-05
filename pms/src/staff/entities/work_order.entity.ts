@@ -1,72 +1,85 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToOne,
+} from 'typeorm';
 import { ReviewEntity } from './review.entity';
-import { IssueEntity } from 'src/tenant/entities/issue.entity'; // Adjust path as needed
-import { PropertyEntity } from 'src/landlord/entities/property.entity'; // Adjust path as needed
-import { LandlordEntity } from 'src/landlord/entities/landlord.entity'; // Adjust path as needed
-import { TenantEntity } from 'src/tenant/entities/tenant.entity'; // Adjust path as needed
-import { StaffEntity } from './staff.entity'; // Adjust path as needed
-import { WorkerEntity } from './worker.entity'; // Adjust path as needed
+import { IssueEntity } from 'src/tenant/entities/issue.entity';
+import { PropertyEntity } from 'src/landlord/entities/property.entity';
+import { LandlordEntity } from 'src/landlord/entities/landlord.entity';
+import { TenantEntity } from 'src/tenant/entities/tenant.entity';
+import { StaffEntity } from './staff.entity';
+import { WorkerEntity } from './worker.entity';
 
 export enum OrderStatus {
-    PENDING = "pending",
-    ASSIGNED = "assigned",
-    TENANT_CONFIRMED = "tenant_confirmed", // Fixed slight typo: tanent -> tenant
-    COMPLETE = "complete"
+  PENDING = 'pending',
+  ASSIGNED = 'assigned',
+  TENANT_CONFIRMED = 'tenant_confirmed',
+  COMPLETE = 'complete',
 }
 
-@Entity('Work_Order')
+@Entity('work_order')
 export class WorkOrder {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    // --- Added relationships based on your comments ---
-    @ManyToOne(() => IssueEntity)
-    @JoinColumn({ name: 'issue_id' })
-    issue: IssueEntity;
+  @ManyToOne(() => IssueEntity)
+  @JoinColumn({ name: 'issue_id' })
+  issue: IssueEntity;
 
-    @ManyToOne(() => PropertyEntity)
-    @JoinColumn({ name: 'property_id' })
-    property: PropertyEntity;
+  @ManyToOne(() => PropertyEntity)
+  @JoinColumn({ name: 'property_id' })
+  property: PropertyEntity;
 
-    @ManyToOne(() => LandlordEntity)
-    @JoinColumn({ name: 'landlord_id' })
-    landlord: LandlordEntity;
+  @ManyToOne(() => LandlordEntity)
+  @JoinColumn({ name: 'landlord_id' })
+  landlord: LandlordEntity;
 
-    @ManyToOne(() => TenantEntity)
-    @JoinColumn({ name: 'tenant_id' })
-    tenant: TenantEntity;
+  @ManyToOne(() => TenantEntity, { nullable: true })
+  @JoinColumn({ name: 'tenant_id' })
+  tenant?: TenantEntity | null;
 
-    @ManyToOne(() => StaffEntity)
-    @JoinColumn({ name: 'staff_id' })
-    staff: StaffEntity;
+  @ManyToOne(() => StaffEntity)
+  @JoinColumn({ name: 'staff_id' })
+  staff: StaffEntity;
 
-    @ManyToOne(() => WorkerEntity)
-    @JoinColumn({ name: 'worker_id' })
-    worker: WorkerEntity;
+  @ManyToOne(() => WorkerEntity, { nullable: true })
+  @JoinColumn({ name: 'worker_id' })
+  worker?: WorkerEntity | null;
 
+  @OneToOne(() => ReviewEntity, (review) => review.workOrder, { cascade: true, nullable: true })
+  @JoinColumn({ name: 'review_id' })
+  review?: ReviewEntity | null;
 
-    @OneToOne(() => ReviewEntity, review => review.workOrder, {
-        cascade: true
-    })
-    @JoinColumn({ name: 'review_id' }) // JoinColumn belongs on the owning side
-    review: ReviewEntity;
+  @Column()
+  created_by_type: string;
 
-    @Column()
-    created_by_type: string;
+  @Column()
+  created_by_id: number;
 
-    @Column()
-    created_by_id: number;
+  @Column({
+    type: 'enum',
+    enum: OrderStatus,
+    default: OrderStatus.PENDING,
+  })
+  status: OrderStatus;
 
-    @Column({
-        type: "enum",
-        enum: OrderStatus,
-        default: OrderStatus.PENDING,
-    })
-    status: OrderStatus;
+  @CreateDateColumn()
+  created_at: Date;
 
-    @CreateDateColumn()
-    created_at: Date;
+  @Column({ type: 'timestamp', nullable: true })
+  completed_at?: Date;
 
-    @CreateDateColumn() // Usually completed_at is a standard @Column(type: 'timestamp', nullable: true), not a CreateDateColumn. 
-    completed_at?: Date;
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  labor_cost: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  materials_cost: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  additional_cost: number;
 }

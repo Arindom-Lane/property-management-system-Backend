@@ -46,5 +46,4 @@ export class LandlordEntity  {
 
     @CreateDateColumn()
     created_at: Date;
-
 }

@@ -1,16 +1,15 @@
-import { 
-  Entity, 
-  PrimaryGeneratedColumn, 
-  Column, 
-  CreateDateColumn, 
-  ManyToOne, 
-  JoinColumn, 
-  OneToMany
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { PropertyEntity } from 'src/landlord/entities/property.entity';
 import { LandlordEntity } from 'src/landlord/entities/landlord.entity';
 import { ReviewEntity } from 'src/staff/entities/review.entity';
-
 
 export enum TenantStatus {
   PENDING = 'PENDING',
@@ -51,20 +50,17 @@ export class TenantEntity {
   })
   status: TenantStatus;
 
-  // Nullable until approved
   @ManyToOne(() => PropertyEntity, { nullable: true })
   @JoinColumn({ name: 'property_id' })
-  property: PropertyEntity;
+  property?: PropertyEntity | null;
 
-  // FK pointing to Landlord.id, nullable
   @ManyToOne(() => LandlordEntity, { nullable: true })
   @JoinColumn({ name: 'approved_by' })
-  approved_by: LandlordEntity;
+  approved_by?: LandlordEntity | null;
 
   @CreateDateColumn()
   created_at: Date;
-  
-  @OneToMany(()=> ReviewEntity, (review)=> review.id)
-  @JoinColumn()
-  review: ReviewEntity;
+
+  @OneToMany(() => ReviewEntity, (review) => review.tenant)
+  reviews: ReviewEntity[];
 }

@@ -21,7 +21,7 @@ export class BuildingEntity  {
     created_by: AdminEntity;
 
     @OneToMany(() => PropertyEntity, (property) => property.building_id)
-    property: PropertyEntity[];
+    properties: PropertyEntity[];
 
     @CreateDateColumn()
     created_at: Date;

@@ -137,7 +137,10 @@ export class StaffService {
     const review = await this.reviewRepo.findOne({ where: { id } });
     if (!review) throw new NotFoundException('Review not found');
     await this.reviewRepo.delete(id);
-    return `${review.id} has been deleted`;
+    return {
+      message: 'Review successfully deleted',
+      deletedId: id,
+    };
   }
 
   async viewAllStaff() {
@@ -173,24 +176,25 @@ export class StaffService {
 
     // property must belong to landlord
     if (!property.landlord || property.landlord.id !== landlord.id) {
-      throw new BadRequestException('Property does not belong to provided landlord');
+      throw new BadRequestException('Property does not belong to landlord');
     }
 
     let tenant: TenantEntity | null = null;
     if (body.tenant_id) {
       tenant = await this.findTanent(body.tenant_id);
 
-      // tenant must belong to property
       if (!tenant.property || tenant.property.id !== property.id) {
-        throw new BadRequestException('Tenant is not associated with the provided property');
+        throw new BadRequestException(
+          'Tenant is not associated with the property',
+        );
       }
 
-      // tenant must be approved by provided landlord
       if (!tenant.approved_by || tenant.approved_by.id !== landlord.id) {
-        throw new BadRequestException('Tenant not approved by the provided landlord');
+        throw new BadRequestException(
+          'Tenant not approved by the provided landlord',
+        );
       }
 
-      // tenant status must be APPROVED
       if (tenant.status !== TenantStatus.APPROVED) {
         throw new BadRequestException('Tenant is not approved');
       }
@@ -216,16 +220,22 @@ export class StaffService {
   async loginStaff(dto: staffDto) {
     const staff = await this.staffRepo.findOne({ where: { email: dto.email } });
     if (!staff) throw new NotFoundException('Email not found');
-    const isPasswordCorrect = await bcrypt.compare(dto.password_hash, staff.password_hash);
+    const isPasswordCorrect = await bcrypt.compare(
+      dto.password_hash,
+      staff.password_hash,
+    );
     if (!isPasswordCorrect) throw new UnauthorizedException('Invalid password');
     return staff;
   }
 
-  async createWorker(staffId: number, data: CreateWorkerDto): Promise<WorkerEntity> {
+  async createWorker(
+    staffId: number,
+    data: CreateWorkerDto,
+  ): Promise<WorkerEntity> {
     const staff = await this.findStaff(staffId);
-
-    // prevent duplicate worker email
-    const exists = await this.workerRepo.findOne({ where: { email: data.email } });
+    const exists = await this.workerRepo.findOne({
+      where: { email: data.email },
+    });
     if (exists) throw new BadRequestException('Worker email already exists');
 
     const newWorker = this.workerRepo.create({
@@ -266,7 +276,10 @@ export class StaffService {
     const order = await this.findWOrkOrder(workOrderId);
     const worker = await this.findWorker(dto.worker_id);
 
-    if (order.status === OrderStatus.COMPLETE || order.status === OrderStatus.TENANT_CONFIRMED) {
+    if (
+      order.status === OrderStatus.COMPLETE ||
+      order.status === OrderStatus.TENANT_CONFIRMED
+    ) {
       throw new BadRequestException('The order is already complete.');
     }
     if (order.status === OrderStatus.ASSIGNED || order.worker) {
@@ -296,7 +309,8 @@ export class StaffService {
     });
 
     if (!order) throw new NotFoundException('Order not found');
-    if (!order.worker) throw new BadRequestException('No worker is assigned to this work order');
+    if (!order.worker)
+      throw new BadRequestException('No worker is assigned to this work order');
 
     const workerId = order.worker.id;
     const otherActiveCount = await this.workOrderRepo.count({
@@ -309,7 +323,12 @@ export class StaffService {
 
     const worker = await this.workerRepo.findOne({ where: { id: workerId } });
     if (worker) {
-      worker.status = otherActiveCount === 0 ? WorkerStatus.FREE : WorkerStatus.BUSY;
+      if (otherActiveCount === 0) {
+        worker.status = WorkerStatus.FREE;
+      } else {
+        worker.status = WorkerStatus.BUSY;
+      }
+
       await this.workerRepo.save(worker);
     }
 
@@ -326,14 +345,17 @@ export class StaffService {
 
     if (!order) throw new NotFoundException('Work order not found');
 
-    order.labor_cost = (Number(order.labor_cost) || 0) + (dto.labor_cost || 0);
-    order.materials_cost = (Number(order.materials_cost) || 0) + (dto.materials_cost || 0);
-    order.additional_cost = (Number(order.additional_cost) || 0) + (dto.additional_cost || 0);
+    order.labor_cost += dto.labor_cost || 0;
+    order.materials_cost += dto.materials_cost || 0;
+    order.additional_cost += dto.additional_cost || 0;
+
     order.status = OrderStatus.COMPLETE;
     order.completed_at = new Date();
 
     if (order.worker) {
-      const worker = await this.workerRepo.findOne({ where: { id: order.worker.id } });
+      const worker = await this.workerRepo.findOne({
+        where: { id: order.worker.id },
+      });
       if (worker) {
         const otherActiveCount = await this.workOrderRepo.count({
           where: {
@@ -343,7 +365,11 @@ export class StaffService {
           },
         });
 
-        worker.status = otherActiveCount === 0 ? WorkerStatus.FREE : WorkerStatus.BUSY;
+        if (otherActiveCount === 0) {
+          worker.status = WorkerStatus.FREE;
+        } else {
+          worker.status = WorkerStatus.BUSY;
+        }
         await this.workerRepo.save(worker);
       }
     }
@@ -371,7 +397,11 @@ export class StaffService {
 
       const worker = await this.workerRepo.findOne({ where: { id: workerId } });
       if (worker) {
-        worker.status = otherActiveCount === 0 ? WorkerStatus.FREE : WorkerStatus.BUSY;
+        if (otherActiveCount === 0) {
+          worker.status = WorkerStatus.FREE;
+        } else {
+          worker.status = WorkerStatus.BUSY;
+        }
         await this.workerRepo.save(worker);
       }
     }
@@ -381,13 +411,21 @@ export class StaffService {
   }
 
   async getAllLandLoards() {
-    return await this.ladnlordRepo.find();
+    return await this.ladnlordRepo.find({
+      relations:{
+        properties: true,
+      }
+    });
   }
 
   async getReviewByOrder(id: number) {
-    const order = await this.workOrderRepo.findOne({ where: { id }, relations: { review: true } });
+    const order = await this.workOrderRepo.findOne({
+      where: { id },
+      relations: { review: true },
+    });
     if (!order) throw new NotFoundException(`Work order ${id} not found`);
-    if (!order.review) throw new NotFoundException(`Review for work order ${id} not found`);
+    if (!order.review)
+      throw new NotFoundException(`Review for work order ${id} not found`);
     return order.review;
   }
 }

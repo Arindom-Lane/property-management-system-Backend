@@ -1,49 +1,55 @@
 import { AdminEntity } from 'src/admin/entities/admin.entity';
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { PropertyEntity } from './property.entity';
 import { TransactionEntity } from './transaction.entity';
 
 export enum LandlordStatus {
-    active = 'active',
-    inactive = 'inactive',
+  active = 'active',
+  inactive = 'inactive',
 }
 
-
 @Entity('landlords')
+export class LandlordEntity {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-export class LandlordEntity  {
+  @Column()
+  name: string;
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  @Column({ unique: true })
+  email: string;
 
-    @Column()
-    name: string;
+  @Column()
+  phone: string;
 
-    @Column({ unique: true })
-    email: string;
+  @Column()
+  password_hash: string;
 
-    @Column()
-    phone: string;
+  @Column({
+    type: 'enum',
+    enum: LandlordStatus,
+    default: LandlordStatus.active,
+  })
+  status: LandlordStatus;
 
-    @Column()
-    password_hash: string;
+  @ManyToOne(() => AdminEntity, (admin) => admin.id)
+  created_by: AdminEntity;
 
-    @Column({
-        type: "enum",
-        enum: LandlordStatus,
-        default: LandlordStatus.active,
-    })
-    status: LandlordStatus;
+  @OneToMany(() => PropertyEntity, (property) => property.landlord)
+  properties: PropertyEntity[];
 
-    @ManyToOne(() => AdminEntity, (admin) => admin.id)
-    created_by: AdminEntity;
 
-    @OneToMany(() => PropertyEntity, (property) => property.id)
-    properties: PropertyEntity[];
+  @OneToMany(() => TransactionEntity, (transaction) => transaction.landlord)
+  transactions: TransactionEntity[];
 
-    @OneToMany(() => TransactionEntity, (transaction) => transaction.id)
-    transactions: TransactionEntity[];
-
-    @CreateDateColumn()
-    created_at: Date;
+  @CreateDateColumn()
+  created_at: Date;
 }

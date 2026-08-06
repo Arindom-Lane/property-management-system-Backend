@@ -30,10 +30,10 @@ export class PropertyEntity {
   @Column()
   unit_number: string;
 
-  @ManyToOne(() => BuildingEntity, (building) => building.id)
+  @ManyToOne(() => BuildingEntity, (building) => building.properties)
   building_id: BuildingEntity;
 
-  @ManyToOne(() => LandlordEntity, (landlord) => landlord.id)
+  @ManyToOne(() => LandlordEntity, (landlord) => landlord.properties)
   landlord: LandlordEntity;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })

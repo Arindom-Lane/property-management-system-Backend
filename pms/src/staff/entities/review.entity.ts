@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  OneToOne,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { WorkOrder } from './work_order.entity';
 import { TenantEntity } from 'src/tenant/entities/tenant.entity';
 
@@ -7,7 +15,10 @@ export class ReviewEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => WorkOrder, (workOrder) => workOrder.review)
+  @OneToOne(() => WorkOrder, (workOrder) => workOrder.review, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'work_order_id' })
   workOrder: WorkOrder;
 
   @Column()

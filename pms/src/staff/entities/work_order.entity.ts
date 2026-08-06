@@ -51,8 +51,7 @@ export class WorkOrder {
   @JoinColumn({ name: 'worker_id' })
   worker?: WorkerEntity | null;
 
-  @OneToOne(() => ReviewEntity, (review) => review.workOrder, { cascade: true, nullable: true })
-  @JoinColumn({ name: 'review_id' })
+  @OneToOne(() => ReviewEntity, (review) => review.workOrder, { nullable: true })
   review?: ReviewEntity | null;
 
   @Column()

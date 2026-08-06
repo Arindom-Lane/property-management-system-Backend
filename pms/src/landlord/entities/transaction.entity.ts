@@ -52,7 +52,7 @@ export class TransactionEntity {
     property_id: PropertyEntity;
 
     @ManyToOne(() => LandlordEntity, (landlord) => landlord.id)
-    landlord_id?: LandlordEntity;
+    landlord?: LandlordEntity;
 
     @ManyToOne(() => TenantEntity, (tanent) => tanent.id)
     tenant_id?: TenantEntity;

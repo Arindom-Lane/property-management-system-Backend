@@ -11,6 +11,7 @@ import { WorkOrder } from '../staff/entities/work_order.entity';
 @Module({
   imports:[TypeOrmModule.forFeature([LandlordEntity,PropertyEntity,TransactionEntity,TenantEntity,WorkOrder])],
   providers: [LandlordService],
-  controllers: [LandlordController]
+  controllers: [LandlordController],
+  exports: [LandlordService,TypeOrmModule]
 })
 export class LandlordModule {}

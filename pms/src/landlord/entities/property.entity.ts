@@ -11,6 +11,7 @@ import { LandlordEntity } from 'src/landlord/entities/landlord.entity';
 import { BuildingEntity } from 'src/admin/entities/building.entity';
 import { TenantEntity } from 'src/tenant/entities/tenant.entity';
 import { TransactionEntity } from './transaction.entity';
+import { PaymentEntity } from 'src/tenant/entities/payment.entity';
 
 export enum ListingStatus {
   not_listed = 'not_listed',
@@ -76,4 +77,7 @@ export class PropertyEntity {
 
   @OneToMany(() => TransactionEntity, (transaction) => transaction.property_id)
   transactions: TransactionEntity[];
+
+  @OneToMany(() => PaymentEntity, (payment) => payment.property)
+  payments: PaymentEntity[];
 }

@@ -539,12 +539,12 @@ async payRent(
 
   // return await this.paymentRepository.save(payment);
   const payment = this.paymentRepository.create({
-  ...dto,
-  tenant,
-  property: tenant.property ?? null,
-});
+    ...dto,
+    tenant,
+    ...(tenant.property ? { property: tenant.property } : {}),
+  });
 
-return await this.paymentRepository.save(payment);
+  return await this.paymentRepository.save(payment);
 }
 
 async getPayments(

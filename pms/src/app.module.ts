@@ -10,8 +10,10 @@ import { staffAuthService } from './staff/StaffAuth/staffAuth.service';
 import { staffAuthController } from './staff/StaffAuth/staffAuth.controller';
 import { StaffAuthModule  } from './staff/StaffAuth/staffAuth.module';
 
+import { AuthModule } from './auth/auth.module';
+import { MailModule } from './mail/mail.module';
 @Module({
-  imports: [AdminModule, LandlordModule, TenantModule, StaffModule, TypeOrmModule.forRoot({
+  imports: [AdminModule, LandlordModule, TenantModule, StaffModule, AuthModule, MailModule, TypeOrmModule.forRoot({
     type: 'postgres',
     host: 'localhost',
     port: 5432,

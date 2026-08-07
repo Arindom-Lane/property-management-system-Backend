@@ -6,14 +6,15 @@ import { LandlordModule } from './landlord/landlord.module';
 import { TenantModule } from './tenant/tenant.module';
 import { StaffModule } from './staff/staff.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
+import { AuthModule } from './auth/auth.module';
+import { MailModule } from './mail/mail.module';
 @Module({
-  imports: [AdminModule, LandlordModule, TenantModule, StaffModule, TypeOrmModule.forRoot({
+  imports: [AdminModule, LandlordModule, TenantModule, StaffModule, AuthModule, MailModule, TypeOrmModule.forRoot({
     type: 'postgres',
     host: 'localhost',
     port: 5432,
     username: 'postgres',
-    password: 'admin', // please keep the password: admin
+    password: '127415@@', // please keep the password: admin
     // admin is the default passowrd, keep it as is
     database: 'property_Management_system',
     autoLoadEntities: true,

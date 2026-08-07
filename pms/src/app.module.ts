@@ -16,7 +16,7 @@ import { StaffAuthModule  } from './staff/StaffAuth/staffAuth.module';
     host: 'localhost',
     port: 5432,
     username: 'postgres',
-    password: 'admin', // please keep the password: admin
+    password: '127415@@', // please keep the password: admin
     // admin is the default passowrd, keep it as is in the postgreSQL as well
     database: 'property_Management_system',
     autoLoadEntities: true,

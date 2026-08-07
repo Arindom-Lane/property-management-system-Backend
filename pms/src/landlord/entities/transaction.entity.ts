@@ -48,10 +48,10 @@ export class TransactionEntity {
     @Column({type: 'decimal'})
     amount: number;
 
-    @ManyToOne(() => PropertyEntity, (property) => property.id)
+    @ManyToOne(() => PropertyEntity, (property) => property.transactions)
     property_id: PropertyEntity;
 
-    @ManyToOne(() => LandlordEntity, (landlord) => landlord.id)
+    @ManyToOne(() => LandlordEntity, (landlord) => landlord.transactions)
     landlord?: LandlordEntity;
 
     @ManyToOne(() => TenantEntity, (tanent) => tanent.id)

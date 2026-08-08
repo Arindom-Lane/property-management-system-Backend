@@ -18,7 +18,7 @@ import { MailModule } from './mail/mail.module';
     host: 'localhost',
     port: 5432,
     username: 'postgres',
-    password: '127415@@', // please keep the password: admin
+    password: 'admin', // please keep the password: admin
     // admin is the default passowrd, keep it as is in the postgreSQL as well
     database: 'property_Management_system',
     autoLoadEntities: true,

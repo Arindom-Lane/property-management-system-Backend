@@ -21,8 +21,8 @@ import { UpdateTenantDto } from './dto/update-tenant.dto';
 import { CreateIssueDto } from './dto/create-issue.dto';
 import { UpdateIssueDto } from './dto/update-issue.dto';
 
-import { CreatePaymentDto } from './dto/create-payment.dto';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
+// import { CreatePaymentDto } from './dto/create-payment.dto';
+// import { UpdatePaymentDto } from './dto/update-payment.dto';
 
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -184,62 +184,63 @@ deleteTenantByEmail(
     return this.tenantService.deleteIssue(issueId);
   }
 
-  // ==========================
-// Pay Rent
-// ==========================
+//   // ==========================
+// // Pay Rent
+// // ==========================
 
-@Post(':id/pay-rent')
-@UsePipes(new ValidationPipe())
-payRent(
-  @Param('id', ParseIntPipe) id: number,
-  @Body() dto: CreatePaymentDto,
-) {
-  return this.tenantService.payRent(id, dto);
-}
+// @Post(':id/pay-rent')
+// @UsePipes(new ValidationPipe())
+// payRent(
+//   @Param('id', ParseIntPipe) id: number,
+//   @Body() dto: CreatePaymentDto,
+// ) {
+//   return this.tenantService.payRent(id, dto);
+// }
 
-// ==========================
-// Get Payments
-// ==========================
+// // ==========================
+// // Get Payments
+// // ==========================
 
-@Get(':id/payments')
-getPayments(
-  @Param('id', ParseIntPipe) id: number,
-) {
-  return this.tenantService.getPayments(id);
-}
+// @Get(':id/payments')
+// getPayments(
+//   @Param('id', ParseIntPipe) id: number,
+// ) {
+//   return this.tenantService.getPayments(id);
+// }
 
-// ==========================
-// Get Single Payment
-// ==========================
+// // ==========================
+// // Get Single Payment
+// // ==========================
 
-@Get('payment/:paymentId')
-getPaymentById(
-  @Param('paymentId', ParseIntPipe) paymentId: number,
-) {
-  return this.tenantService.getPaymentById(paymentId);
-}
+// @Get('payment/:paymentId')
+// getPaymentById(
+//   @Param('paymentId', ParseIntPipe) paymentId: number,
+// ) {
+//   return this.tenantService.getPaymentById(paymentId);
+// }
 
-// ==========================
-// Update Payment
-// ==========================
+// // ==========================
+// // Update Payment
+// // ==========================
+// //eta not needed, karon payment update korar dorkar nai, karon payment er status update hobe landlord er approval er por
+// @Patch('payment/:paymentId')
+// @UsePipes(new ValidationPipe())
+// updatePayment(
+//   @Param('paymentId', ParseIntPipe) paymentId: number,
+//   @Body() dto: UpdatePaymentDto,
+// ) {
+//   return this.tenantService.updatePayment(paymentId, dto);
+// }
 
-@Patch('payment/:paymentId')
-@UsePipes(new ValidationPipe())
-updatePayment(
-  @Param('paymentId', ParseIntPipe) paymentId: number,
-  @Body() dto: UpdatePaymentDto,
-) {
-  return this.tenantService.updatePayment(paymentId, dto);
-}
+// // ==========================
+// // Delete Payment
+// // ==========================
 
-// ==========================
-// Delete Payment
-// ==========================
-
-@Delete('payment/:paymentId')
-deletePayment(
-  @Param('paymentId', ParseIntPipe) paymentId: number,
-) {
-  return this.tenantService.deletePayment(paymentId);
-}
+// @Delete('payment/:paymentId')
+// deletePayment(
+//   @Param('paymentId', ParseIntPipe) paymentId: number,
+// ) {
+//   return this.tenantService.deletePayment(paymentId);
+// }
+// }
 }

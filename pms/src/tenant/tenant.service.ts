@@ -23,9 +23,9 @@ import { UpdateTenantDto } from './dto/update-tenant.dto';
 import { CreateIssueDto } from './dto/create-issue.dto';
 import { UpdateIssueDto } from './dto/update-issue.dto';
 
-import { PaymentEntity } from './entities/payment.entity';
-import { CreatePaymentDto } from './dto/create-payment.dto';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
+
+// import { CreatePaymentDto } from './dto/create-payment.dto';
+// import { UpdatePaymentDto } from './dto/update-payment.dto';
 
 import { JwtService } from '@nestjs/jwt';
 import { MailService } from 'src/mail/mail.service';
@@ -44,8 +44,7 @@ export class TenantService {
     @InjectRepository(LandlordEntity)
     private readonly landlordRepository: Repository<LandlordEntity>,
 
-    @InjectRepository(PaymentEntity)
-    private readonly paymentRepository: Repository<PaymentEntity>,
+    
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
   ) {}
@@ -493,149 +492,149 @@ async deleteIssue(
 
   await this.issueRepository.delete(issueId);
 }
-// ============================
-// Pay Rent
-// ============================
+// // ============================
+// // Pay Rent
+// // ============================
 
-async payRent(
-  tenantId: number,
-  dto: CreatePaymentDto,
-): Promise<PaymentEntity> {
+// async payRent(
+//   tenantId: number,
+//   dto: CreatePaymentDto,
+// ): Promise<PaymentEntity> {
 
-  const tenant = await this.tenantRepository.findOne({
-    where: { id: tenantId },
-    relations: {
-      property: true,
-    },
-  });
+//   const tenant = await this.tenantRepository.findOne({
+//     where: { id: tenantId },
+//     relations: {
+//       property: true,
+//     },
+//   });
 
-  if (!tenant) {
-    throw new NotFoundException('Tenant not found.');
-  }
+//   if (!tenant) {
+//     throw new NotFoundException('Tenant not found.');
+//   }
 
-  // if (!tenant.property) {
-  //   throw new BadRequestException(
-  //     'No property assigned.',
-  //   );
-  // }
+//   // if (!tenant.property) {
+//   //   throw new BadRequestException(
+//   //     'No property assigned.',
+//   //   );
+//   // }
 
-  const exists = await this.paymentRepository.findOne({
-    where: {
-      transaction_id: dto.transaction_id,
-    },
-  });
+//   const exists = await this.paymentRepository.findOne({
+//     where: {
+//       transaction_id: dto.transaction_id,
+//     },
+//   });
 
-  if (exists) {
-    throw new BadRequestException(
-      'Transaction ID already exists.',
-    );
-  }
+//   if (exists) {
+//     throw new BadRequestException(
+//       'Transaction ID already exists.',
+//     );
+//   }
 
-  // const payment = this.paymentRepository.create({
-  //   ...dto,
-  //   tenant,
-  //   property: tenant.property,
-  // });
+//   // const payment = this.paymentRepository.create({
+//   //   ...dto,
+//   //   tenant,
+//   //   property: tenant.property,
+//   // });
 
-  // return await this.paymentRepository.save(payment);
-  const payment = this.paymentRepository.create({
-  ...dto,
-  tenant,
-  property: tenant.property ?? null,
-});
+//   // return await this.paymentRepository.save(payment);
+//   const payment = this.paymentRepository.create({
+//   ...dto,
+//   tenant,
+//   property: tenant.property ?? null,
+// });
 
-return await this.paymentRepository.save(payment);
-}
+// return await this.paymentRepository.save(payment);
+// }
 
-async getPayments(
-  tenantId: number,
-): Promise<PaymentEntity[]> {
+// async getPayments(
+//   tenantId: number,
+// ): Promise<PaymentEntity[]> {
 
-  return await this.paymentRepository.find({
-    where: {
-      tenant: {
-        id: tenantId,
-      },
-    },
-  });
-}
+//   return await this.paymentRepository.find({
+//     where: {
+//       tenant: {
+//         id: tenantId,
+//       },
+//     },
+//   });
+// }
 
-async getPaymentById(
-  paymentId: number,
-): Promise<PaymentEntity> {
+// async getPaymentById(
+//   paymentId: number,
+// ): Promise<PaymentEntity> {
 
-  const payment = await this.paymentRepository.findOne({
-    where: {
-      id: paymentId,
-    },
-  });
+//   const payment = await this.paymentRepository.findOne({
+//     where: {
+//       id: paymentId,
+//     },
+//   });
 
-  if (!payment) {
-    throw new NotFoundException(
-      'Payment not found.',
-    );
-  }
+//   if (!payment) {
+//     throw new NotFoundException(
+//       'Payment not found.',
+//     );
+//   }
 
-  return payment;
-  //   // id: payment.id,
-  //   // tenant: {
-  //     id: payment.tenant.id,
-  //     name: payment.tenant.name,
-  //     phone: payment.tenant.phone,
-  //   // },
-  // }
+//   return payment;
+//   //   // id: payment.id,
+//   //   // tenant: {
+//   //     id: payment.tenant.id,
+//   //     name: payment.tenant.name,
+//   //     phone: payment.tenant.phone,
+//   //   // },
+//   // }
   
   
-}
+// }
 
-// Update Payment
+// // Update Payment
 
 
-async updatePayment(
-  paymentId: number,
-  dto: UpdatePaymentDto,
-): Promise<PaymentEntity> {
+// async updatePayment(
+//   paymentId: number,
+//   dto: UpdatePaymentDto,
+// ): Promise<PaymentEntity> {
 
-  const payment = await this.paymentRepository.findOne({
-    where: {
-      id: paymentId,
-    },
-  });
+//   const payment = await this.paymentRepository.findOne({
+//     where: {
+//       id: paymentId,
+//     },
+//   });
 
-  if (!payment) {
-    throw new NotFoundException(
-      'Payment not found.',
-    );
-  }
+//   if (!payment) {
+//     throw new NotFoundException(
+//       'Payment not found.',
+//     );
+//   }
 
-  Object.assign(payment, dto);
+//   Object.assign(payment, dto);
 
-  return await this.paymentRepository.save(payment);
-}
-// ============================
-// Delete Payment
-// ============================
+//   return await this.paymentRepository.save(payment);
+// }
+// // ============================
+// // Delete Payment
+// // ============================
 
-async deletePayment(
-  paymentId: number,
-): Promise<{ message: string }> {
+// async deletePayment(
+//   paymentId: number,
+// ): Promise<{ message: string }> {
 
-  const payment = await this.paymentRepository.findOne({
-    where: {
-      id: paymentId,
-    },
-  });
+//   const payment = await this.paymentRepository.findOne({
+//     where: {
+//       id: paymentId,
+//     },
+//   });
 
-  if (!payment) {
-    throw new NotFoundException(
-      'Payment not found.',
-    );
-  }
+//   if (!payment) {
+//     throw new NotFoundException(
+//       'Payment not found.',
+//     );
+//   }
 
-  await this.paymentRepository.delete(paymentId);
+//   await this.paymentRepository.delete(paymentId);
 
-  return {
-    message: 'Payment deleted successfully.',
-  };
-}
-}
+//   return {
+//     message: 'Payment deleted successfully.',
+//   };
+// }
+ }

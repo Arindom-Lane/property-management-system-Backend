@@ -7,7 +7,6 @@ import { TenantEntity } from './entities/tenant.entity';
 import { IssueEntity } from './entities/issue.entity';
 import { PropertyEntity } from 'src/landlord/entities/property.entity';
 import { LandlordEntity } from 'src/landlord/entities/landlord.entity';
-import { PaymentEntity } from './entities/payment.entity';
 
 import { JwtModule } from '@nestjs/jwt';    
 
@@ -20,7 +19,6 @@ import { MailModule } from 'src/mail/mail.module';
     TypeOrmModule.forFeature([
       TenantEntity,
       IssueEntity,
-      PaymentEntity,
       PropertyEntity,
       LandlordEntity,
     ]),

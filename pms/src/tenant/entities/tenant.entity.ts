@@ -13,7 +13,7 @@ import { PropertyEntity } from 'src/landlord/entities/property.entity';
 import { LandlordEntity } from 'src/landlord/entities/landlord.entity';
 import { ReviewEntity } from 'src/staff/entities/review.entity';
 import { IssueEntity } from './issue.entity';
-import { PaymentEntity } from './payment.entity';
+// import { PaymentEntity } from './payment.entity';
 
 export enum TenantStatus {
   PENDING = 'PENDING',
@@ -78,11 +78,11 @@ export class TenantEntity {
   })
   issues: IssueEntity[];
    
-  @OneToMany(
-  () => PaymentEntity,
-  (payment) => payment.tenant,
-)
-payments: PaymentEntity[];
+//   @OneToMany(
+//   () => PaymentEntity,
+//   (payment) => payment.tenant,
+// )
+// payments: PaymentEntity[];
 
   @CreateDateColumn()
   created_at: Date;

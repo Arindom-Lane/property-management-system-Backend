@@ -1,13 +1,14 @@
-import { 
-  Entity, 
-  PrimaryGeneratedColumn, 
-  Column, 
-  CreateDateColumn, 
-  ManyToOne, 
-  JoinColumn 
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
-import { TenantEntity } from './tenant.entity';   // Adjust import path
-import { PropertyEntity } from '../../landlord/entities/property.entity'; // Adjust import path
+
+import { TenantEntity } from './tenant.entity';
+import { PropertyEntity } from 'src/landlord/entities/property.entity';
 
 export enum IssueStatus {
   OPEN = 'OPEN',
@@ -20,18 +21,28 @@ export class IssueEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => TenantEntity)
+  @ManyToOne(() => TenantEntity, (tenant) => tenant.issues, {
+    onDelete: 'CASCADE',
+    eager: true,
+  })
   @JoinColumn({ name: 'tenant_id' })
   tenant: TenantEntity;
 
-  @ManyToOne(() => PropertyEntity)
+  @ManyToOne(() => PropertyEntity, {
+    nullable: true,
+    eager: true,
+  })
   @JoinColumn({ name: 'property_id' })
   property: PropertyEntity;
 
-  @Column()
+  @Column({
+    type: 'text',
+  })
   description: string;
 
-  @Column({ nullable: true })
+  @Column({
+    nullable: true,
+  })
   image_url: string;
 
   @Column({

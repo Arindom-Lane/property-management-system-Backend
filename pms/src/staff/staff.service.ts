@@ -44,7 +44,7 @@ export class StaffService {
     private readonly ladnlordRepo: Repository<LandlordEntity>,
     @InjectRepository(TenantEntity)
     private readonly tanentRepo: Repository<TenantEntity>,
-  ) {}
+  ) { }
 
   async findAdmin(id: number) {
     const admin = await this.adminRepo.findOne({ where: { id } });
@@ -227,6 +227,10 @@ export class StaffService {
     if (!isPasswordCorrect) throw new UnauthorizedException('Invalid password');
     return staff;
   }
+  async findStaffByEmail(email: string) {
+    return await this.staffRepo.findOne({ where: { email } });
+  }
+
 
   async createWorker(
     staffId: number,
@@ -251,24 +255,35 @@ export class StaffService {
     return newWorker;
   }
 
-  async findStaffByEmail(email: string) {
-    return await this.staffRepo.findOne({ where: { email } });
-  }
 
   async findAllWorkers() {
     return await this.workerRepo.find({ relations: { created_by: true } });
   }
 
-  async updateWorkerName(id: number, updateWorkerDto: CreateWorkerDto) {
-    const { created_by, ...updateData } = updateWorkerDto as any;
-    await this.workerRepo.update(id, updateData);
+  async updateWorker(id: number, body: CreateWorkerDto) {
+    const worker = await this.findWorker(id);
+    if (body.name !== undefined) {
+      worker.name = body.name;
+    }
+
+    if (body.email !== undefined) {
+      worker.email = body.email;
+    }
+
+    if (body.phone !== undefined) {
+      worker.phone = body.phone;
+    }
+
+    await this.workerRepo.save(worker);
+
+    await this.workerRepo.save(worker);
     return await this.workerRepo.findOne({ where: { id } });
   }
 
   async deleteWorker(id: number) {
-    const worker = await this.workerRepo.findOne({ where: { id } });
+    const worker = await this.findWorker(id);
     if (!worker) throw new NotFoundException('Worker not found');
-    await this.workerRepo.delete(id);
+    await this.workerRepo.remove(worker);
     return { message: `${worker.name} has been deleted` };
   }
 
@@ -412,7 +427,7 @@ export class StaffService {
 
   async getAllLandLoards() {
     return await this.ladnlordRepo.find({
-      relations:{
+      relations: {
         properties: true,
       }
     });

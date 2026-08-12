@@ -10,6 +10,8 @@ import {
 } from 'typeorm';
 import { PropertyEntity } from './property.entity';
 import { TransactionEntity } from './transaction.entity';
+import { TenantEntity } from 'src/tenant/entities/tenant.entity';
+import { WorkOrder } from 'src/staff/entities/work_order.entity';
 
 export enum LandlordStatus {
   active = 'active',
@@ -40,15 +42,20 @@ export class LandlordEntity {
   })
   status: LandlordStatus;
 
-  @ManyToOne(() => AdminEntity, (admin) => admin.id)
+  @ManyToOne(() => AdminEntity, (admin) => admin.landlords)
   created_by: AdminEntity;
 
   @OneToMany(() => PropertyEntity, (property) => property.landlord)
   properties: PropertyEntity[];
 
+  @OneToMany(() => TenantEntity, (tenant) => tenant.approved_by)
+  tenants: TenantEntity[];
 
   @OneToMany(() => TransactionEntity, (transaction) => transaction.landlord)
   transactions: TransactionEntity[];
+
+  @OneToMany(() => WorkOrder, (workOrder) => workOrder.landlord)
+  workOrders: WorkOrder[];
 
   @CreateDateColumn()
   created_at: Date;

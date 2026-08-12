@@ -1,0 +1,544 @@
+I. ADMIN MODULE - POSTMAN
+
+Base URL: http://localhost:3000/admin
+
+1. Register Admin
+
+Method: POST
+
+URL: http://localhost:3000/admin/register
+
+Body:
+{
+    "name":"Admin",
+    "email":"admin@gmail.com",
+    "password":"1234"
+}
+
+2. Login Admin
+
+Method:POST
+
+URL: http://localhost:3000/admin/login
+
+Body:
+
+{
+    "email":"admin@gmail.com",
+    "password":"1234"
+}
+
+Response:
+{
+    "access_token":"JWT_TOKEN"
+}
+
+must Copy this token for access profile.
+
+Authorization:
+
+Example:
+
+Bearer eyJhbGciOiJIUzI1NiIsInR5cCI...
+
+3. Get Profile
+
+Method: GET
+
+URL: http://localhost:3000/admin/profile
+
+Headers:
+
+Authorization: Bearer JWT_TOKEN
+
+4. Update Profile
+
+Method: PATCH
+
+URL: http://localhost:3000/admin/profile
+
+Headers:
+Authorization: Bearer WT_TOKEN
+
+Body:
+{
+    "name":"Admin Updated",
+    "email":"adminupdated@gmail.com"
+}
+
+5. Change Password
+
+Method: PATCH
+
+URL: http://localhost:3000/admin/changepass
+
+Headers:
+Authorization: Bearer JWT_TOKEN
+
+Body:
+{
+    "oldPassword":"1234",
+    "newPassword":"5678"
+}
+
+6. Get All Admin
+
+Method: GET
+
+URL: http://localhost:3000/admin
+
+Headers:
+Authorization: Bearer JWT_TOKEN
+
+7. Search Admin
+
+Method: GET
+
+URL: Search By Name: http://localhost:3000/admin/search?keyword=Eyamin
+
+     Search By Email: http://localhost:3000/admin/search?keyword=eyamin@gmail.com
+
+Headers:
+Authorization: Bearer JWT_TOKEN
+
+8. Get Admin By ID
+
+Method: GET
+
+URL: http://localhost:3000/admin/1
+
+Headers:
+Authorization: Bearer JWT_TOKEN
+
+9. Delete Admin
+
+Method: DELETE
+
+URL: http://localhost:3000/admin/1
+
+Headers:
+Authorization: Bearer JWT_TOKEN
+
+END OF ADMIN MODULE
+-----------------------------------------------------------
+
+II. BLOCK MODULE - POSTMAN
+
+Base URL: http://localhost:3000/admin/block
+
+Authorization
+
+All APIs require: Authorization: Bearer JWT_TOKEN
+
+1. Create Block
+
+Method: POST
+
+URL: http://localhost:3000/admin/block
+
+Headers:
+Authorization: Bearer JWT_TOKEN
+
+Body:
+{
+    "name":"Block A",
+    "address":"Dhaka"
+}
+
+2. Get All Blocks
+
+Method: GET
+
+URL: http://localhost:3000/admin/block/allblocks
+
+3. Search Block
+
+Method: GET
+
+URL: Search By Name: http://localhost:3000/admin/block/search?keyword=BlockEyamin
+
+     Search By Address: http://localhost:3000/admin/block/search?keyword=Dhaka
+
+4. Get Block By ID
+
+Method: GET
+
+URL: http://localhost:3000/admin/block/1
+
+5. Update Block
+
+Method: PATCH
+
+URL: http://localhost:3000/admin/block/1
+
+Body:
+{
+    "name":"BlockEyaminUpdate",
+    "address":"Narayanganj"
+}
+
+6. Delete Block
+
+Method: DELETE
+
+URL: http://localhost:3000/admin/block/1
+
+END OF BLOCK MODULE
+------------------------------------------------------
+
+III. BUILDING MODULE - POSTMAN
+
+Base URL: http://localhost:3000/admin/building
+
+Authorization
+
+All APIs require: Authorization: Bearer JWT_TOKEN
+
+1. Create Building
+
+Method: POST
+
+URL: http://localhost:3000/admin/building
+
+Body:
+{
+    "name":"Building 1",
+    "blockId":1
+}
+
+2. Get All Buildings
+
+Method: GET
+
+URL: http://localhost:3000/admin/building/allbuildings
+
+3. Search Building
+
+Method: GET
+
+URL: Search By Name: http://localhost:3000/admin/building/search?keyword=BuildingEyamin
+
+4. Get Building By ID
+
+Method: GET
+
+URL: http://localhost:3000/admin/building/1
+
+5. Update Building
+
+Method: PATCH
+
+URL: http://localhost:3000/admin/building/1
+
+Body:
+{
+    "name":"Building Updated",
+    "blockId":1
+}
+
+6. Delete Building
+
+Method: DELETE
+
+URL: http://localhost:3000/admin/building/1
+
+END OF BUILDING MODULE
+-----------------------------------------------------
+
+IV. LANDLORD MODULE - POSTMAN
+
+Base URL: http://localhost:3000/admin/landlord
+
+Authorization
+
+All APIs require:
+Authorization: Bearer JWT_TOKEN
+
+1. Create Landlord
+
+Method: POST
+
+URL: http://localhost:3000/admin/landlord/create
+
+Body:
+{
+    "name":"Rahim",
+    "email":"rahim@gmail.com",
+    "phone":"01711111111",
+    "password":"1234"
+}
+
+2. Get All Landlords
+
+Method: GET
+
+URL: http://localhost:3000/admin/landlord/alllandlord
+
+3. Search Landlord
+
+Method: GET
+
+Search By Name: http://localhost:3000/admin/landlord/search?keyword=Rahim
+
+Search By Email: http://localhost:3000/admin/landlord/search?keyword=rahim@gmail.com
+
+Search By Phone: http://localhost:3000/admin/landlord/search?keyword=01711111111
+
+4. Get Landlord By ID
+
+Method: GET
+
+URL: http://localhost:3000/admin/landlord/find/1
+
+5. Update Landlord
+
+Method: PATCH
+
+URL: http://localhost:3000/admin/landlord/update/1
+
+Body:
+{
+    "name":"Rahim Updated",
+    "email":"rahimupdated@gmail.com",
+    "phone":"01888888888"
+}
+
+6. Delete Landlord
+
+Method: DELETE
+
+URL: http://localhost:3000/admin/landlord/delete/1
+
+END OF LANDLORD MODULE
+
+-----------------------------------------------------
+
+V. TENANT MODULE - POSTMAN
+
+Base URL: http://localhost:3000/admin/tenant
+
+Authorization
+
+All APIs require:
+Authorization: Bearer JWT_TOKEN
+
+1. Create Tenant
+
+Method: POST
+
+URL: http://localhost:3000/admin/tenant/create
+
+Body:
+{
+    "name":"Karim",
+    "email":"karim@gmail.com",
+    "phone":"01711111111",
+    "password":"1234",
+    "nid_number":"1234567890123",
+    "nid_document_url":"https://example.com/nid.pdf",
+    "has_vehicle":true
+}
+
+2. Get All Tenants
+
+Method: GET
+
+URL: http://localhost:3000/admin/tenant/alltenants
+
+3. Search Tenant
+
+Method: GET
+
+Search By Name: http://localhost:3000/admin/tenant/search?keyword=Karim
+
+Search By Email: http://localhost:3000/admin/tenant/search?keyword=karim@gmail.com
+
+Search By Phone: http://localhost:3000/admin/tenant/search?keyword=01711111111
+
+Search By NID: http://localhost:3000/admin/tenant/search?keyword=1234567890123
+
+4. Get Tenant By ID
+
+Method: GET
+
+URL: http://localhost:3000/admin/tenant/find/1
+
+5. Update Tenant
+
+Method: PATCH
+
+URL: http://localhost:3000/admin/tenant/update/1
+
+Body:
+{
+    "name":"Karim Updated",
+    "email":"karimupdated@gmail.com",
+    "phone":"01888888888",
+    "nid_number":"9876543210123",
+    "nid_document_url":"https://example.com/new_nid.pdf",
+    "has_vehicle":false
+}
+
+6. Delete Tenant
+
+Method: DELETE
+
+URL: http://localhost:3000/admin/tenant/delete/1
+
+END OF TENANT MODULE
+
+-----------------------------------------------------
+
+VI. STAFF MODULE - POSTMAN
+
+Base URL: http://localhost:3000/admin/staff
+
+Authorization
+
+All APIs require:
+Authorization: Bearer JWT_TOKEN
+
+1. Create Staff
+
+Method: POST
+
+URL: http://localhost:3000/admin/staff/create
+
+Body:
+{
+    "name":"John",
+    "email":"john@gmail.com",
+    "phone":"01712345678",
+    "password":"1234"
+}
+
+2. Get All Staff
+
+Method: GET
+
+URL: http://localhost:3000/admin/staff/allstaff
+
+3. Search Staff
+
+Method: GET
+
+Search By Name: http://localhost:3000/admin/staff/search?keyword=John
+
+Search By Email: http://localhost:3000/admin/staff/search?keyword=john@gmail.com
+
+Search By Phone: http://localhost:3000/admin/staff/search?keyword=01712345678
+
+4. Get Staff By ID
+
+Method: GET
+
+URL: http://localhost:3000/admin/staff/find/1
+
+5. Update Staff
+
+Method: PATCH
+
+URL: http://localhost:3000/admin/staff/update/1
+
+Body:
+{
+    "name":"John Updated",
+    "email":"johnupdated@gmail.com",
+    "phone":"01888888888"
+}
+
+6. Delete Staff
+
+Method: DELETE
+
+URL: http://localhost:3000/admin/staff/delete/1
+
+END OF STAFF MODULE
+
+-----------------------------------------------------
+
+
+VII. PROPERTY MODULE - POSTMAN
+
+Base URL: http://localhost:3000/admin/property
+
+Authorization
+All APIs require: Authorization: Bearer JWT_TOKEN
+
+1. Create Property
+
+Method: POST
+
+URL: http://localhost:3000/admin/property/create
+
+Body:
+{
+    "unit_number":"A-101",
+    "buildingId":1,
+    "landlordId":1,
+    "rent_amount":15000,
+    "service_charge":2000,
+    "has_parking":true,
+    "parking_fee":1000,
+    "listing_status":"for_rent",
+    "status":"vacant"
+}
+Note:
+listing_status values:
+- not_listed
+- for_rent
+- for_sale
+
+status values:
+- vacant
+- occupied
+- sold
+
+2. Get All Properties
+
+Method: GET
+
+URL: http://localhost:3000/admin/property/allproperties
+
+3. Search Property
+
+Method: GET
+
+Search By Unit Number: http://localhost:3000/admin/property/search?keyword=A-101
+
+Search By Created By: http://localhost:3000/admin/property/search?keyword=Admin
+
+4. Get Property By ID
+
+Method: GET
+
+URL: http://localhost:3000/admin/property/find/1
+
+5. Update Property
+
+Method: PATCH
+
+URL: http://localhost:3000/admin/property/update/1
+
+Body:
+{
+    "unit_number":"A-102",
+    "buildingId":1,
+    "landlordId":1,
+    "rent_amount":18000,
+    "service_charge":2500,
+    "has_parking":true,
+    "parking_fee":1200,
+    "listing_status":"for_sale",
+    "status":"occupied"
+}
+
+6. Delete Property
+
+Method: DELETE
+
+URL: http://localhost:3000/admin/property/delete/1
+
+END OF PROPERTY MODULE
+
+-----------------------------------------------------

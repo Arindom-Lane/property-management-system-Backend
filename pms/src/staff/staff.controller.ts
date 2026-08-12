@@ -24,6 +24,8 @@ import { AuthGuard } from './StaffAuth/guard/auth.guard';
 export class StaffController {
   constructor(private readonly staffService: StaffService) {}
 
+  //staff entity
+
   @UseGuards(AuthGuard)
   @Post('createStaff')
   @UsePipes(new ValidationPipe())
@@ -49,6 +51,8 @@ export class StaffController {
     return this.staffService.findStaff(id);
   }
 
+  // STAFF's ACTUAL WORK
+
   @UseGuards(AuthGuard)
   @Post('/:staffId/workers')
   @UsePipes(new ValidationPipe())
@@ -68,11 +72,11 @@ export class StaffController {
   @UseGuards(AuthGuard)
   @Patch('workers/:id')
   @UsePipes(new ValidationPipe())
-  updateWorkerName(
+  updateWorker(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: CreateWorkerDto,
   ) {
-    return this.staffService.updateWorkerName(id, dto);
+    return this.staffService.updateWorker(id, dto);
   }
 
   @UseGuards(AuthGuard)

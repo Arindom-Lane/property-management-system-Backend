@@ -145,7 +145,7 @@ export class StaffController {
     return this.staffService.getReviewByOrder(id);
   }
 
-  // @UseGuards(AuthGuard)
+
   @Delete('deleteReview/:id')
   deleteReview(@Param('id', ParseIntPipe) id: number) {
     return this.staffService.deleteReview(id);

@@ -11,7 +11,7 @@ import { LandlordEntity } from 'src/landlord/entities/landlord.entity';
 import { BuildingEntity } from 'src/admin/entities/building.entity';
 import { TenantEntity } from 'src/tenant/entities/tenant.entity';
 import { TransactionEntity } from './transaction.entity';
-
+import { WorkOrder } from '../../staff/entities/work_order.entity'; 
 
 export enum ListingStatus {
   not_listed = 'not_listed',
@@ -74,9 +74,9 @@ export class PropertyEntity {
   @OneToOne(() => TenantEntity, (tenant) => tenant.property)
   tenant?: TenantEntity;
 
-
   @OneToMany(() => TransactionEntity, (transaction) => transaction.property_id)
   transactions: TransactionEntity[];
 
- 
+  @OneToMany(() => WorkOrder, (workOrder) => workOrder.property)
+  workOrders: WorkOrder[];
 }

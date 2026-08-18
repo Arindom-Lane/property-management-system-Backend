@@ -7,7 +7,16 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Not, In, Between, Like, IsNull, MoreThanOrEqual, LessThanOrEqual } from 'typeorm';
+import {
+  Repository,
+  Not,
+  In,
+  Between,
+  Like,
+  IsNull,
+  MoreThanOrEqual,
+  LessThanOrEqual,
+} from 'typeorm';
 import { staffDto } from './dto/staff.dto';
 import { WorkerEntity, WorkerStatus } from './entities/worker.entity';
 import { WorkOrder, OrderStatus } from './entities/work_order.entity';
@@ -17,8 +26,15 @@ import * as bcrypt from 'bcrypt';
 import { AdminEntity } from 'src/admin/entities/admin.entity';
 import { CreateWorkOrderDto } from './dto/CreateWorkOrder.dto';
 import { IssueEntity, IssueStatus } from 'src/tenant/entities/issue.entity';
-import { PropertyEntity, Status as PropertyStatus, ListingStatus } from 'src/landlord/entities/property.entity';
-import { LandlordEntity, LandlordStatus } from 'src/landlord/entities/landlord.entity';
+import {
+  PropertyEntity,
+  Status as PropertyStatus,
+  ListingStatus,
+} from 'src/landlord/entities/property.entity';
+import {
+  LandlordEntity,
+  LandlordStatus,
+} from 'src/landlord/entities/landlord.entity';
 import { TenantEntity, TenantStatus } from 'src/tenant/entities/tenant.entity';
 import { DispatchWorkerDto } from './dto/DispatchWorkOrder.dto';
 import { CreateWorkerDto } from './dto/CreateWorker.dto';
@@ -31,7 +47,13 @@ import { FilterWorkerDto } from './dto/FilterWorker.dto';
 //import { FilterTransactionDto } from './dto/FilterTransactionDto';
 import { IssueStatusDto } from './dto/IssueStatus.dto';
 import { ConvertIssueDto } from './dto/ConvertIssue.dto';
-import { TransactionEntity, Trnsaction_type, payer_type, status as TxnStatus, created_by_type } from 'src/landlord/entities/transaction.entity';
+import {
+  TransactionEntity,
+  Trnsaction_type,
+  payer_type,
+  status as TxnStatus,
+  created_by_type,
+} from 'src/landlord/entities/transaction.entity';
 import { BlockEntity } from 'src/admin/entities/block.entity';
 import { BuildingEntity } from 'src/admin/entities/building.entity';
 
@@ -62,13 +84,21 @@ export class StaffService {
     private readonly blockRepo: Repository<BlockEntity>,
     @InjectRepository(BuildingEntity)
     private readonly buildingRepo: Repository<BuildingEntity>,
-  ) { }
+  ) {}
 
   // ==========================================
   // PRIVATE HELPERS (FINDERS)
   // ==========================================
   async findAdmin(id: number) {
-    const admin = await this.adminRepo.findOne({ where: { id }, relations: { landlords: true, staff: true, blocks: true, buildings: true } });
+    const admin = await this.adminRepo.findOne({
+      where: { id },
+      relations: {
+        landlords: true,
+        staff: true,
+        blocks: true,
+        buildings: true,
+      },
+    });
     if (!admin) throw new NotFoundException('Admin not found!');
     return admin;
   }
@@ -91,7 +121,10 @@ export class StaffService {
   }
 
   async findStaff(id: number) {
-    const staff = await this.staffRepo.findOne({ where: { id }, relations: { created_by: true } });
+    const staff = await this.staffRepo.findOne({
+      where: { id },
+      relations: { created_by: true },
+    });
     if (!staff) throw new NotFoundException('Staff not found!');
     return staff;
   }
@@ -108,14 +141,22 @@ export class StaffService {
   async findProperty(id: number) {
     const property = await this.propertyRepo.findOne({
       where: { id },
-      relations: { landlord: true, tenant: true, transactions: true, workOrders: { worker: true, review: true } },
+      relations: {
+        landlord: true,
+        tenant: true,
+        transactions: true,
+        workOrders: { worker: true, review: true },
+      },
     });
     if (!property) throw new NotFoundException('Property not found!');
     return property;
   }
 
   async findLandlord(id: number) {
-    const landlord = await this.landlordRepo.findOne({ where: { id }, relations: { properties: true, tenants: true } });
+    const landlord = await this.landlordRepo.findOne({
+      where: { id },
+      relations: { properties: true, tenants: true },
+    });
     if (!landlord) throw new NotFoundException('Landlord not found!');
     return landlord;
   }
@@ -123,7 +164,12 @@ export class StaffService {
   async findTanent(id: number) {
     const tenant = await this.tenantRepo.findOne({
       where: { id },
-      relations: { property: { landlord: true }, approved_by: true, issues: true, reviews: true },
+      relations: {
+        property: { landlord: true },
+        approved_by: true,
+        issues: true,
+        reviews: true,
+      },
     });
     if (!tenant) throw new NotFoundException('Tenant not found!');
     return tenant;
@@ -132,20 +178,29 @@ export class StaffService {
   async findWorker(id: number) {
     const worker = await this.workerRepo.findOne({
       where: { id },
-      relations: { created_by: true, workOrders: { property: { landlord: true }, review: true } },
+      relations: {
+        created_by: true,
+        workOrders: { property: { landlord: true }, review: true },
+      },
     });
     if (!worker) throw new NotFoundException('Worker not found!');
     return worker;
   }
 
   async findBuilding(id: number) {
-    const building = await this.buildingRepo.findOne({ where: { id }, relations: { block: true, properties: true, created_by: true } });
+    const building = await this.buildingRepo.findOne({
+      where: { id },
+      relations: { properties: true, created_by: true },
+    });
     if (!building) throw new NotFoundException('Building not found!');
     return building;
   }
 
   async findBlock(id: number) {
-    const block = await this.blockRepo.findOne({ where: { id }, relations: { created_by: true, building: true } });
+    const block = await this.blockRepo.findOne({
+      where: { id },
+      relations: { created_by: true, building: true },
+    });
     if (!block) throw new NotFoundException('Block not found!');
     return block;
   }
@@ -178,7 +233,10 @@ export class StaffService {
   async loginStaff(dto: staffDto) {
     const staff = await this.staffRepo.findOne({ where: { email: dto.email } });
     if (!staff) throw new NotFoundException('Email not found');
-    const isPasswordCorrect = await bcrypt.compare(dto.password_hash, staff.password_hash);
+    const isPasswordCorrect = await bcrypt.compare(
+      dto.password_hash,
+      staff.password_hash,
+    );
     if (!isPasswordCorrect) throw new UnauthorizedException('Invalid password');
     return staff;
   }
@@ -226,7 +284,9 @@ export class StaffService {
       this.workOrderRepo.count(),
       this.workOrderRepo.count({ where: { status: OrderStatus.PENDING } }),
       this.workOrderRepo.count({ where: { status: OrderStatus.ASSIGNED } }),
-      this.workOrderRepo.count({ where: { status: OrderStatus.TENANT_CONFIRMED } }),
+      this.workOrderRepo.count({
+        where: { status: OrderStatus.TENANT_CONFIRMED },
+      }),
       this.workOrderRepo.count({ where: { status: OrderStatus.COMPLETE } }),
       this.workerRepo.count(),
       this.workerRepo.count({ where: { status: WorkerStatus.FREE } }),
@@ -257,20 +317,39 @@ export class StaffService {
     const monthlyRent = await this.transactionRepo
       .createQueryBuilder('txn')
       .select('SUM(txn.amount)', 'total')
-      .where('txn.type IN (:...types)', { types: [Trnsaction_type.rent, Trnsaction_type.service_charge, Trnsaction_type.parking] })
+      .where('txn.type IN (:...types)', {
+        types: [
+          Trnsaction_type.rent,
+          Trnsaction_type.service_charge,
+          Trnsaction_type.parking,
+        ],
+      })
       .andWhere('txn.status = :status', { status: TxnStatus.paid })
       .andWhere('txn.paid_at >= :date', { date: startOfMonth })
       .getRawOne();
 
     return {
-      workOrders: { total: totalWorkOrders, pending: pendingWorkOrders, assigned: assignedWorkOrders, inProgress: inProgressWorkOrders, completed: completedWorkOrders },
+      workOrders: {
+        total: totalWorkOrders,
+        pending: pendingWorkOrders,
+        assigned: assignedWorkOrders,
+        inProgress: inProgressWorkOrders,
+        completed: completedWorkOrders,
+      },
       workers: { total: totalWorkers, free: freeWorkers, busy: busyWorkers },
       issues: { open: openIssues, inProgress: inProgressIssues },
-      properties: { total: totalProperties, occupied: occupiedProperties, vacant: vacantProperties },
+      properties: {
+        total: totalProperties,
+        occupied: occupiedProperties,
+        vacant: vacantProperties,
+      },
       landlords: { total: totalLandlords },
       tenants: { total: totalTenants },
       hierarchy: { blocks: totalBlocks, buildings: totalBuildings },
-      financials: { monthlyWorkOrderRevenue: parseFloat(monthlyRevenue?.total || '0'), monthlyRentCollected: parseFloat(monthlyRent?.total || '0') },
+      financials: {
+        monthlyWorkOrderRevenue: parseFloat(monthlyRevenue?.total || '0'),
+        monthlyRentCollected: parseFloat(monthlyRent?.total || '0'),
+      },
     };
   }
 
@@ -278,24 +357,46 @@ export class StaffService {
     await this.findStaff(staffId);
 
     // Worker Workload
-    const workers = await this.workerRepo.find({ relations: { workOrders: true } });
-    const workerLoad = workers.map(w => ({
-      id: w.id, name: w.name, area: w.worker_area, status: w.status,
-      activeOrders: w.workOrders.filter(wo => wo.status !== OrderStatus.COMPLETE).length,
-      completedOrders: w.workOrders.filter(wo => wo.status === OrderStatus.COMPLETE).length,
+    const workers = await this.workerRepo.find({
+      relations: { workOrders: true },
+    });
+    const workerLoad = workers.map((w) => ({
+      id: w.id,
+      name: w.name,
+      area: w.worker_area,
+      status: w.status,
+      activeOrders: w.workOrders.filter(
+        (wo) => wo.status !== OrderStatus.COMPLETE,
+      ).length,
+      completedOrders: w.workOrders.filter(
+        (wo) => wo.status === OrderStatus.COMPLETE,
+      ).length,
     }));
 
     // Property Workload (Vacant/Occupied + Open Orders/Issues)
-    const properties = await this.propertyRepo.find({ relations: { workOrders: true, issues: true, building: { block: true } } });
+    const properties = await this.propertyRepo.find({
+      relations: { workOrders: true, issues: true, building: true },
+    });
     const propertyLoad = properties
-      .map(p => ({
-        id: p.id, unit: p.unit_number, building: p.building?.name, block: p.building?.block?.name,
-        status: p.status, listing: p.listing_status,
-        openWorkOrders: p.workOrders.filter(wo => wo.status !== OrderStatus.COMPLETE).length,
-        openIssues: p.issues.filter(i => i.status !== IssueStatus.RESOLVED).length,
+      .map((p) => ({
+        id: p.id,
+        unit: p.unit_number,
+        building: p.building?.name,
+        status: p.status,
+        listing: p.listing_status,
+        openWorkOrders: p.workOrders.filter(
+          (wo) => wo.status !== OrderStatus.COMPLETE,
+        ).length,
+        openIssues: p.issues.filter((i) => i.status !== IssueStatus.RESOLVED)
+          .length,
         currentTenant: p.tenant?.name || 'Vacant',
       }))
-      .filter(p => p.openWorkOrders > 0 || p.openIssues > 0 || p.status === PropertyStatus.VACANT);
+      .filter(
+        (p) =>
+          p.openWorkOrders > 0 ||
+          p.openIssues > 0 ||
+          p.status === PropertyStatus.VACANT,
+      );
 
     return { workerLoad, propertyLoad };
   }
@@ -303,29 +404,52 @@ export class StaffService {
   // ==========================================
   // WORKER MANAGEMENT
   // ==========================================
-  async createWorker(staffId: number, data: CreateWorkerDto): Promise<WorkerEntity> {
+  async createWorker(
+    staffId: number,
+    data: CreateWorkerDto,
+  ): Promise<WorkerEntity> {
     const staff = await this.findStaff(staffId);
-    const exists = await this.workerRepo.findOne({ where: { email: data.email } });
+    const exists = await this.workerRepo.findOne({
+      where: { email: data.email },
+    });
     if (exists) throw new BadRequestException('Worker email already exists');
 
     const newWorker = this.workerRepo.create({
-      name: data.name, email: data.email, phone: data.phone,
-      worker_area: data.worker_area, status: data.status ?? WorkerStatus.FREE, created_by: staff,
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      worker_area: data.worker_area,
+      status: data.status ?? WorkerStatus.FREE,
+      created_by: staff,
     });
     await this.workerRepo.save(newWorker);
     return newWorker;
   }
 
   async findAllWorkers(filterDto: FilterWorkerDto) {
-    const { status, area, search, page = 1, limit = 10, sortBy = 'created_at', sortOrder = 'DESC' } = filterDto;
-    const qb = this.workerRepo.createQueryBuilder('worker')
+    const {
+      status,
+      area,
+      search,
+      page = 1,
+      limit = 10,
+      sortBy = 'created_at',
+      sortOrder = 'DESC',
+    } = filterDto;
+    const qb = this.workerRepo
+      .createQueryBuilder('worker')
       .leftJoinAndSelect('worker.created_by', 'staff')
-      .skip((page - 1) * limit).take(limit)
+      .skip((page - 1) * limit)
+      .take(limit)
       .orderBy(`worker.${sortBy}`, sortOrder);
 
     if (status) qb.andWhere('worker.status = :status', { status });
     if (area) qb.andWhere('worker.worker_area = :area', { area });
-    if (search) qb.andWhere('(worker.name ILIKE :search OR worker.email ILIKE :search OR worker.phone ILIKE :search)', { search: `%${search}%` });
+    if (search)
+      qb.andWhere(
+        '(worker.name ILIKE :search OR worker.email ILIKE :search OR worker.phone ILIKE :search)',
+        { search: `%${search}%` },
+      );
 
     const [data, total] = await qb.getManyAndCount();
     return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
@@ -340,15 +464,23 @@ export class StaffService {
 
   async toggleWorkerStatus(id: number) {
     const worker = await this.findWorker(id);
-    worker.status = worker.status === WorkerStatus.FREE ? WorkerStatus.BUSY : WorkerStatus.FREE;
+    worker.status =
+      worker.status === WorkerStatus.FREE
+        ? WorkerStatus.BUSY
+        : WorkerStatus.FREE;
     await this.workerRepo.save(worker);
     return worker;
   }
 
   async deleteWorker(id: number) {
     const worker = await this.findWorker(id);
-    const activeOrders = await this.workOrderRepo.count({ where: { worker: { id }, status: Not(OrderStatus.COMPLETE) } });
-    if (activeOrders > 0) throw new BadRequestException(`Cannot delete worker. They have ${activeOrders} active work orders.`);
+    const activeOrders = await this.workOrderRepo.count({
+      where: { worker: { id }, status: Not(OrderStatus.COMPLETE) },
+    });
+    if (activeOrders > 0)
+      throw new BadRequestException(
+        `Cannot delete worker. They have ${activeOrders} active work orders.`,
+      );
     await this.workerRepo.remove(worker);
     return { message: `${worker.name} has been deleted` };
   }
@@ -357,44 +489,87 @@ export class StaffService {
     const worker = await this.findWorker(id);
     const orders = await this.workOrderRepo.find({
       where: { worker: { id }, status: Not(OrderStatus.COMPLETE) },
-      relations: { property: { building: { block: true }, landlord: true }, issue: true, tenant: true },
-      order: { created_at: 'ASC' }
+      relations: {
+        property: { building: { block: true }, landlord: true },
+        issue: true,
+        tenant: true,
+      },
+      order: { created_at: 'ASC' },
     });
-    return { worker: { id: worker.id, name: worker.name, area: worker.worker_area, status: worker.status }, schedule: orders };
+    return {
+      worker: {
+        id: worker.id,
+        name: worker.name,
+        area: worker.worker_area,
+        status: worker.status,
+      },
+      schedule: orders,
+    };
   }
 
   async getWorkerPerformance(id: number) {
     const worker = await this.findWorker(id);
     const completedOrders = await this.workOrderRepo.find({
       where: { worker: { id }, status: OrderStatus.COMPLETE },
-      relations: { review: true }
+      relations: { review: true },
     });
 
     const totalCompleted = completedOrders.length;
-    const ratedOrders = completedOrders.filter(o => o.review);
-    const avgRating = ratedOrders.length > 0
-      ? ratedOrders.reduce((sum, o) => sum + parseInt(o.review.rating), 0) / ratedOrders.length
-      : 0;
+    const ratedOrders = completedOrders.filter((o) => o.review);
+    const avgRating =
+      ratedOrders.length > 0
+        ? ratedOrders.reduce((sum, o) => sum + parseInt(o.review.rating), 0) /
+          ratedOrders.length
+        : 0;
 
-    const totalRevenue = completedOrders.reduce((sum, o) => sum + o.labor_cost + o.materials_cost + o.additional_cost, 0);
+    const totalRevenue = completedOrders.reduce(
+      (sum, o) => sum + o.labor_cost + o.materials_cost + o.additional_cost,
+      0,
+    );
 
     return {
       worker: { id: worker.id, name: worker.name, area: worker.worker_area },
-      stats: { totalCompleted, ratedCount: ratedOrders.length, averageRating: parseFloat(avgRating.toFixed(2)), totalRevenueGenerated: totalRevenue },
-      recentOrders: completedOrders.slice(-5).map(o => ({ id: o.id, property: o.property?.unit_number, cost: o.labor_cost + o.materials_cost + o.additional_cost, rating: o.review?.rating })),
+      stats: {
+        totalCompleted,
+        ratedCount: ratedOrders.length,
+        averageRating: parseFloat(avgRating.toFixed(2)),
+        totalRevenueGenerated: totalRevenue,
+      },
+      recentOrders: completedOrders
+        .slice(-5)
+        .map((o) => ({
+          id: o.id,
+          property: o.property?.unit_number,
+          cost: o.labor_cost + o.materials_cost + o.additional_cost,
+          rating: o.review?.rating,
+        })),
     };
   }
 
   async getWorkerPerformanceReport(query: any) {
-    const workers = await this.workerRepo.find({ relations: { workOrders: { review: true, property: true } } });
-    const report = workers.map(w => {
-      const completed = w.workOrders.filter(o => o.status === OrderStatus.COMPLETE);
-      const ratings = completed.map(o => o.review ? parseInt(o.review.rating) : null).filter(r => r !== null);
+    const workers = await this.workerRepo.find({
+      relations: { workOrders: { review: true, property: true } },
+    });
+    const report = workers.map((w) => {
+      const completed = w.workOrders.filter(
+        (o) => o.status === OrderStatus.COMPLETE,
+      );
+      const ratings = completed
+        .map((o) => (o.review ? parseInt(o.review.rating) : null))
+        .filter((r) => r !== null);
       return {
-        id: w.id, name: w.name, area: w.area, status: w.status,
+        id: w.id,
+        name: w.name,
+        area: w.area,
+        status: w.status,
         completedCount: completed.length,
-        avgRating: ratings.length ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(2) : 0,
-        totalRevenue: completed.reduce((s, o) => s + o.labor_cost + o.materials_cost + o.additional_cost, 0),
+        avgRating: ratings.length
+          ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(2)
+          : 0,
+        totalRevenue: completed.reduce(
+          (s, o) => s + o.labor_cost + o.materials_cost + o.additional_cost,
+          0,
+        ),
       };
     });
     return { data: report, total: report.length };
@@ -404,8 +579,25 @@ export class StaffService {
   // WORK ORDER MANAGEMENT
   // ==========================================
   async findAllWorkOrders(filterDto: FilterWorkOrderDto) {
-    const { status, workerId, propertyId, landlordId, tenantId, issueId, buildingId, blockId, dateFrom, dateTo, search, page = 1, limit = 10, sortBy = 'created_at', sortOrder = 'DESC' } = filterDto;
-    const qb = this.workOrderRepo.createQueryBuilder('wo')
+    const {
+      status,
+      workerId,
+      propertyId,
+      landlordId,
+      tenantId,
+      issueId,
+      buildingId,
+      blockId,
+      dateFrom,
+      dateTo,
+      search,
+      page = 1,
+      limit = 10,
+      sortBy = 'created_at',
+      sortOrder = 'DESC',
+    } = filterDto;
+    const qb = this.workOrderRepo
+      .createQueryBuilder('wo')
       .leftJoinAndSelect('wo.worker', 'worker')
       .leftJoinAndSelect('wo.property', 'property')
       .leftJoinAndSelect('property.landlord', 'landlord')
@@ -415,23 +607,26 @@ export class StaffService {
       .leftJoinAndSelect('wo.staff', 'staff')
       .leftJoinAndSelect('wo.issue', 'issue')
       .leftJoinAndSelect('wo.review', 'review')
-      .skip((page - 1) * limit).take(limit)
+      .skip((page - 1) * limit)
+      .take(limit)
       .orderBy(`wo.${sortBy}`, sortOrder);
 
     if (status) qb.andWhere('wo.status = :status', { status });
     if (workerId) qb.andWhere('wo.worker_id = :workerId', { workerId });
     if (propertyId) qb.andWhere('wo.property_id = :propertyId', { propertyId });
-    if (landlordId) qb.andWhere('property.landlord_id = :landlordId', { landlordId });
+    if (landlordId)
+      qb.andWhere('property.landlord_id = :landlordId', { landlordId });
     if (tenantId) qb.andWhere('wo.tenant_id = :tenantId', { tenantId });
     if (issueId) qb.andWhere('wo.issue_id = :issueId', { issueId });
-    if (buildingId) qb.andWhere('property.building_id = :buildingId', { buildingId });
+    if (buildingId)
+      qb.andWhere('property.building_id = :buildingId', { buildingId });
     if (blockId) qb.andWhere('building.block_id = :blockId', { blockId });
     if (dateFrom) qb.andWhere('wo.created_at >= :dateFrom', { dateFrom });
     if (dateTo) qb.andWhere('wo.created_at <= :dateTo', { dateTo });
     if (search) {
       qb.andWhere(
         '(wo.id::text ILIKE :search OR property.unit_number ILIKE :search OR issue.description ILIKE :search OR worker.name ILIKE :search OR tenant.name ILIKE :search)',
-        { search: `%${search}%` }
+        { search: `%${search}%` },
       );
     }
 
@@ -441,7 +636,11 @@ export class StaffService {
 
   async exportWorkOrders(filterDto: FilterWorkOrderDto) {
     const { page, limit, ...filters } = filterDto;
-    const result = await this.findAllWorkOrders({ ...filters, page: 1, limit: 5000 });
+    const result = await this.findAllWorkOrders({
+      ...filters,
+      page: 1,
+      limit: 5000,
+    });
     return result.data;
   }
 
@@ -452,17 +651,23 @@ export class StaffService {
     const landlord = await this.findLandlord(body.landlord_id);
 
     if (!property.landlord || property.landlord.id !== landlord.id) {
-      throw new BadRequestException('Property does not belong to this landlord');
+      throw new BadRequestException(
+        'Property does not belong to this landlord',
+      );
     }
 
     let tenant: TenantEntity | null = null;
     if (body.tenant_id) {
       tenant = await this.findTanent(body.tenant_id);
       if (!tenant.property || tenant.property.id !== property.id) {
-        throw new BadRequestException('Tenant is not associated with this property');
+        throw new BadRequestException(
+          'Tenant is not associated with this property',
+        );
       }
       if (!tenant.approved_by || tenant.approved_by.id !== landlord.id) {
-        throw new BadRequestException('Tenant not approved by the provided landlord');
+        throw new BadRequestException(
+          'Tenant not approved by the provided landlord',
+        );
       }
       if (tenant.status !== TenantStatus.APPROVED) {
         throw new BadRequestException('Tenant is not approved');
@@ -470,13 +675,27 @@ export class StaffService {
     }
 
     // Auto-link Issue to Property/Tenant if missing
-    if (!issue.property) { issue.property = property; await this.issueRepo.save(issue); }
-    if (!issue.tenant) { issue.tenant = tenant || issue.tenant; await this.issueRepo.save(issue); }
+    if (!issue.property) {
+      issue.property = property;
+      await this.issueRepo.save(issue);
+    }
+    if (!issue.tenant) {
+      issue.tenant = tenant || issue.tenant;
+      await this.issueRepo.save(issue);
+    }
 
     const workOrder = this.workOrderRepo.create({
-      issue, property, landlord, tenant: tenant ?? null, staff,
-      created_by_type: 'staff', created_by_id: staff.id,
-      status: OrderStatus.PENDING, labor_cost: 0, materials_cost: 0, additional_cost: 0,
+      issue,
+      property,
+      landlord,
+      tenant: tenant ?? null,
+      staff,
+      created_by_type: 'staff',
+      created_by_id: staff.id,
+      status: OrderStatus.PENDING,
+      labor_cost: 0,
+      materials_cost: 0,
+      additional_cost: 0,
     });
 
     // Update Issue Status to IN_PROGRESS
@@ -492,26 +711,39 @@ export class StaffService {
     const order = await this.findWOrkOrder(id);
 
     if (order.status === OrderStatus.COMPLETE && !dto.status) {
-      throw new BadRequestException('Cannot update a completed work order. Reopen it first.');
+      throw new BadRequestException(
+        'Cannot update a completed work order. Reopen it first.',
+      );
     }
 
     if (dto.status && dto.status !== order.status) {
       const validTransitions: Record<OrderStatus, OrderStatus[]> = {
         [OrderStatus.PENDING]: [OrderStatus.ASSIGNED, OrderStatus.COMPLETE],
-        [OrderStatus.ASSIGNED]: [OrderStatus.TENANT_CONFIRMED, OrderStatus.PENDING, OrderStatus.COMPLETE],
-        [OrderStatus.TENANT_CONFIRMED]: [OrderStatus.COMPLETE, OrderStatus.ASSIGNED],
+        [OrderStatus.ASSIGNED]: [
+          OrderStatus.TENANT_CONFIRMED,
+          OrderStatus.PENDING,
+          OrderStatus.COMPLETE,
+        ],
+        [OrderStatus.TENANT_CONFIRMED]: [
+          OrderStatus.COMPLETE,
+          OrderStatus.ASSIGNED,
+        ],
         [OrderStatus.COMPLETE]: [],
       };
       if (!validTransitions[order.status]?.includes(dto.status)) {
-        throw new BadRequestException(`Invalid status transition from ${order.status} to ${dto.status}`);
+        throw new BadRequestException(
+          `Invalid status transition from ${order.status} to ${dto.status}`,
+        );
       }
       order.status = dto.status;
       if (dto.status === OrderStatus.COMPLETE) order.completed_at = new Date();
     }
 
     if (dto.labor_cost !== undefined) order.labor_cost = dto.labor_cost;
-    if (dto.materials_cost !== undefined) order.materials_cost = dto.materials_cost;
-    if (dto.additional_cost !== undefined) order.additional_cost = dto.additional_cost;
+    if (dto.materials_cost !== undefined)
+      order.materials_cost = dto.materials_cost;
+    if (dto.additional_cost !== undefined)
+      order.additional_cost = dto.additional_cost;
     if (dto.notes !== undefined) order.notes = dto.notes; // Requires 'notes' column on WorkOrder Entity
 
     return await this.workOrderRepo.save(order);
@@ -521,11 +753,20 @@ export class StaffService {
     const order = await this.findWOrkOrder(workOrderId);
     const worker = await this.findWorker(dto.worker_id);
 
-    if (order.status === OrderStatus.COMPLETE || order.status === OrderStatus.TENANT_CONFIRMED) {
-      throw new BadRequestException('The order is already complete or confirmed.');
+    if (
+      order.status === OrderStatus.COMPLETE ||
+      order.status === OrderStatus.TENANT_CONFIRMED
+    ) {
+      throw new BadRequestException(
+        'The order is already complete or confirmed.',
+      );
     }
-    if (order.worker) throw new BadRequestException('The order already has a worker. Remove current worker first.');
-    if (worker.status !== WorkerStatus.FREE) throw new BadRequestException('Worker is not available for dispatch');
+    if (order.worker)
+      throw new BadRequestException(
+        'The order already has a worker. Remove current worker first.',
+      );
+    if (worker.status !== WorkerStatus.FREE)
+      throw new BadRequestException('Worker is not available for dispatch');
 
     // Optional: Area Matching Logic
     // if (worker.worker_area && order.property.building?.block?.name !== worker.worker_area) { ... }
@@ -540,18 +781,26 @@ export class StaffService {
   }
 
   async removeWorkerFromOrder(id: number) {
-    const order = await this.workOrderRepo.findOne({ where: { id }, relations: { worker: true } });
+    const order = await this.workOrderRepo.findOne({
+      where: { id },
+      relations: { worker: true },
+    });
     if (!order) throw new NotFoundException('Order not found');
     if (!order.worker) throw new BadRequestException('No worker assigned');
 
     const workerId = order.worker.id;
     const otherActiveCount = await this.workOrderRepo.count({
-      where: { worker: { id: workerId }, status: Not(OrderStatus.COMPLETE), id: Not(id) },
+      where: {
+        worker: { id: workerId },
+        status: Not(OrderStatus.COMPLETE),
+        id: Not(id),
+      },
     });
 
     const worker = await this.workerRepo.findOne({ where: { id: workerId } });
     if (worker) {
-      worker.status = otherActiveCount === 0 ? WorkerStatus.FREE : WorkerStatus.BUSY;
+      worker.status =
+        otherActiveCount === 0 ? WorkerStatus.FREE : WorkerStatus.BUSY;
       await this.workerRepo.save(worker);
     }
 
@@ -561,9 +810,13 @@ export class StaffService {
   }
 
   async completeWorkOrder(id: number, dto: CompleteWorkOrderDto) {
-    const order = await this.workOrderRepo.findOne({ where: { id }, relations: { worker: true, property: true, landlord: true, tenant: true } });
+    const order = await this.workOrderRepo.findOne({
+      where: { id },
+      relations: { worker: true, property: true, landlord: true, tenant: true },
+    });
     if (!order) throw new NotFoundException('Work order not found');
-    if (order.status === OrderStatus.COMPLETE) throw new BadRequestException('Order already completed');
+    if (order.status === OrderStatus.COMPLETE)
+      throw new BadRequestException('Order already completed');
 
     order.labor_cost += dto.labor_cost || 0;
     order.materials_cost += dto.materials_cost || 0;
@@ -572,13 +825,18 @@ export class StaffService {
     order.completed_at = new Date();
 
     // Create Transaction for Landlord (Expense)
-    const totalCost = order.labor_cost + order.materials_cost + order.additional_cost;
+    const totalCost =
+      order.labor_cost + order.materials_cost + order.additional_cost;
     if (totalCost > 0) {
       const txn = this.transactionRepo.create({
-        type: Trnsaction_type.work_order_cost, amount: totalCost,
-        property_id: order.property, landlord: order.landlord,
-        tenant_id: order.tenant ?? null, work_order_id: order,
-        payer_type: payer_type.landlord, status: TxnStatus.pending,
+        type: Trnsaction_type.work_order_cost,
+        amount: totalCost,
+        property_id: order.property,
+        landlord: order.landlord,
+        tenant_id: order.tenant ?? null,
+        work_order_id: order,
+        payer_type: payer_type.landlord,
+        status: TxnStatus.pending,
         created_by_type: created_by_type.staff,
       });
       await this.transactionRepo.save(txn);
@@ -586,12 +844,19 @@ export class StaffService {
 
     // Update Worker Status
     if (order.worker) {
-      const worker = await this.workerRepo.findOne({ where: { id: order.worker.id } });
+      const worker = await this.workerRepo.findOne({
+        where: { id: order.worker.id },
+      });
       if (worker) {
         const otherActiveCount = await this.workOrderRepo.count({
-          where: { worker: { id: worker.id }, status: Not(OrderStatus.COMPLETE), id: Not(id) },
+          where: {
+            worker: { id: worker.id },
+            status: Not(OrderStatus.COMPLETE),
+            id: Not(id),
+          },
         });
-        worker.status = otherActiveCount === 0 ? WorkerStatus.FREE : WorkerStatus.BUSY;
+        worker.status =
+          otherActiveCount === 0 ? WorkerStatus.FREE : WorkerStatus.BUSY;
         await this.workerRepo.save(worker);
       }
     }
@@ -607,34 +872,59 @@ export class StaffService {
 
   async tenantConfirmWorkOrder(id: number) {
     const order = await this.findWOrkOrder(id);
-    if (order.status !== OrderStatus.ASSIGNED) throw new BadRequestException('Only assigned orders can be confirmed by tenant');
+    if (order.status !== OrderStatus.ASSIGNED)
+      throw new BadRequestException(
+        'Only assigned orders can be confirmed by tenant',
+      );
     order.status = OrderStatus.TENANT_CONFIRMED;
     return await this.workOrderRepo.save(order);
   }
 
   async reopenWorkOrder(id: number) {
     const order = await this.findWOrkOrder(id);
-    if (order.status !== OrderStatus.COMPLETE) throw new BadRequestException('Only completed orders can be reopened');
+    if (order.status !== OrderStatus.COMPLETE)
+      throw new BadRequestException('Only completed orders can be reopened');
     order.status = OrderStatus.PENDING;
     order.completed_at = null;
     if (order.worker) {
-      const worker = await this.workerRepo.findOne({ where: { id: order.worker.id } });
-      if (worker) { worker.status = WorkerStatus.BUSY; await this.workerRepo.save(worker); }
+      const worker = await this.workerRepo.findOne({
+        where: { id: order.worker.id },
+      });
+      if (worker) {
+        worker.status = WorkerStatus.BUSY;
+        await this.workerRepo.save(worker);
+      }
     }
     // Reopen Issue
-    if (order.issue) { order.issue.status = IssueStatus.IN_PROGRESS; await this.issueRepo.save(order.issue); }
+    if (order.issue) {
+      order.issue.status = IssueStatus.IN_PROGRESS;
+      await this.issueRepo.save(order.issue);
+    }
     return await this.workOrderRepo.save(order);
   }
 
   async deleteOrder(id: number) {
-    const order = await this.workOrderRepo.findOne({ where: { id }, relations: { worker: true } });
+    const order = await this.workOrderRepo.findOne({
+      where: { id },
+      relations: { worker: true },
+    });
     if (!order) throw new NotFoundException(`Order ${id} not found`);
 
     if (order.worker) {
       const workerId = order.worker.id;
-      const otherActiveCount = await this.workOrderRepo.count({ where: { worker: { id: workerId }, status: Not(OrderStatus.COMPLETE), id: Not(id) } });
+      const otherActiveCount = await this.workOrderRepo.count({
+        where: {
+          worker: { id: workerId },
+          status: Not(OrderStatus.COMPLETE),
+          id: Not(id),
+        },
+      });
       const worker = await this.workerRepo.findOne({ where: { id: workerId } });
-      if (worker) { worker.status = otherActiveCount === 0 ? WorkerStatus.FREE : WorkerStatus.BUSY; await this.workerRepo.save(worker); }
+      if (worker) {
+        worker.status =
+          otherActiveCount === 0 ? WorkerStatus.FREE : WorkerStatus.BUSY;
+        await this.workerRepo.save(worker);
+      }
     }
 
     await this.workOrderRepo.delete(id);
@@ -645,24 +935,45 @@ export class StaffService {
   // ISSUE MANAGEMENT (TRIAGE)
   // ==========================================
   async findAllIssues(filterDto: FilterWorkOrderDto) {
-    const { status, propertyId, tenantId, buildingId, blockId, dateFrom, dateTo, search, page = 1, limit = 10, sortBy = 'created_at', sortOrder = 'DESC' } = filterDto;
-    const qb = this.issueRepo.createQueryBuilder('issue')
+    const {
+      status,
+      propertyId,
+      tenantId,
+      buildingId,
+      blockId,
+      dateFrom,
+      dateTo,
+      search,
+      page = 1,
+      limit = 10,
+      sortBy = 'created_at',
+      sortOrder = 'DESC',
+    } = filterDto;
+    const qb = this.issueRepo
+      .createQueryBuilder('issue')
       .leftJoinAndSelect('issue.tenant', 'tenant')
       .leftJoinAndSelect('issue.property', 'property')
       .leftJoinAndSelect('property.landlord', 'landlord')
       .leftJoinAndSelect('property.building', 'building')
       .leftJoinAndSelect('building.block', 'block')
-      .skip((page - 1) * limit).take(limit)
+      .skip((page - 1) * limit)
+      .take(limit)
       .orderBy(`issue.${sortBy}`, sortOrder);
 
     if (status) qb.andWhere('issue.status = :status', { status });
-    if (propertyId) qb.andWhere('issue.property_id = :propertyId', { propertyId });
+    if (propertyId)
+      qb.andWhere('issue.property_id = :propertyId', { propertyId });
     if (tenantId) qb.andWhere('issue.tenant_id = :tenantId', { tenantId });
-    if (buildingId) qb.andWhere('property.building_id = :buildingId', { buildingId });
+    if (buildingId)
+      qb.andWhere('property.building_id = :buildingId', { buildingId });
     if (blockId) qb.andWhere('building.block_id = :blockId', { blockId });
     if (dateFrom) qb.andWhere('issue.created_at >= :dateFrom', { dateFrom });
     if (dateTo) qb.andWhere('issue.created_at <= :dateTo', { dateTo });
-    if (search) qb.andWhere('(issue.description ILIKE :search OR tenant.name ILIKE :search)', { search: `%${search}%` });
+    if (search)
+      qb.andWhere(
+        '(issue.description ILIKE :search OR tenant.name ILIKE :search)',
+        { search: `%${search}%` },
+      );
 
     const [data, total] = await qb.getManyAndCount();
     return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
@@ -675,20 +986,37 @@ export class StaffService {
     return issue;
   }
 
-  async convertIssueToWorkOrder(issueId: number, staffId: number, dto: ConvertIssueDto) {
+  async convertIssueToWorkOrder(
+    issueId: number,
+    staffId: number,
+    dto: ConvertIssueDto,
+  ) {
     const issue = await this.findIssue(issueId);
-    if (issue.status === IssueStatus.RESOLVED) throw new BadRequestException('Issue already resolved');
+    if (issue.status === IssueStatus.RESOLVED)
+      throw new BadRequestException('Issue already resolved');
 
     const staff = await this.findStaff(staffId);
-    const property = issue.property || await this.findProperty(dto.property_id);
-    if (!property) throw new BadRequestException('Property is required to create Work Order');
+    const property =
+      issue.property || (await this.findProperty(dto.property_id));
+    if (!property)
+      throw new BadRequestException(
+        'Property is required to create Work Order',
+      );
 
     const landlord = property.landlord;
 
     const workOrder = this.workOrderRepo.create({
-      issue, property, landlord, tenant: issue.tenant, staff,
-      created_by_type: 'staff', created_by_id: staff.id,
-      status: OrderStatus.PENDING, labor_cost: 0, materials_cost: 0, additional_cost: 0,
+      issue,
+      property,
+      landlord,
+      tenant: issue.tenant,
+      staff,
+      created_by_type: 'staff',
+      created_by_id: staff.id,
+      status: OrderStatus.PENDING,
+      labor_cost: 0,
+      materials_cost: 0,
+      additional_cost: 0,
     });
 
     issue.status = IssueStatus.IN_PROGRESS;
@@ -700,20 +1028,36 @@ export class StaffService {
   // CONTEXTUAL READ ACCESS (Hierarchy)
   // ==========================================
   async getAllProperties(query: any) {
-    const { page = 1, limit = 10, status, listingStatus, buildingId, blockId, search } = query;
-    const qb = this.propertyRepo.createQueryBuilder('prop')
+    const {
+      page = 1,
+      limit = 10,
+      status,
+      listingStatus,
+      buildingId,
+      blockId,
+      search,
+    } = query;
+    const qb = this.propertyRepo
+      .createQueryBuilder('prop')
       .leftJoinAndSelect('prop.landlord', 'landlord')
       .leftJoinAndSelect('prop.building', 'building')
       .leftJoinAndSelect('building.block', 'block')
       .leftJoinAndSelect('prop.tenant', 'tenant')
-      .skip((page - 1) * limit).take(limit)
+      .skip((page - 1) * limit)
+      .take(limit)
       .orderBy('prop.created_at', 'DESC');
 
     if (status) qb.andWhere('prop.status = :status', { status });
-    if (listingStatus) qb.andWhere('prop.listing_status = :listingStatus', { listingStatus });
-    if (buildingId) qb.andWhere('prop.building_id = :buildingId', { buildingId });
+    if (listingStatus)
+      qb.andWhere('prop.listing_status = :listingStatus', { listingStatus });
+    if (buildingId)
+      qb.andWhere('prop.building_id = :buildingId', { buildingId });
     if (blockId) qb.andWhere('building.block_id = :blockId', { blockId });
-    if (search) qb.andWhere('(prop.unit_number ILIKE :search OR landlord.name ILIKE :search)', { search: `%${search}%` });
+    if (search)
+      qb.andWhere(
+        '(prop.unit_number ILIKE :search OR landlord.name ILIKE :search)',
+        { search: `%${search}%` },
+      );
 
     const [data, total] = await qb.getManyAndCount();
     return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
@@ -721,66 +1065,107 @@ export class StaffService {
 
   async getAllBuildings(query: any) {
     const { page = 1, limit = 10, blockId, search } = query;
-    const qb = this.buildingRepo.createQueryBuilder('bld')
+    const qb = this.buildingRepo
+      .createQueryBuilder('bld')
       .leftJoinAndSelect('bld.block', 'block')
       .leftJoinAndSelect('bld.created_by', 'admin')
-      .skip((page - 1) * limit).take(limit)
+      .skip((page - 1) * limit)
+      .take(limit)
       .orderBy('bld.created_at', 'DESC');
     if (blockId) qb.andWhere('bld.block_id = :blockId', { blockId });
-    if (search) qb.andWhere('(bld.name ILIKE :search OR block.name ILIKE :search)', { search: `%${search}%` });
+    if (search)
+      qb.andWhere('(bld.name ILIKE :search OR block.name ILIKE :search)', {
+        search: `%${search}%`,
+      });
     const [data, total] = await qb.getManyAndCount();
     return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
   async getAllBlocks(query: any) {
     const { page = 1, limit = 10, search } = query;
-    const qb = this.blockRepo.createQueryBuilder('blk')
+    const qb = this.blockRepo
+      .createQueryBuilder('blk')
       .leftJoinAndSelect('blk.created_by', 'admin')
-      .skip((page - 1) * limit).take(limit)
+      .skip((page - 1) * limit)
+      .take(limit)
       .orderBy('blk.created_at', 'DESC');
-    if (search) qb.andWhere('(blk.name ILIKE :search OR blk.address ILIKE :search)', { search: `%${search}%` });
+    if (search)
+      qb.andWhere('(blk.name ILIKE :search OR blk.address ILIKE :search)', {
+        search: `%${search}%`,
+      });
     const [data, total] = await qb.getManyAndCount();
     return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
   async getAllTenants(query: any) {
     const { page = 1, limit = 10, status, propertyId, search } = query;
-    const qb = this.tenantRepo.createQueryBuilder('tn')
+    const qb = this.tenantRepo
+      .createQueryBuilder('tn')
       .leftJoinAndSelect('tn.property', 'property')
       .leftJoinAndSelect('property.landlord', 'landlord')
       .leftJoinAndSelect('tn.approved_by', 'approvedBy')
-      .skip((page - 1) * limit).take(limit)
+      .skip((page - 1) * limit)
+      .take(limit)
       .orderBy('tn.created_at', 'DESC');
     if (status) qb.andWhere('tn.status = :status', { status });
     if (propertyId) qb.andWhere('tn.property_id = :propertyId', { propertyId });
-    if (search) qb.andWhere('(tn.name ILIKE :search OR tn.email ILIKE :search)', { search: `%${search}%` });
+    if (search)
+      qb.andWhere('(tn.name ILIKE :search OR tn.email ILIKE :search)', {
+        search: `%${search}%`,
+      });
     const [data, total] = await qb.getManyAndCount();
     return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
   async getAllAdmins() {
-    return this.adminRepo.find({ relations: { landlords: true, staff: true, blocks: true, buildings: true } });
+    return this.adminRepo.find({
+      relations: {
+        landlords: true,
+        staff: true,
+        blocks: true,
+        buildings: true,
+      },
+    });
   }
 
   // ==========================================
   // TRANSACTIONS & FINANCIALS
   // ==========================================
   async getTransactions(filterDto: FilterTransactionDto) {
-    const { type, status, payerType, propertyId, workOrderId, landlordId, tenantId, dateFrom, dateTo, page = 1, limit = 10, sortBy = 'created_at', sortOrder = 'DESC' } = filterDto;
-    const qb = this.transactionRepo.createQueryBuilder('txn')
+    const {
+      type,
+      status,
+      payerType,
+      propertyId,
+      workOrderId,
+      landlordId,
+      tenantId,
+      dateFrom,
+      dateTo,
+      page = 1,
+      limit = 10,
+      sortBy = 'created_at',
+      sortOrder = 'DESC',
+    } = filterDto;
+    const qb = this.transactionRepo
+      .createQueryBuilder('txn')
       .leftJoinAndSelect('txn.property_id', 'property')
       .leftJoinAndSelect('txn.landlord', 'landlord')
       .leftJoinAndSelect('txn.tenant_id', 'tenant')
       .leftJoinAndSelect('txn.work_order_id', 'workOrder')
-      .skip((page - 1) * limit).take(limit)
+      .skip((page - 1) * limit)
+      .take(limit)
       .orderBy(`txn.${sortBy}`, sortOrder);
 
     if (type) qb.andWhere('txn.type = :type', { type });
     if (status) qb.andWhere('txn.status = :status', { status });
     if (payerType) qb.andWhere('txn.payer_type = :payerType', { payerType });
-    if (propertyId) qb.andWhere('txn.property_id = :propertyId', { propertyId });
-    if (workOrderId) qb.andWhere('txn.work_order_id = :workOrderId', { workOrderId });
-    if (landlordId) qb.andWhere('txn.landlord_id = :landlordId', { landlordId });
+    if (propertyId)
+      qb.andWhere('txn.property_id = :propertyId', { propertyId });
+    if (workOrderId)
+      qb.andWhere('txn.work_order_id = :workOrderId', { workOrderId });
+    if (landlordId)
+      qb.andWhere('txn.landlord_id = :landlordId', { landlordId });
     if (tenantId) qb.andWhere('txn.tenant_id = :tenantId', { tenantId });
     if (dateFrom) qb.andWhere('txn.created_at >= :dateFrom', { dateFrom });
     if (dateTo) qb.andWhere('txn.created_at <= :dateTo', { dateTo });
@@ -798,12 +1183,18 @@ export class StaffService {
     if (dto.tenant_id) tenant = await this.findTanent(dto.tenant_id);
 
     let workOrder: WorkOrder | null = null;
-    if (dto.work_order_id) workOrder = await this.findWOrkOrder(dto.work_order_id);
+    if (dto.work_order_id)
+      workOrder = await this.findWOrkOrder(dto.work_order_id);
 
     const txn = this.transactionRepo.create({
-      type: dto.type, amount: dto.amount, property_id: property, landlord,
-      tenant_id: tenant, work_order_id: workOrder,
-      payer_type: dto.payer_type, status: dto.status || TxnStatus.pending,
+      type: dto.type,
+      amount: dto.amount,
+      property_id: property,
+      landlord,
+      tenant_id: tenant,
+      work_order_id: workOrder,
+      payer_type: dto.payer_type,
+      status: dto.status || TxnStatus.pending,
       created_by_type: created_by_type.staff,
     });
 
@@ -817,13 +1208,14 @@ export class StaffService {
     return this.transactionRepo.find({
       where: { work_order_id: { id: workOrderId } },
       relations: { property_id: true, landlord: true, tenant_id: true },
-      order: { created_at: 'DESC' }
+      order: { created_at: 'DESC' },
     });
   }
 
   async getFinancialSummary(filterDto: FilterTransactionDto) {
     const { dateFrom, dateTo } = filterDto;
-    const qb = this.transactionRepo.createQueryBuilder('txn')
+    const qb = this.transactionRepo
+      .createQueryBuilder('txn')
       .select('txn.type', 'type')
       .addSelect('txn.status', 'status')
       .addSelect('txn.payer_type', 'payerType')
@@ -835,19 +1227,29 @@ export class StaffService {
     if (dateTo) qb.andWhere('txn.created_at <= :dateTo', { dateTo });
 
     const raw = await qb.getRawMany();
-    return raw.map(r => ({
-      type: r.type, status: r.status, payerType: r.payerType,
-      totalAmount: parseFloat(r.totalAmount), count: parseInt(r.count),
+    return raw.map((r) => ({
+      type: r.type,
+      status: r.status,
+      payerType: r.payerType,
+      totalAmount: parseFloat(r.totalAmount),
+      count: parseInt(r.count),
     }));
   }
 
   async getWorkOrderSummaryReport(filterDto: FilterWorkOrderDto) {
     const { dateFrom, dateTo, status } = filterDto;
-    const qb = this.workOrderRepo.createQueryBuilder('wo')
+    const qb = this.workOrderRepo
+      .createQueryBuilder('wo')
       .select('wo.status', 'status')
       .addSelect('COUNT(wo.id)', 'count')
-      .addSelect('AVG(wo.labor_cost + wo.materials_cost + wo.additional_cost)', 'avgCost')
-      .addSelect('SUM(wo.labor_cost + wo.materials_cost + wo.additional_cost)', 'totalCost')
+      .addSelect(
+        'AVG(wo.labor_cost + wo.materials_cost + wo.additional_cost)',
+        'avgCost',
+      )
+      .addSelect(
+        'SUM(wo.labor_cost + wo.materials_cost + wo.additional_cost)',
+        'totalCost',
+      )
       .groupBy('wo.status');
 
     if (dateFrom) qb.andWhere('wo.created_at >= :dateFrom', { dateFrom });
@@ -855,9 +1257,11 @@ export class StaffService {
     if (status) qb.andWhere('wo.status = :status', { status });
 
     const raw = await qb.getRawMany();
-    return raw.map(r => ({
-      status: r.status, count: parseInt(r.count),
-      avgCost: parseFloat(r.avgCost || 0), totalCost: parseFloat(r.totalCost || 0),
+    return raw.map((r) => ({
+      status: r.status,
+      count: parseInt(r.count),
+      avgCost: parseFloat(r.avgCost || 0),
+      totalCost: parseFloat(r.totalCost || 0),
     }));
   }
 
@@ -865,9 +1269,13 @@ export class StaffService {
   // REVIEWS & LANDLORDS
   // ==========================================
   async getReviewByOrder(id: number) {
-    const order = await this.workOrderRepo.findOne({ where: { id }, relations: { review: { tenant: true } } });
+    const order = await this.workOrderRepo.findOne({
+      where: { id },
+      relations: { review: { tenant: true } },
+    });
     if (!order) throw new NotFoundException(`Work order ${id} not found`);
-    if (!order.review) throw new NotFoundException(`Review for work order ${id} not found`);
+    if (!order.review)
+      throw new NotFoundException(`Review for work order ${id} not found`);
     return order.review;
   }
 
@@ -879,6 +1287,8 @@ export class StaffService {
   }
 
   async getAllLandLoards() {
-    return await this.landlordRepo.find({ relations: { properties: { building: { block: true } }, tenants: true } });
+    return await this.landlordRepo.find({
+      relations: { properties: { building: { block: true } }, tenants: true },
+    });
   }
 }

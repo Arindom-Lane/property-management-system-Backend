@@ -20,7 +20,7 @@ export class BuildingEntity  {
     @JoinColumn({ name: 'created_by_id' }) // Added JoinColumn
     created_by: AdminEntity;
 
-    @OneToMany(() => PropertyEntity, (property) => property.building_id)
+    @OneToMany(() => PropertyEntity, (property) => property.building)
     properties: PropertyEntity[];
 
     @CreateDateColumn()

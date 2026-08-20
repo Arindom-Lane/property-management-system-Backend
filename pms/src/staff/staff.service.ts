@@ -23,19 +23,19 @@ import { WorkOrder, OrderStatus } from './entities/work_order.entity';
 import { ReviewEntity } from './entities/review.entity';
 import { StaffEntity } from './entities/staff.entity';
 import * as bcrypt from 'bcrypt';
-import { AdminEntity } from 'src/admin/entities/admin.entity';
+import { AdminEntity } from '../admin/entities/admin.entity';
 import { CreateWorkOrderDto } from './dto/CreateWorkOrder.dto';
-import { IssueEntity, IssueStatus } from 'src/tenant/entities/issue.entity';
+import { IssueEntity, IssueStatus } from '../tenant/entities/issue.entity';
 import {
   PropertyEntity,
   Status as PropertyStatus,
   ListingStatus,
-} from 'src/landlord/entities/property.entity';
+} from '../landlord/entities/property.entity';
 import {
   LandlordEntity,
   LandlordStatus,
-} from 'src/landlord/entities/landlord.entity';
-import { TenantEntity, TenantStatus } from 'src/tenant/entities/tenant.entity';
+} from '../landlord/entities/landlord.entity';
+import { TenantEntity, TenantStatus } from '../tenant/entities/tenant.entity';
 import { DispatchWorkerDto } from './dto/DispatchWorkOrder.dto';
 import { CreateWorkerDto } from './dto/CreateWorker.dto';
 import { CompleteWorkOrderDto } from './dto/CompleteWorkOrder.dto';
@@ -53,9 +53,11 @@ import {
   payer_type,
   status as TxnStatus,
   created_by_type,
-} from 'src/landlord/entities/transaction.entity';
-import { BlockEntity } from 'src/admin/entities/block.entity';
-import { BuildingEntity } from 'src/admin/entities/building.entity';
+} from '../landlord/entities/transaction.entity';
+import { BlockEntity } from '../admin/entities/block.entity';
+import { BuildingEntity } from '../admin/entities/building.entity';
+import { dateTimestampProvider } from 'rxjs/internal/scheduler/dateTimestampProvider';
+import { timestamp } from 'rxjs';
 
 @Injectable()
 export class StaffService {
@@ -433,15 +435,12 @@ export class StaffService {
       search,
       page = 1,
       limit = 10,
-      sortBy = 'created_at',
-      sortOrder = 'DESC',
     } = filterDto;
     const qb = this.workerRepo
       .createQueryBuilder('worker')
       .leftJoinAndSelect('worker.created_by', 'staff')
       .skip((page - 1) * limit)
-      .take(limit)
-      .orderBy(`worker.${sortBy}`, sortOrder);
+      .take(limit);
 
     if (status) qb.andWhere('worker.status = :status', { status });
     if (area) qb.andWhere('worker.worker_area = :area', { area });
@@ -515,11 +514,15 @@ export class StaffService {
     });
 
     const totalCompleted = completedOrders.length;
-    const ratedOrders = completedOrders.filter((o) => o.review);
+    const ratedOrders = completedOrders.filter(
+      (o): o is typeof o & { review: NonNullable<typeof o.review> } => !!o.review,
+    );
     const avgRating =
       ratedOrders.length > 0
-        ? ratedOrders.reduce((sum, o) => sum + parseInt(o.review.rating), 0) /
-          ratedOrders.length
+        ? ratedOrders.reduce(
+            (sum, o) => sum + parseInt(o.review.rating, 10),
+            0,
+          ) / ratedOrders.length
         : 0;
 
     const totalRevenue = completedOrders.reduce(
@@ -560,7 +563,6 @@ export class StaffService {
       return {
         id: w.id,
         name: w.name,
-        area: w.area,
         status: w.status,
         completedCount: completed.length,
         avgRating: ratings.length
@@ -585,9 +587,6 @@ export class StaffService {
       propertyId,
       landlordId,
       tenantId,
-      issueId,
-      buildingId,
-      blockId,
       dateFrom,
       dateTo,
       search,
@@ -617,10 +616,6 @@ export class StaffService {
     if (landlordId)
       qb.andWhere('property.landlord_id = :landlordId', { landlordId });
     if (tenantId) qb.andWhere('wo.tenant_id = :tenantId', { tenantId });
-    if (issueId) qb.andWhere('wo.issue_id = :issueId', { issueId });
-    if (buildingId)
-      qb.andWhere('property.building_id = :buildingId', { buildingId });
-    if (blockId) qb.andWhere('building.block_id = :blockId', { blockId });
     if (dateFrom) qb.andWhere('wo.created_at >= :dateFrom', { dateFrom });
     if (dateTo) qb.andWhere('wo.created_at <= :dateTo', { dateTo });
     if (search) {
@@ -744,7 +739,6 @@ export class StaffService {
       order.materials_cost = dto.materials_cost;
     if (dto.additional_cost !== undefined)
       order.additional_cost = dto.additional_cost;
-    if (dto.notes !== undefined) order.notes = dto.notes; // Requires 'notes' column on WorkOrder Entity
 
     return await this.workOrderRepo.save(order);
   }
@@ -885,7 +879,6 @@ export class StaffService {
     if (order.status !== OrderStatus.COMPLETE)
       throw new BadRequestException('Only completed orders can be reopened');
     order.status = OrderStatus.PENDING;
-    order.completed_at = null;
     if (order.worker) {
       const worker = await this.workerRepo.findOne({
         where: { id: order.worker.id },
@@ -939,8 +932,7 @@ export class StaffService {
       status,
       propertyId,
       tenantId,
-      buildingId,
-      blockId,
+
       dateFrom,
       dateTo,
       search,
@@ -964,9 +956,6 @@ export class StaffService {
     if (propertyId)
       qb.andWhere('issue.property_id = :propertyId', { propertyId });
     if (tenantId) qb.andWhere('issue.tenant_id = :tenantId', { tenantId });
-    if (buildingId)
-      qb.andWhere('property.building_id = :buildingId', { buildingId });
-    if (blockId) qb.andWhere('building.block_id = :blockId', { blockId });
     if (dateFrom) qb.andWhere('issue.created_at >= :dateFrom', { dateFrom });
     if (dateTo) qb.andWhere('issue.created_at <= :dateTo', { dateTo });
     if (search)
@@ -1131,110 +1120,6 @@ export class StaffService {
   // ==========================================
   // TRANSACTIONS & FINANCIALS
   // ==========================================
-  async getTransactions(filterDto: FilterTransactionDto) {
-    const {
-      type,
-      status,
-      payerType,
-      propertyId,
-      workOrderId,
-      landlordId,
-      tenantId,
-      dateFrom,
-      dateTo,
-      page = 1,
-      limit = 10,
-      sortBy = 'created_at',
-      sortOrder = 'DESC',
-    } = filterDto;
-    const qb = this.transactionRepo
-      .createQueryBuilder('txn')
-      .leftJoinAndSelect('txn.property_id', 'property')
-      .leftJoinAndSelect('txn.landlord', 'landlord')
-      .leftJoinAndSelect('txn.tenant_id', 'tenant')
-      .leftJoinAndSelect('txn.work_order_id', 'workOrder')
-      .skip((page - 1) * limit)
-      .take(limit)
-      .orderBy(`txn.${sortBy}`, sortOrder);
-
-    if (type) qb.andWhere('txn.type = :type', { type });
-    if (status) qb.andWhere('txn.status = :status', { status });
-    if (payerType) qb.andWhere('txn.payer_type = :payerType', { payerType });
-    if (propertyId)
-      qb.andWhere('txn.property_id = :propertyId', { propertyId });
-    if (workOrderId)
-      qb.andWhere('txn.work_order_id = :workOrderId', { workOrderId });
-    if (landlordId)
-      qb.andWhere('txn.landlord_id = :landlordId', { landlordId });
-    if (tenantId) qb.andWhere('txn.tenant_id = :tenantId', { tenantId });
-    if (dateFrom) qb.andWhere('txn.created_at >= :dateFrom', { dateFrom });
-    if (dateTo) qb.andWhere('txn.created_at <= :dateTo', { dateTo });
-
-    const [data, total] = await qb.getManyAndCount();
-    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
-  }
-
-  async createTransaction(staffId: number, dto: CreateTransactionDto) {
-    const staff = await this.findStaff(staffId);
-    const property = await this.findProperty(dto.property_id);
-    const landlord = property.landlord;
-
-    let tenant: TenantEntity | null = null;
-    if (dto.tenant_id) tenant = await this.findTanent(dto.tenant_id);
-
-    let workOrder: WorkOrder | null = null;
-    if (dto.work_order_id)
-      workOrder = await this.findWOrkOrder(dto.work_order_id);
-
-    const txn = this.transactionRepo.create({
-      type: dto.type,
-      amount: dto.amount,
-      property_id: property,
-      landlord,
-      tenant_id: tenant,
-      work_order_id: workOrder,
-      payer_type: dto.payer_type,
-      status: dto.status || TxnStatus.pending,
-      created_by_type: created_by_type.staff,
-    });
-
-    if (dto.status === TxnStatus.paid) txn.paid_at = new Date();
-
-    return await this.transactionRepo.save(txn);
-  }
-
-  async getWorkOrderTransactions(workOrderId: number) {
-    await this.findWOrkOrder(workOrderId);
-    return this.transactionRepo.find({
-      where: { work_order_id: { id: workOrderId } },
-      relations: { property_id: true, landlord: true, tenant_id: true },
-      order: { created_at: 'DESC' },
-    });
-  }
-
-  async getFinancialSummary(filterDto: FilterTransactionDto) {
-    const { dateFrom, dateTo } = filterDto;
-    const qb = this.transactionRepo
-      .createQueryBuilder('txn')
-      .select('txn.type', 'type')
-      .addSelect('txn.status', 'status')
-      .addSelect('txn.payer_type', 'payerType')
-      .addSelect('SUM(txn.amount)', 'totalAmount')
-      .addSelect('COUNT(txn.id)', 'count')
-      .groupBy('txn.type, txn.status, txn.payer_type');
-
-    if (dateFrom) qb.andWhere('txn.created_at >= :dateFrom', { dateFrom });
-    if (dateTo) qb.andWhere('txn.created_at <= :dateTo', { dateTo });
-
-    const raw = await qb.getRawMany();
-    return raw.map((r) => ({
-      type: r.type,
-      status: r.status,
-      payerType: r.payerType,
-      totalAmount: parseFloat(r.totalAmount),
-      count: parseInt(r.count),
-    }));
-  }
 
   async getWorkOrderSummaryReport(filterDto: FilterWorkOrderDto) {
     const { dateFrom, dateTo, status } = filterDto;

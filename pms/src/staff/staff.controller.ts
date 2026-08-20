@@ -276,24 +276,6 @@ export class StaffController {
   // ==========================================
   // TRANSACTIONS & FINANCIALS
   // ==========================================
-  @Get('transactions')
-  getTransactions(@Query() filterDto: FilterTransactionDto) {
-    return this.staffService.getTransactions(filterDto);
-  }
-
-  @Post('transactions')
-  @UsePipes(new ValidationPipe())
-  createTransaction(
-    @Query('staffId', ParseIntPipe) staffId: number,
-    @Body() dto: CreateTransactionDto,
-  ) {
-    return this.staffService.createTransaction(staffId, dto);
-  }
-
-  @Get('work-orders/:id/transactions')
-  getWorkOrderTransactions(@Param('id', ParseIntPipe) id: number) {
-    return this.staffService.getWorkOrderTransactions(id);
-  }
 
   // ==========================================
   // REVIEWS
@@ -319,10 +301,5 @@ export class StaffController {
   @Get('reports/work-order-summary')
   getWorkOrderSummaryReport(@Query() filterDto: FilterWorkOrderDto) {
     return this.staffService.getWorkOrderSummaryReport(filterDto);
-  }
-
-  @Get('reports/financial-summary')
-  getFinancialSummary(@Query() filterDto: FilterTransactionDto) {
-    return this.staffService.getFinancialSummary(filterDto);
   }
 }

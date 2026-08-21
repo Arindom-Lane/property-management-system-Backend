@@ -6,14 +6,29 @@ import { ReviewEntity } from './entities/review.entity';
 import { StaffEntity } from './entities/staff.entity';
 import { WorkOrder } from './entities/work_order.entity';
 import { WorkerEntity } from './entities/worker.entity';
-import { AdminEntity } from "src/admin/entities/admin.entity";
-import { IssueEntity } from 'src/tenant/entities/issue.entity';
-import { PropertyEntity } from "src/landlord/entities/property.entity";
-import { LandlordEntity } from "src/landlord/entities/landlord.entity";
-import { TenantEntity } from "src/tenant/entities/tenant.entity";
+import { AdminEntity } from "../admin/entities/admin.entity";
+import { IssueEntity } from '../tenant/entities/issue.entity';
+import { PropertyEntity } from "../landlord/entities/property.entity";
+import { LandlordEntity } from "../landlord/entities/landlord.entity";
+import { TenantEntity } from "../tenant/entities/tenant.entity";
+import { TransactionEntity } from '../landlord/entities/transaction.entity'
+import { BlockEntity } from "../admin/entities/block.entity";
+import { BuildingEntity } from "../admin/entities/building.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ReviewEntity,StaffEntity,WorkOrder,WorkerEntity,AdminEntity,IssueEntity,PropertyEntity,LandlordEntity,TenantEntity])],
+  imports: [TypeOrmModule,TypeOrmModule.forFeature([
+  TransactionEntity,BuildingEntity,
+  ReviewEntity,
+  StaffEntity,
+  WorkOrder,
+  WorkerEntity,
+  AdminEntity,
+  IssueEntity,
+  PropertyEntity,
+  LandlordEntity,
+  TenantEntity,
+  BlockEntity
+])],
   providers: [StaffService],
   controllers: [StaffController],
   exports: [StaffService]

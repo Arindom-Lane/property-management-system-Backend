@@ -28,10 +28,7 @@ export class IssueEntity {
   @JoinColumn({ name: 'tenant_id' })
   tenant: TenantEntity;
 
-  @ManyToOne(() => PropertyEntity, {
-    nullable: true,
-    eager: true,
-  })
+  @ManyToOne(() => PropertyEntity, { nullable: true, eager: true })
   @JoinColumn({ name: 'property_id' })
   property: PropertyEntity;
 

@@ -844,7 +844,7 @@ async createProperty(
 
       unit_number: createPropertyDto.unit_number,
 
-      building_id: building,
+      building: building,
 
       landlord: landlord,
 
@@ -876,7 +876,7 @@ async createProperty(
 
       unit_number: savedProperty.unit_number,
 
-      building: {id: savedProperty.building_id?.id, name: savedProperty.building_id?.name,},
+      building: {id: savedProperty.building?.id, name: savedProperty.building?.name,},
 
       landlord: savedProperty.landlord.name,
 
@@ -905,7 +905,7 @@ async getAllProperties() {
     await this.propertyRepository.find({
 
       relations: {
-        building_id: true,
+        building: true,
         landlord: true,
         tenant: true,
       },
@@ -919,8 +919,8 @@ async getAllProperties() {
 
     building: {
 
-      id: property.building_id?.id,
-      name: property.building_id?.name,
+      id: property.building?.id,
+      name: property.building?.name,
     },
 
     landlord: {
@@ -966,7 +966,7 @@ async getProperty(id: number) {
 
       relations: {
 
-        building_id: true,
+        building: true,
 
         landlord: true,
 
@@ -989,9 +989,9 @@ async getProperty(id: number) {
 
     building: {
 
-      id: property.building_id?.id,
+      id: property.building?.id,
 
-      name: property.building_id?.name,
+      name: property.building?.name,
     },
 
     landlord: {
@@ -1044,7 +1044,7 @@ async searchProperty(keyword: string) {
       },
     ],
     relations: {
-      building_id: true,
+      building: true,
       landlord: true,
       tenant: true,
     },
@@ -1054,10 +1054,10 @@ async searchProperty(keyword: string) {
     id: property.id,
     unit_number: property.unit_number,
 
-    building: property.building_id
+    building: property.building
       ? {
-          id: property.building_id.id,
-          name: property.building_id.name,
+          id: property.building.id,
+          name: property.building.name,
         }
       : null,
 
@@ -1092,7 +1092,7 @@ async updateProperty(
   const property = await this.propertyRepository.findOne({
     where: { id },
     relations: {
-      building_id: true,
+      building: true,
       landlord: true,
     },
   });
@@ -1113,7 +1113,7 @@ async updateProperty(
       throw new NotFoundException('Building not found');
     }
 
-    property.building_id = building;
+    property.building = building;
   }
 
   if (updatePropertyDto.landlordId) {

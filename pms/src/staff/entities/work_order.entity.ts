@@ -51,7 +51,9 @@ export class WorkOrder {
   @JoinColumn({ name: 'worker_id' })
   worker?: WorkerEntity | null;
 
-  @OneToOne(() => ReviewEntity, (review) => review.workOrder, { nullable: true })
+  @OneToOne(() => ReviewEntity, (review) => review.workOrder, {
+    nullable: true,
+  })
   review?: ReviewEntity | null;
 
   @Column()

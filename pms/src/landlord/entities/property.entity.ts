@@ -11,7 +11,8 @@ import { LandlordEntity } from 'src/landlord/entities/landlord.entity';
 import { BuildingEntity } from 'src/admin/entities/building.entity';
 import { TenantEntity } from 'src/tenant/entities/tenant.entity';
 import { TransactionEntity } from './transaction.entity';
-
+import { WorkOrder } from '../../staff/entities/work_order.entity';       // <-- Import WorkOrder
+import { IssueEntity } from 'src/tenant/entities/issue.entity'; // <-- Import IssueEntity (adjust path if needed)
 
 export enum ListingStatus {
   not_listed = 'not_listed',
@@ -34,7 +35,7 @@ export class PropertyEntity {
   unit_number: string;
 
   @ManyToOne(() => BuildingEntity, (building) => building.properties)
-  building_id?: BuildingEntity;
+  building?: BuildingEntity;
 
   @ManyToOne(() => LandlordEntity, (landlord) => landlord.properties)
   landlord: LandlordEntity;
@@ -74,9 +75,17 @@ export class PropertyEntity {
   @OneToOne(() => TenantEntity, (tenant) => tenant.property)
   tenant?: TenantEntity;
 
-
   @OneToMany(() => TransactionEntity, (transaction) => transaction.property_id)
   transactions: TransactionEntity[];
 
- 
+  // --- RELATIONS ADDED BELOW ---
+
+  // 1. OneToMany: Property -> WorkOrders
+  @OneToMany(() => WorkOrder, (workOrder) => workOrder.property)
+  workOrders: WorkOrder[];
+
+  // 2. OneToMany: Property -> Issues
+  // Maps to the 'property' property in IssueEntity
+  @OneToMany(() => IssueEntity, (issue) => issue.property)
+  issues: IssueEntity[];
 }

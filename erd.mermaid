@@ -1,0 +1,181 @@
+%% Property Management System — ER Diagram
+%% PK = Primary Key, FK = Foreign Key, UK = Unique Key
+%% Note: Issue→WorkOrder and WorkOrder→Review are drawn as one-to-many for
+%% diagram simplicity, but should be enforced 1:1 at the application/DB layer
+%% (e.g. a unique constraint on issue_id, and on work_order_id).
+
+erDiagram
+    ADMIN ||--o{ ADMIN : "creates"
+    ADMIN ||--o{ LANDLORD : "creates"
+    ADMIN ||--o{ STAFF : "creates"
+    ADMIN ||--o{ BLOCK : "creates"
+    ADMIN ||--o{ BUILDING : "creates"
+    ADMIN ||--o{ PROPERTY : "creates"
+
+    BLOCK ||--o{ BUILDING : "contains"
+    BUILDING ||--o{ PROPERTY : "contains"
+
+    LANDLORD ||--o{ PROPERTY : "owns"
+    LANDLORD ||--o{ TENANT : "approves"
+    PROPERTY ||--o{ TENANT : "houses"
+
+    TENANT ||--o{ ISSUE : "reports"
+    PROPERTY ||--o{ ISSUE : "location of"
+
+    ISSUE ||--o{ WORK_ORDER : "generates"
+    STAFF ||--o{ WORK_ORDER : "handles"
+    LANDLORD ||--o{ WORK_ORDER : "can request"
+    TENANT ||--o{ WORK_ORDER : "involves"
+    PROPERTY ||--o{ WORK_ORDER : "involves"
+    WORKER ||--o{ WORK_ORDER : "dispatched to"
+
+    STAFF ||--o{ WORKER : "registers"
+
+    WORK_ORDER ||--o{ REVIEW : "reviewed by"
+    TENANT ||--o{ REVIEW : "writes"
+
+    WORK_ORDER ||--o{ TRANSACTION : "billed as"
+    LANDLORD ||--o{ TRANSACTION : "owns / pays"
+    TENANT ||--o{ TRANSACTION : "pays"
+    PROPERTY ||--o{ TRANSACTION : "recorded against"
+
+    ADMIN {
+        int id PK
+        string name
+        string email UK
+        string password_hash
+        int created_by FK "nullable, self-ref Admin"
+        datetime created_at
+    }
+
+    LANDLORD {
+        int id PK
+        string name
+        string email UK
+        string phone
+        string password_hash
+        string status "ACTIVE, DEACTIVATED"
+        int created_by FK "Admin.id"
+        datetime created_at
+    }
+
+    STAFF {
+        int id PK
+        string name
+        string email UK
+        string phone
+        string password_hash
+        string role "e.g. MAINTENANCE, SUPERVISOR"
+        string status "ACTIVE, DEACTIVATED"
+        int created_by FK "Admin.id"
+        datetime created_at
+    }
+
+    TENANT {
+        int id PK
+        string name
+        string email UK
+        string phone
+        string password_hash
+        string nid_number
+        string nid_document_url
+        boolean has_vehicle "for optional parking billing"
+        string status "PENDING, APPROVED, REJECTED"
+        int property_id FK "nullable until approved"
+        int approved_by FK "Landlord.id, nullable"
+        datetime created_at
+    }
+
+    BLOCK {
+        int id PK
+        string name
+        string address
+        int created_by FK "Admin.id"
+        datetime created_at
+    }
+
+    BUILDING {
+        int id PK
+        string name
+        int block_id FK
+        int created_by FK "Admin.id"
+        datetime created_at
+    }
+
+    PROPERTY {
+        int id PK
+        string unit_number
+        int building_id FK
+        int landlord_id FK "nullable until assigned"
+        decimal rent_amount
+        decimal service_charge_amount
+        boolean has_parking
+        decimal parking_fee "nullable, set by landlord"
+        string listing_status "NOT_LISTED, FOR_RENT, FOR_SALE"
+        string status "VACANT, OCCUPIED, SOLD"
+        int created_by FK "Admin.id"
+        datetime created_at
+    }
+
+    ISSUE {
+        int id PK
+        int tenant_id FK
+        int property_id FK
+        string description
+        string image_url "nullable"
+        string status "OPEN, IN_PROGRESS, RESOLVED"
+        datetime created_at
+    }
+
+    WORK_ORDER {
+        int id PK
+        int issue_id FK
+        int property_id FK
+        int landlord_id FK
+        int tenant_id FK
+        int staff_id FK
+        int worker_id FK "nullable until dispatched"
+        string created_by_type "STAFF or LANDLORD"
+        int created_by_id "id of staff or landlord"
+        decimal material_cost "original estimate, editable"
+        decimal labor_cost "original estimate, editable"
+        decimal additional_cost "nullable, added on completion"
+        string status "PENDING, ASSIGNED, IN_PROGRESS, TENANT_CONFIRMED, COMPLETED"
+        datetime created_at
+        datetime completed_at "nullable"
+    }
+
+    WORKER {
+        int id PK
+        string name
+        string phone
+        string working_area
+        int staff_id FK "created_by"
+        datetime created_at
+    }
+
+    TRANSACTION {
+        int id PK
+        string type "RENT, ELECTRICITY, GAS, WATER, SERVICE_CHARGE, PARKING, WORK_ORDER_COST"
+        decimal amount
+        int property_id FK
+        int landlord_id FK
+        int tenant_id FK "nullable depending on type"
+        int work_order_id FK "nullable"
+        string payer_type "LANDLORD or TENANT"
+        int payer_id
+        string status "PENDING, PAID, REJECTED"
+        string created_by_type "STAFF, LANDLORD, or TENANT"
+        int created_by_id
+        datetime created_at
+        datetime paid_at "nullable"
+    }
+
+    REVIEW {
+        int id PK
+        int work_order_id FK
+        int tenant_id FK
+        int rating "1-5"
+        string comment "nullable"
+        datetime created_at
+    }

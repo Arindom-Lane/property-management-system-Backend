@@ -42,10 +42,10 @@ export class StaffEntity {
   })
   status: StaffStatus;
 
-  @ManyToOne(() => AdminEntity, (admin) => admin.id)
+  @ManyToOne(() => AdminEntity, (admin) => admin.id, { nullable: true })
   @JoinColumn({ name: 'created_by_id' })
   @IsOptional()
-  created_by?: AdminEntity;
+  created_by: AdminEntity | null;;
 
   @CreateDateColumn()
   created_at: Date;

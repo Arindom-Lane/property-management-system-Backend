@@ -11,7 +11,7 @@ import {
   MinLength,
   MaxLength,
   Matches,
-  IsPhoneNumber,
+  IsMobilePhone,
 } from 'class-validator';
 
 import { WorkerStatus } from '../entities/worker.entity';
@@ -40,7 +40,7 @@ export class CreateWorkerDto {
 
   @IsString()
   @IsNotEmpty()
-  @IsPhoneNumber()
+  @IsMobilePhone()
   phone: string;
 
 
@@ -54,17 +54,8 @@ export class CreateWorkerDto {
   })
   worker_area: string;
 
-
-
   @IsEnum(WorkerStatus)
   @IsOptional()
   status?: WorkerStatus;
-
-
-
-  @IsInt()
-  @IsPositive()
-  @IsNotEmpty()
-  created_by: number;
 
 }

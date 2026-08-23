@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Index, OneToMany } from 'typeorm'; // <-- 1. Add OneToMany import
 import { StaffEntity } from './staff.entity';
 import { WorkOrder } from './work_order.entity'; // <-- 2. Import WorkOrder entity (adjust path if needed)
+import { IsOptional } from 'class-validator';
 
 export enum WorkerStatus {
     FREE = "free",
@@ -34,6 +35,7 @@ export class WorkerEntity {
 
     @ManyToOne(() => StaffEntity)
     @JoinColumn({ name: 'created_by_id' })
+    @IsOptional()
     created_by: StaffEntity;
 
     @CreateDateColumn()

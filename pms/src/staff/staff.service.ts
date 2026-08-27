@@ -44,6 +44,8 @@ import {
 import { BlockEntity } from '../admin/entities/block.entity';
 import { BuildingEntity } from '../admin/entities/building.entity';
 import { CreateAdminDto } from '../admin/dto/admin.dto';
+import { LoginStaffDto } from "./dto/LoginStaff.dto"
+
 
 @Injectable()
 export class StaffService {
@@ -283,22 +285,22 @@ export class StaffService {
     return staff;
   }
 
-  async loginStaff(dto: staffDto) {
+  async loginStaff(dto: LoginStaffDto ) {
     const staff = await this.staffRepo.findOne({
       where: { email: dto.email },
     });
 
     if (!staff) {
-      throw new NotFoundException('Email not found');
+      throw new NotFoundException('not found');
     }
 
     const isPasswordCorrect = await bcrypt.compare(
-      dto.password_hash,
+      dto.password,
       staff.password_hash,
     );
 
     if (!isPasswordCorrect) {
-      throw new UnauthorizedException('Invalid password');
+      throw new UnauthorizedException('Invalid');
     }
 
     return staff;

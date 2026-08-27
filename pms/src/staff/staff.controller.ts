@@ -30,6 +30,7 @@ import { FilterTransactionDto } from './dto/FilterTransaction.dto';
 import { IssueStatusDto } from './dto/IssueStatus.dto';
 import { ConvertIssueDto } from './dto/ConvertIssue.dto';
 import { AuthGuard } from './StaffAuth/guard/auth.guard';
+import { LoginStaffDto } from './dto/LoginStaff.dto';
 
 @Controller('staff')
 @UseGuards(AuthGuard)
@@ -39,6 +40,12 @@ export class StaffController {
   // ==========================================
   // STAFF PROFILE MANAGEMENT
   // ==========================================
+
+  @Post('login')
+  login(@Body() dto: LoginStaffDto) {
+    return this.staffService.loginStaff(dto);
+  }
+
   @Post('createStaff')
   @UsePipes(new ValidationPipe())
   createStaff(@Body() dto: staffDto) {

@@ -25,11 +25,11 @@ export class AdminController {
     //ADMIN MODULE...
 
     //admin/register (Admin Register)
-    // @Post('register')
-    // @UsePipes(new ValidationPipe())
-    // register(@Body() createAdminDto: CreateAdminDto){
-    //     return this.adminService.register(createAdminDto)
-    // }
+    @Post('register')
+    @UsePipes(new ValidationPipe())
+    register(@Body() createAdminDto: CreateAdminDto){
+        return this.adminService.register(createAdminDto)
+    }
 
     //admin/login (Admin Login)
     // @Post('login')

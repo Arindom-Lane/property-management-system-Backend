@@ -1,11 +1,11 @@
 import { Body, Controller, Post, Get, Patch, Delete, Query, Param, ParseIntPipe, Request, UseGuards, UsePipes, ValidationPipe, } from '@nestjs/common';
 import { BlockService } from './block.service';
-import { JwtAuthGuard } from './auth/auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 import { CreateBlockDto } from './dto/block.dto';
 import { UpdateBlockDto } from './dto/updateBlock.dto';
 
 @Controller('admin/block')
-@UseGuards(JwtAuthGuard)
+@UseGuards(AuthGuard)
 export class BlockController {
   constructor(
     private readonly blockService: BlockService,

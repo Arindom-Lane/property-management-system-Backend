@@ -2,8 +2,8 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { LandlordDto } from './dto/landlord.dto';
 import type { UpdateLandlordDto } from './dto/update_landlord.dto';
 import { LandlordEntity } from './entities/landlord.entity';
-import { Repository } from 'typeorm/browser/repository/Repository.js';
-import { InjectRepository } from '@nestjs/typeorm/dist/common/typeorm.decorators';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { PropertyEntity } from './entities/property.entity';
 import {Status} from './entities/property.entity.js';
 import { ListingStatus } from './entities/property.entity.js';
@@ -138,7 +138,7 @@ constructor(
 
     async updatePropertyRent(landlordId: number, propertyId: number, rent_amount: number): Promise<PropertyEntity | null> {
 
-      const landlord = this.landlordRepository.findOne({
+      const landlord = await this.landlordRepository.findOne({
         where: { id: landlordId },
         relations: { properties: true },
       });
@@ -199,7 +199,7 @@ constructor(
       if (!property) {
         throw new UnauthorizedException('Property not found for this landlord');
       }
-      if (property.has_parking = false){
+      if (!property.has_parking){
 
         throw new UnauthorizedException('There is no parking for this property');
       }

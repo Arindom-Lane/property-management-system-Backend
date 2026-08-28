@@ -14,6 +14,7 @@ import { TenantEntity } from "../tenant/entities/tenant.entity";
 import { TransactionEntity } from '../landlord/entities/transaction.entity'
 import { BlockEntity } from "../admin/entities/block.entity";
 import { BuildingEntity } from "../admin/entities/building.entity";
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [TypeOrmModule,TypeOrmModule.forFeature([
@@ -27,8 +28,8 @@ import { BuildingEntity } from "../admin/entities/building.entity";
   PropertyEntity,
   LandlordEntity,
   TenantEntity,
-  BlockEntity
-])],
+  BlockEntity,
+]),AuthModule],
   providers: [StaffService],
   controllers: [StaffController],
   exports: [StaffService]

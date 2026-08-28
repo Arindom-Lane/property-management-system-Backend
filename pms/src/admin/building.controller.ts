@@ -1,11 +1,11 @@
 import { Body, Controller, Post, Get, Patch, Delete, Query, Param, ParseIntPipe, Request, UseGuards, UsePipes, ValidationPipe, } from '@nestjs/common';
 import { BuildingService } from './building.service';
-import { JwtAuthGuard } from './auth/auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 import { CreateBuildingDto } from './dto/building.dto';
 import { UpdateBuildingDto } from './dto/updateBuilding.dto';
 
 @Controller('admin/building')
-@UseGuards(JwtAuthGuard)
+@UseGuards(AuthGuard)
 export class BuildingController {
   constructor(
     private readonly buildingService: BuildingService,

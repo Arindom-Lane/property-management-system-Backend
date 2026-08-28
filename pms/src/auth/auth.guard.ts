@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from './auth.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -12,21 +13,24 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-
     const authorization = request.headers.authorization;
 
-    const token = authorization?.split(' ')[1];
+    if (!authorization?.startsWith('Bearer ')) {
+      throw new UnauthorizedException('Bearer token is required');
+    }
+
+    const token = authorization.substring(7).trim();
 
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Bearer token is required');
     }
 
     try {
-      await this.jwtService.verifyAsync(token);
-    } catch (err) {
-      throw new UnauthorizedException('Invalid token');
+      const payload = await this.jwtService.verifyAsync<JwtPayload>(token);
+      request.user = payload;
+      return true;
+    } catch {
+      throw new UnauthorizedException('Invalid or expired token');
     }
-
-    return true;
   }
 }

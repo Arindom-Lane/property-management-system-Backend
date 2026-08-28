@@ -5,14 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { TenantEntity } from './entities/tenant.entity';
 import { IssueEntity } from './entities/issue.entity';
-import { PropertyEntity } from 'src/landlord/entities/property.entity';
-import { LandlordEntity } from 'src/landlord/entities/landlord.entity';
-
+import { PropertyEntity } from '../landlord/entities/property.entity';
+import { LandlordEntity } from '../landlord/entities/landlord.entity';
+import {AuthModule } from '../auth/auth.module'
 import { JwtModule } from '@nestjs/jwt';    
 
-import { AuthModule } from 'src/auth/auth.module';
 
-import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
@@ -23,7 +21,6 @@ import { MailModule } from 'src/mail/mail.module';
       LandlordEntity,
     ]),
     AuthModule,
-    MailModule,
   ],
   controllers: [TenantController],
   providers: [TenantService],

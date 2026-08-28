@@ -28,7 +28,7 @@ import { UpdateIssueDto } from './dto/update-issue.dto';
 // import { UpdatePaymentDto } from './dto/update-payment.dto';
 
 import { JwtService } from '@nestjs/jwt';
-import { MailService } from 'src/mail/mail.service';
+
 @Injectable()
 export class TenantService {
   constructor(
@@ -46,7 +46,7 @@ export class TenantService {
 
     
     private readonly jwtService: JwtService,
-    private readonly mailService: MailService,
+
   ) {}
 
   
@@ -90,10 +90,10 @@ async createTenant(
   const savedTenant = await this.tenantRepository.save(tenant);
 
   // Send welcome mail
-  await this.mailService.sendWelcomeMail(
-    savedTenant.email,
-    savedTenant.name,
-  );
+  // await this.mailService.sendWelcomeMail(
+  //   savedTenant.email,
+  //   savedTenant.name,
+  // );
 
   // Return response
   return savedTenant;

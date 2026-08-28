@@ -44,7 +44,7 @@ export class StaffController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(new ValidationPipe({ whitelist: true }))
+  @UsePipes(new ValidationPipe)
   login(@Body() dto: LoginStaffDto) {
     return this.staffService.loginStaff(dto);
   }

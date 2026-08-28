@@ -45,6 +45,8 @@ import { BlockEntity } from '../admin/entities/block.entity';
 import { BuildingEntity } from '../admin/entities/building.entity';
 import { CreateAdminDto } from '../admin/dto/admin.dto';
 import { LoginStaffDto } from "./dto/LoginStaff.dto"
+import { empty } from 'rxjs';
+import { IsEmail } from 'class-validator';
 
 
 @Injectable()
@@ -303,7 +305,14 @@ export class StaffService {
       throw new UnauthorizedException('Invalid');
     }
 
-    return staff;
+    const Objstaff = {
+      id: staff.id,
+      email: staff.email,
+      name: staff.name,
+      phone: staff.phone,
+      status: staff.status
+    }
+    return Objstaff;
   }
 
   async findStaffByEmail(email: string) {

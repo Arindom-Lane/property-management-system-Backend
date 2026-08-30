@@ -47,6 +47,7 @@ import { CreateAdminDto } from '../admin/dto/admin.dto';
 import { LoginStaffDto } from "./dto/LoginStaff.dto"
 import { empty } from 'rxjs';
 import { IsEmail } from 'class-validator';
+import { StaffStatus } from "./entities/staff.entity"
 
 
 @Injectable()
@@ -87,7 +88,7 @@ export class StaffService {
 
     @InjectRepository(BuildingEntity)
     private readonly buildingRepo: Repository<BuildingEntity>,
-  ) {}
+  ) { }
 
   async findAdmin(id: number) {
     const admin = await this.adminRepo.findOne({
@@ -259,7 +260,7 @@ export class StaffService {
 
     return block;
   }
- // admins work
+  // admins work
   async createStaff(data: staffDto): Promise<StaffEntity> {
     const existing = await this.staffRepo.findOne({
       where: [{ email: data.email }, { phone: data.phone }],
@@ -272,14 +273,12 @@ export class StaffService {
     const saltRounds = 10;
     let admin: AdminEntity | null = null;
     const hashedPassword = await bcrypt.hash(data.password_hash, saltRounds);
-    if(data.created_by){
-        admin = await this.findAdmin(data.created_by);
-    }
-  
+
+
     const staff = this.staffRepo.create({
       ...data,
+      status: data.status,
       password_hash: hashedPassword,
-      created_by: admin,
     });
 
     await this.staffRepo.save(staff);
@@ -287,7 +286,7 @@ export class StaffService {
     return staff;
   }
 
-  async loginStaff(dto: LoginStaffDto ) {
+  async loginStaff(dto: LoginStaffDto) {
     const staff = await this.staffRepo.findOne({
       where: { email: dto.email },
     });

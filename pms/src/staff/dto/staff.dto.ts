@@ -18,8 +18,8 @@ export class staffDto {
   @IsString()
   @IsNotEmpty()
   @Matches(/^[a-zA-Z\s]+$/, {
-      message: 'Name can only contain letters and spaces',
-    })
+    message: 'Name can only contain letters and spaces',
+  })
   name: string;
 
   @IsEmail()
@@ -37,9 +37,6 @@ export class staffDto {
   })
   password_hash: string;
 
-  @IsNumber()
-  @IsOptional()
-  created_by: number;
 
   @IsEnum(StaffStatus)
   status?: StaffStatus;

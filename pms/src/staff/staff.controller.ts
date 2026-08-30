@@ -36,7 +36,7 @@ import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('staff')
 export class StaffController {
-  constructor(private readonly staffService: StaffService) {}
+  constructor(private readonly staffService: StaffService) { }
 
   // ==========================================
   // PUBLIC ROUTES
@@ -54,7 +54,6 @@ export class StaffController {
   // ==========================================
 
   @Post('createStaff')
-  @UseGuards(AuthGuard)
   @UsePipes(new ValidationPipe())
   createStaff(@Body() dto: staffDto) {
     return this.staffService.createStaff(dto);

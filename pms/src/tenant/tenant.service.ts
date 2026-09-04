@@ -23,12 +23,21 @@ import { UpdateTenantDto } from './dto/update-tenant.dto';
 import { CreateIssueDto } from './dto/create-issue.dto';
 import { UpdateIssueDto } from './dto/update-issue.dto';
 
+import { WorkOrder, OrderStatus } from 'src/staff/entities/work_order.entity';
 
-// import { CreatePaymentDto } from './dto/create-payment.dto';
-// import { UpdatePaymentDto } from './dto/update-payment.dto';
+import {
+  TransactionEntity,
+  Transaction_type,
+  payer_type,
+  status,
+  created_by_type,
+} from 'src/landlord/entities/transaction.entity';
+import { CreateTransactionDto } from './dto/create-transaction.dto';
+
 
 import { JwtService } from '@nestjs/jwt';
 import { MailService } from 'src/mail/mail.service';
+import { BillStatus, TenantBillEntity } from 'src/landlord/entities/tenant-bill.entity';
 @Injectable()
 export class TenantService {
   constructor(
@@ -44,7 +53,18 @@ export class TenantService {
     @InjectRepository(LandlordEntity)
     private readonly landlordRepository: Repository<LandlordEntity>,
 
-    
+    @InjectRepository(TransactionEntity)
+    private readonly transactionRepository: Repository<TransactionEntity>,
+
+    @InjectRepository(TenantBillEntity)
+private readonly tenantBillRepository:
+  Repository<TenantBillEntity>,
+
+  @InjectRepository(WorkOrder)
+private readonly workOrderRepository: Repository<WorkOrder>,
+
+
+
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
   ) {}
@@ -108,17 +128,17 @@ async createTenant(
   
   
 
-  // ============================
+
   // Login
-  // ============================
+  
 
 async loginTenant(
   dto: LoginTenantDto,
 ): Promise<any> {
     const tenant = await this.tenantRepository.findOne({
       where: {
-        // email: dto.email,
-          phone: dto.phone,
+        email: dto.email,
+          // phone: dto.phone,
       },
     });
 
@@ -151,17 +171,15 @@ return {
 };
   }
 
-  // ============================
+  
   // Get All Tenants
-  // ============================
 
   async getAllTenants(): Promise<TenantEntity[]> {
     return await this.tenantRepository.find();
   }
 
-  // ============================
   // Get Tenant By ID
-  // ============================
+  
 
   async getTenantById(
     id: number,
@@ -180,9 +198,8 @@ return {
 
     return tenant;
   }
-  // ============================
+  
 // Update Tenant
-// ============================
 
 async updateTenant(
   id: number,
@@ -323,65 +340,69 @@ async createIssue(
 
   return await this.issueRepository.save(issue);
 }
-/*async getAssignedProperty(
-  id: number,
-): Promise<any> {
 
-  const tenant = await this.tenantRepository.findOne({
-    where: { id },
-  });
+// //Dummy async getAssignedProperty
+// async getAssignedProperty(
+//   id: number,
+// ): Promise<any> {
 
-  if (!tenant) {
-    throw new NotFoundException(
-      'Tenant not found.',
-    );
-  }
+//   const tenant = await this.tenantRepository.findOne({
+//     where: { id },
+//   });
 
-  return {
-    id: 1,
-    unit_number: 'A-101',
-    rent_amount: 15000,
-    listing_status: 'for_rent',
-    status: 'occupied',
-    landlord: 'Demo Landlord',
-  };
-}
-//create issue
-async createIssue(
-  tenantId: number,
-  dto: CreateIssueDto,
-): Promise<any> {
-  const tenant = await this.tenantRepository.findOne({
-    where: { id: tenantId },
-    relations: {
-      property: true,
-    },
-  });
-
-  if (!tenant) {
-    throw new NotFoundException('Tenant not found.');
-  }
-
-//   if (!tenant.property) {
-//     throw new BadRequestException(
-//       'Property is not assigned yet.',
+//   if (!tenant) {
+//     throw new NotFoundException(
+//       'Tenant not found.',
 //     );
 //   }
+
+//   return {
+//     id: 1,
+//     unit_number: 'A-101',
+//     rent_amount: 15000,
+//     listing_status: 'for_rent',
+//     status: 'occupied',
+//     landlord: 'Demo Landlord',
+//   };
+// }
+// //create issue
+// async createIssue(
+//   tenantId: number,
+//   dto: CreateIssueDto,
+// ): Promise<any> {
+//   const tenant = await this.tenantRepository.findOne({
+//     where: { id: tenantId },
+//     relations: {
+//       property: true,
+//     },
+//   });
+
+//   if (!tenant) {
+//     throw new NotFoundException('Tenant not found.');
+//   }
+
+// //   if (!tenant.property) {
+// //     throw new BadRequestException(
+// //       'Property is not assigned yet.',
+// //     );
+// //   }
+// //   const issue = this.issueRepository.create({
+// //   description: dto.description,
+// //   image_url: dto.image_url,
+// //   tenant,
+// // });
+
 //   const issue = this.issueRepository.create({
 //   description: dto.description,
 //   image_url: dto.image_url,
 //   tenant,
+//   property: tenant.property ?? null,
 // });
 
-  const issue = this.issueRepository.create({
-  description: dto.description,
-  image_url: dto.image_url,
-  tenant,
-  property: tenant.property ?? null,
-});
+//   return await this.issueRepository.save(issue);
+// }
 
-  return await this.issueRepository.save(issue);
-}*/
+//from that to real code
 // get all issues of a tenant
 async getTenantIssues(
   tenantId: number,
@@ -492,5 +513,364 @@ async deleteIssue(
 
   await this.issueRepository.delete(issueId);
 }
+async payRent(
+  tenantId: number,
+  dto: CreateTransactionDto,
+): Promise<TransactionEntity> {
 
+  // Tenant find
+  const tenant = await this.tenantRepository.findOne({
+    where: { id: tenantId },
+    relations: {
+  property: {
+    landlord: true,
+  },
+},
+  });
+
+  if (!tenant) {
+    throw new NotFoundException(
+      'Tenant not found.',
+    );
+  }
+
+
+  // Property assigned
+  if (!tenant.property) {
+    throw new BadRequestException(
+      'Property is not assigned yet.',
+    );
+  }
+
+
+  // 
+  if (dto.type !== Transaction_type.rent) {
+    throw new BadRequestException(
+      'Invalid transaction type.',
+    );
+  }
+
+//pay-rent
+  
+  const amount = tenant.property.rent_amount;
+
+
+  
+  const transaction =
+    this.transactionRepository.create({
+      type: Transaction_type.rent,
+
+      amount: amount,
+
+      tenant_id: tenant,
+
+      property_id: tenant.property,
+
+      landlord: tenant.property.landlord,
+
+      payer_type: payer_type.tenant,
+
+      status: status.pending,
+
+      created_by_type: created_by_type.tenant,
+    });
+
+
+  
+  return await this.transactionRepository.save(
+    transaction,
+  );
+}
+
+//make payment for service charge
+async makePayment(
+  tenantId: number,
+  dto: CreateTransactionDto,
+): Promise<TransactionEntity> {
+
+  const tenant = await this.tenantRepository.findOne({
+    where: { id: tenantId },
+    relations: {
+      property: {
+        landlord: true,
+      },
+    },
+  });
+
+  if (!tenant) {
+    throw new NotFoundException('Tenant not found.');
+  }
+
+  if (!tenant.property) {
+    throw new BadRequestException(
+      'Property is not assigned yet.',
+    );
+  }
+
+  let amount: number;
+
+  switch (dto.type) {
+
+    case Transaction_type.rent:
+      amount = Number(tenant.property.rent_amount);
+      break;
+
+    case Transaction_type.service_charge:
+      if (tenant.property.service_charge == null) {
+        throw new BadRequestException(
+          'Service charge is not available.',
+        );
+      }
+
+      amount = Number(
+        tenant.property.service_charge,
+      );
+      break;
+
+    case Transaction_type.parking:
+      if (
+        !tenant.property.has_parking ||
+        tenant.property.parking_fee == null
+      ) {
+        throw new BadRequestException(
+          'Parking is not available.',
+        );
+      }
+
+      amount = Number(
+        tenant.property.parking_fee,
+      );
+      break;
+
+    case Transaction_type.electricity:
+    case Transaction_type.water:
+    case Transaction_type.gas:
+    case Transaction_type.work_order_cost:
+
+      if (
+        dto.amount === undefined ||
+        dto.amount <= 0
+      ) {
+        throw new BadRequestException(
+          'Amount is required.',
+        );
+      }
+
+      amount = dto.amount;
+      break;
+
+    default:
+      throw new BadRequestException(
+        'Invalid transaction type.',
+      );
+  }
+
+  const transaction =
+    this.transactionRepository.create({
+      type: dto.type,
+      amount,
+      tenant_id: tenant,
+      property_id: tenant.property,
+      landlord: tenant.property.landlord,
+      payer_type: payer_type.tenant,
+      status: status.pending,
+      created_by_type: created_by_type.tenant,
+    });
+
+  return await this.transactionRepository.save(
+    transaction,
+  );
+}
+// get due bills for a tenant
+async getDueBills(
+  tenantId: number,
+): Promise<TenantBillEntity[]> {
+
+  const tenant =
+    await this.tenantRepository.findOne({
+      where: {
+        id: tenantId,
+      },
+    });
+
+  if (!tenant) {
+    throw new NotFoundException(
+      'Tenant not found.',
+    );
+  }
+
+  return await this.tenantBillRepository.find({
+    where: {
+      tenant: {
+        id: tenantId,
+      },
+      status: BillStatus.unpaid,
+    },
+    relations: {
+      property: true,
+    },
+    order: {
+      created_at: 'DESC',
+    },
+  });
+}
+// pay bill for a tenant
+async payBill(
+  tenantId: number,
+  billId: number,
+): Promise<TransactionEntity> {
+
+  const bill =
+    await this.tenantBillRepository.findOne({
+      where: {
+        id: billId,
+        tenant: {
+          id: tenantId,
+        },
+      },
+      relations: {
+        tenant: true,
+        property: {
+          landlord: true,
+        },
+        landlord: true,
+        transaction: true,
+      },
+    });
+
+  if (!bill) {
+    throw new NotFoundException(
+      'Bill not found for this tenant.',
+    );
+  }
+
+  if (bill.status === BillStatus.paid) {
+    throw new BadRequestException(
+      'Bill is already paid.',
+    );
+  }
+
+  
+  if (bill.transaction) {
+    throw new BadRequestException(
+      'Payment already submitted for this bill.',
+    );
+  }
+
+  const transaction =
+    this.transactionRepository.create({
+      type: bill.type,
+      amount: Number(bill.amount),
+      tenant_id: bill.tenant,
+      property_id: bill.property,
+      landlord: bill.landlord,
+      payer_type: payer_type.tenant,
+      status: status.pending,
+      created_by_type:
+        created_by_type.tenant,
+    });
+
+  const savedTransaction =
+    await this.transactionRepository.save(
+      transaction,
+    );
+
+  bill.transaction = savedTransaction;
+
+  await this.tenantBillRepository.save(bill);
+
+  return savedTransaction;
+}
+
+//payable WorkOrder GET method
+
+async getPayableWorkOrders(tenantId: number): Promise<WorkOrder[]> {
+  const tenant = await this.tenantRepository.findOne({
+    where: { id: tenantId },
+  });
+
+  if (!tenant) {
+    throw new NotFoundException('Tenant not found.');
+  }
+
+  const workOrders = await this.workOrderRepository.find({
+    where: {
+      tenant: { id: tenantId },
+      status: OrderStatus.COMPLETE,
+    },
+    relations: {
+      property: true,
+      landlord: true,
+      transaction: true,
+    },
+  });
+
+  // Only completed work orders that do not have a payment transaction yet
+  return workOrders.filter(
+    (workOrder) => !workOrder.transaction,
+  );
+}
+
+//pay work order for a tenant
+
+async payWorkOrder(
+  tenantId: number,
+  workOrderId: number,
+): Promise<TransactionEntity> {
+  const workOrder = await this.workOrderRepository.findOne({
+    where: {
+      id: workOrderId,
+      tenant: { id: tenantId },
+    },
+    relations: {
+      tenant: true,
+      property: true,
+      landlord: true,
+      transaction: true,
+    },
+  });
+
+  if (!workOrder) {
+    throw new NotFoundException('Work order not found for this tenant.');
+  }
+
+if (!workOrder.tenant) {
+  throw new BadRequestException(
+    'This work order is not assigned to a tenant.',
+  );
+}
+
+  if (workOrder.status !== OrderStatus.COMPLETE) {
+    throw new BadRequestException('Work order is not complete yet.');
+  }
+
+  if (workOrder.transaction) {
+    throw new BadRequestException(
+      'Payment already submitted for this work order.',
+    );
+  }
+
+  const amount =
+    Number(workOrder.labor_cost) +
+    Number(workOrder.materials_cost) +
+    Number(workOrder.additional_cost);
+
+  if (amount <= 0) {
+    throw new BadRequestException('Work order has no payable cost.');
+  }
+
+  const transaction = this.transactionRepository.create({
+    type: Transaction_type.work_order_cost,
+    amount,
+    tenant_id: workOrder.tenant,
+    property_id: workOrder.property,
+    landlord: workOrder.landlord,
+    work_order_id: workOrder,
+    payer_type: payer_type.tenant,
+    status: status.pending,
+    created_by_type: created_by_type.tenant,
+  });
+
+  return await this.transactionRepository.save(transaction);
+}
  }

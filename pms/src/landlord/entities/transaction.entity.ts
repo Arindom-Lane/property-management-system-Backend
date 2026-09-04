@@ -1,10 +1,10 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { LandlordEntity } from './landlord.entity';
 import { PropertyEntity } from './property.entity';
 import { TenantEntity } from 'src/tenant/entities/tenant.entity';
 import { WorkOrder } from 'src/staff/entities/work_order.entity';
 
-export enum Trnsaction_type {
+export enum Transaction_type {
     rent = 'rent',
     electricity = 'electricity',
     water = 'water',
@@ -40,10 +40,10 @@ export class TransactionEntity {
 
     @Column({
         type: "enum",
-        enum: Trnsaction_type,
-        default: Trnsaction_type.rent,
+        enum: Transaction_type,
+        default: Transaction_type.rent,
     })
-    type: Trnsaction_type;
+    type: Transaction_type;
 
     @Column({type: 'decimal'})
     amount: number;
@@ -56,9 +56,12 @@ export class TransactionEntity {
 
     @ManyToOne(() => TenantEntity, (tanent) => tanent.id)
     tenant_id?: TenantEntity;
-
-    @OneToOne(() => WorkOrder, (workOder) => workOder.id)
-    work_order_id: WorkOrder;
+//chane relation one to one with work order and add join column
+   @OneToOne( () => WorkOrder, (workOrder) => workOrder.transaction,
+  { nullable: true },
+   )
+    @JoinColumn({ name: 'work_order_id' })
+    work_order_id?: WorkOrder | null;
 
     @Column({
         type: "enum",

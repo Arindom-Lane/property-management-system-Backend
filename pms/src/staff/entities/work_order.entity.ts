@@ -14,7 +14,7 @@ import { LandlordEntity } from 'src/landlord/entities/landlord.entity';
 import { TenantEntity } from 'src/tenant/entities/tenant.entity';
 import { StaffEntity } from './staff.entity';
 import { WorkerEntity } from './worker.entity';
-
+import { TransactionEntity } from 'src/landlord/entities/transaction.entity';
 export enum OrderStatus {
   PENDING = 'pending',
   ASSIGNED = 'assigned',
@@ -53,6 +53,15 @@ export class WorkOrder {
 
   @OneToOne(() => ReviewEntity, (review) => review.workOrder, { nullable: true })
   review?: ReviewEntity | null;
+  
+//add transaction work order relation inversely
+
+  @OneToOne(
+  () => TransactionEntity,
+  (transaction) => transaction.work_order_id,
+  { nullable: true },
+)
+transaction?: TransactionEntity | null;
 
   @Column()
   created_by_type: string;

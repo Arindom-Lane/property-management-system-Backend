@@ -14,7 +14,7 @@ import { LandlordEntity } from 'src/landlord/entities/landlord.entity';
 import { ReviewEntity } from 'src/staff/entities/review.entity';
 import { IssueEntity } from './issue.entity';
 // import { PaymentEntity } from './payment.entity';
-
+import { TransactionEntity } from 'src/landlord/entities/transaction.entity';         
 export enum TenantStatus {
   PENDING = 'PENDING',
   APPROVED = 'APPROVED',
@@ -89,4 +89,10 @@ export class TenantEntity {
 
   @OneToMany(() => ReviewEntity, (review) => review.tenant)
   reviews: ReviewEntity[];
+  
+  @OneToMany(
+  () => TransactionEntity,
+  (transaction) => transaction.tenant_id,
+)
+transactions: TransactionEntity[];
 }

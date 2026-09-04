@@ -23,10 +23,12 @@ import { UpdateIssueDto } from './dto/update-issue.dto';
 
 // import { CreatePaymentDto } from './dto/create-payment.dto';
 // import { UpdatePaymentDto } from './dto/update-payment.dto';
+import { CreateTransactionDto } from './dto/create-transaction.dto';
 
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
+import { PayBillDto } from './dto/pay-bill.dto';
 @Controller('tenant')
 export class TenantController {
   constructor(
@@ -183,6 +185,72 @@ deleteTenantByEmail(
   ) {
     return this.tenantService.deleteIssue(issueId);
   }
+//pay rent
+@Post('pay-rent/:tenantId')
+payRent(
+  @Param('tenantId', ParseIntPipe) tenantId: number,
+  @Body() dto: CreateTransactionDto,
+) {
+  return this.tenantService.payRent(
+    tenantId,
+    dto,
+  );
+}
 
+//make payment
+@Post('payment/:tenantId')
+makePayment(
+  @Param('tenantId', ParseIntPipe) tenantId: number,
+  @Body() dto: CreateTransactionDto,
+) {
+  return this.tenantService.makePayment(
+    tenantId,
+    dto,
+  );
+}
+//get due bills
+@Get('bills/due/:tenantId')
+getDueBills(
+  @Param('tenantId', ParseIntPipe)
+  tenantId: number,
+) {
+  return this.tenantService.getDueBills(
+    tenantId,
+  );
+}
+//pay bill
+@Post('pay-bill/:tenantId')
+payBill(
+  @Param('tenantId', ParseIntPipe)
+  tenantId: number,
 
+  @Body()
+  dto: PayBillDto,
+) {
+  return this.tenantService.payBill(
+    tenantId,
+    dto.billId,
+  );
+}
+//get payable work orders
+@Get('work-orders/payable/:tenantId')
+getPayableWorkOrders(
+  @Param('tenantId', ParseIntPipe)
+  tenantId: number,
+) {
+  return this.tenantService.getPayableWorkOrders(
+    tenantId,
+  );
+}
+//pay work order
+@Post('work-order/pay/:tenantId/:workOrderId')
+payWorkOrder(
+  @Param('tenantId', ParseIntPipe) tenantId: number,
+  @Param('workOrderId', ParseIntPipe) workOrderId: number,
+) {
+  return this.tenantService.payWorkOrder(
+    tenantId,
+    workOrderId,
+  );
+}
 }

@@ -1,4 +1,4 @@
-import { Controller, Post,Body, Get, Param, Put, Patch } from '@nestjs/common';
+import { Controller, Post,Body, Get, Param, Put, Patch, ParseIntPipe } from '@nestjs/common';
 import { LandlordService } from './landlord.service';
 import { LandlordEntity } from './entities/landlord.entity';
 import { LandlordDto } from './dto/landlord.dto';
@@ -8,7 +8,7 @@ import { Status } from './entities/property.entity.js';
 import { ListingStatus } from './entities/property.entity.js';
 import { TenantEntity } from '../tenant/entities/tenant.entity.js';
 import { WorkOrder } from 'src/staff/entities/work_order.entity';
-
+import { CreateTenantBillDto } from './dto/create-tenant-bill.dto';
 @Controller('landlord')
 export class LandlordController {
   constructor(private readonly landlordService: LandlordService) {}
@@ -137,9 +137,34 @@ export class LandlordController {
     getLandlordTransactions(@Param('landlordId') landlordId: number): Promise<any> {
         return this.landlordService.getLandlordTransactions(landlordId);
     }
+//Assign Property to Tenant
+    @Patch('tenant/assign-property/:landlordid/:tenantid/:propertyid')
+assignPropertyToTenant(
+  @Param('landlordid', ParseIntPipe) landlordid: number,
+  @Param('tenantid', ParseIntPipe) tenantid: number,
+  @Param('propertyid', ParseIntPipe) propertyid: number,
+): Promise<TenantEntity> {
+  return this.landlordService.assignPropertyToTenant(
+    landlordid,
+    tenantid,
+    propertyid,
+  );
+}
 
+//tenant bill creation by landlord
+@Post('tenant-bill/:landlordId')
+createTenantBill(
+  @Param('landlordId', ParseIntPipe)
+  landlordId: number,
 
-
+  @Body()
+  dto: CreateTenantBillDto,
+) {
+  return this.landlordService.createTenantBill(
+    landlordId,
+    dto,
+  );
+}
     
 
 }

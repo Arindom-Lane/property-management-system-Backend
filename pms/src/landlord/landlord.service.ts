@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException,ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { LandlordDto } from './dto/landlord.dto';
 import type { UpdateLandlordDto } from './dto/update_landlord.dto';
 import { LandlordEntity } from './entities/landlord.entity';
@@ -11,7 +11,13 @@ import { TenantEntity } from '../tenant/entities/tenant.entity.js';
 import { TenantStatus } from '../tenant/entities/tenant.entity.js';
 import { WorkOrder } from '../staff/entities/work_order.entity.js';
 import { CreateWorkOrderDto } from '../staff/dto/CreateWorkOrder.dto';
-import { TransactionEntity } from './entities/transaction.entity';
+import { TransactionEntity,Transaction_type,  } from './entities/transaction.entity';
+import {
+  TenantBillEntity,
+  BillStatus,
+} from './entities/tenant-bill.entity';
+import { CreateTenantBillDto } from './dto/create-tenant-bill.dto';
+import { IssueEntity } from 'src/tenant/entities/issue.entity';
 
 @Injectable()
 export class LandlordService {
@@ -24,6 +30,10 @@ constructor(
     private tenantRepository: Repository<TenantEntity>,
     @InjectRepository(WorkOrder)
     private workOrderRepository: Repository<WorkOrder>,
+    @InjectRepository(TenantBillEntity)
+    private tenantBillRepository: Repository<TenantBillEntity>,
+    @InjectRepository(IssueEntity)
+    private issueRepository: Repository<IssueEntity>,
   ) {}
 
 
@@ -382,10 +392,149 @@ constructor(
 
       return transactions.transactions;
     }
+//Assign Property to Tenant
+async assignPropertyToTenant(
+  landlordId: number,
+  tenantId: number,
+  propertyId: number,
+): Promise<TenantEntity> {
 
+  const landlord = await this.landlordRepository.findOne({
+    where: { id: landlordId },
+  });
 
+  if (!landlord) {
+    throw new NotFoundException('Landlord not found');
+  }
 
+  const tenant = await this.tenantRepository.findOne({
+    where: { id: tenantId },
+  });
 
+  if (!tenant) {
+    throw new NotFoundException('Tenant not found');
+  }
+
+  if (tenant.status !== TenantStatus.APPROVED) {
+    throw new BadRequestException(
+      'Tenant must be approved before assigning property',
+    );
+  }
+
+  const property = await this.propertyRepository.findOne({
+    where: {
+      id: propertyId,
+      landlord: { id: landlordId },
+    },
+    relations: {
+      landlord: true,
+    },
+  });
+
+  if (!property) {
+    throw new NotFoundException(
+      'Property not found for this landlord',
+    );
+  }
+
+  if (property.status !== Status.VACANT) {
+    throw new BadRequestException(
+      'Property is not vacant',
+    );
+  }
+
+  tenant.property = property;
+  tenant.approved_by = landlord;
+
+  property.status = Status.OCCUPIED;
+
+  await this.propertyRepository.save(property);
+
+  return await this.tenantRepository.save(tenant);
+}
+
+//create tenant bill
+async createTenantBill(
+  landlordId: number,
+  dto: CreateTenantBillDto,
+): Promise<TenantBillEntity> {
+
+  const tenant =
+    await this.tenantRepository.findOne({
+      where: {
+        id: dto.tenantId,
+      },
+      relations: {
+        property: {
+          landlord: true,
+        },
+      },
+    });
+
+  if (!tenant) {
+    throw new NotFoundException(
+      'Tenant not found',
+    );
+  }
+
+  if (!tenant.property) {
+    throw new BadRequestException(
+      'Tenant has no assigned property',
+    );
+  }
+
+  if (
+    tenant.property.landlord.id !== landlordId
+  ) {
+    throw new ForbiddenException(
+      'This tenant does not belong to you',
+    );
+  }
+
+  const allowedTypes = [
+    Transaction_type.electricity,
+    Transaction_type.water,
+    Transaction_type.gas,
+  ];
+
+  if (!allowedTypes.includes(dto.type)) {
+    throw new BadRequestException(
+      'Only utility bills can be created here',
+    );
+  }
+
+  const existing =
+    await this.tenantBillRepository.findOne({
+      where: {
+        tenant: {
+          id: dto.tenantId,
+        },
+        type: dto.type,
+        month: dto.month,
+      },
+    });
+
+  if (existing) {
+    throw new BadRequestException(
+      'Bill already exists for this month',
+    );
+  }
+
+  const bill =
+    this.tenantBillRepository.create({
+      tenant,
+      property: tenant.property,
+      landlord: tenant.property.landlord,
+      type: dto.type,
+      amount: dto.amount,
+      month: dto.month,
+      status: BillStatus.unpaid,
+    });
+
+  return await this.tenantBillRepository.save(
+    bill,
+  );
+}
 
   }
 

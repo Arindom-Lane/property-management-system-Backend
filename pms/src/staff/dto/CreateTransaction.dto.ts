@@ -1,9 +1,9 @@
 import { IsEnum, IsNumber, IsOptional, IsInt, Min, ValidateIf } from 'class-validator';
 import { Type } from 'class-transformer';
-import { Trnsaction_type, payer_type, status, created_by_type } from 'src/landlord/entities/transaction.entity';
+import { Transaction_type, payer_type, status, created_by_type } from 'src/landlord/entities/transaction.entity';
 
 export class CreateTransactionDto {
-  @IsEnum(Trnsaction_type) type: Trnsaction_type;
+  @IsEnum(Transaction_type) type: Transaction_type;
   @IsNumber() @Type(() => Number) amount: number;
   @IsInt() @Type(() => Number) property_id: number;
   @IsOptional() @IsInt() @Type(() => Number) tenant_id?: number;

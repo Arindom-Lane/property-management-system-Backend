@@ -26,7 +26,7 @@ import { UpdateIssueDto } from './dto/update-issue.dto';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 import { PayBillDto } from './dto/pay-bill.dto';
 @Controller('tenant')
@@ -73,7 +73,7 @@ export class TenantController {
   // ==========================
 
   @Get('profile/:id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   getTenantById(
     @Param('id', ParseIntPipe) id: number,
   ) {

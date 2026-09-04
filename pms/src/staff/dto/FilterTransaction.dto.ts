@@ -1,9 +1,9 @@
 import { IsOptional, IsEnum, IsDateString, IsInt, Min } from 'class-validator';
 import { Type } from 'class-transformer';
-import { Trnsaction_type, payer_type, status } from 'src/landlord/entities/transaction.entity';
+import { Transaction_type, payer_type, status } from 'src/landlord/entities/transaction.entity';
 
 export class FilterTransactionDto {
-  @IsOptional() @IsEnum(Trnsaction_type) type?: Trnsaction_type;
+  @IsOptional() @IsEnum(Transaction_type) type?: Transaction_type;
   @IsOptional() @IsEnum(status) status?: status;
   @IsOptional() @IsEnum(payer_type) payerType?: payer_type;
   @IsOptional() @Type(() => Number) @IsInt() @Min(1) propertyId?: number;

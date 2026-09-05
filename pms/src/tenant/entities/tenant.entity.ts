@@ -9,9 +9,9 @@ import {
   OneToOne,
 } from 'typeorm';
 
-import { PropertyEntity } from 'src/landlord/entities/property.entity';
-import { LandlordEntity } from 'src/landlord/entities/landlord.entity';
-import { ReviewEntity } from 'src/staff/entities/review.entity';
+import { PropertyEntity } from '../../landlord/entities/property.entity';
+import { LandlordEntity } from '../../landlord/entities/landlord.entity';
+import { ReviewEntity } from '../../staff/entities/review.entity';
 import { IssueEntity } from './issue.entity';
 // import { PaymentEntity } from './payment.entity';
 
@@ -78,11 +78,6 @@ export class TenantEntity {
   })
   issues: IssueEntity[];
    
-//   @OneToMany(
-//   () => PaymentEntity,
-//   (payment) => payment.tenant,
-// )
-// payments: PaymentEntity[];
 
   @CreateDateColumn()
   created_at: Date;

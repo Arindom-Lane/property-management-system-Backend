@@ -1,4 +1,4 @@
-import { AdminEntity } from 'src/admin/entities/admin.entity';
+import { AdminEntity } from '../../admin/entities/admin.entity';
 import {
   Column,
   CreateDateColumn,
@@ -10,8 +10,8 @@ import {
 } from 'typeorm';
 import { PropertyEntity } from './property.entity';
 import { TransactionEntity } from './transaction.entity';
-import { TenantEntity } from 'src/tenant/entities/tenant.entity';
-import { WorkOrder } from 'src/staff/entities/work_order.entity';
+import { TenantEntity } from '../../tenant/entities/tenant.entity';
+import { WorkOrder } from '../../staff/entities/work_order.entity';
 
 export enum LandlordStatus {
   active = 'active',

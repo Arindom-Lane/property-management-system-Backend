@@ -45,11 +45,10 @@ import {
 import { BlockEntity } from '../admin/entities/block.entity';
 import { BuildingEntity } from '../admin/entities/building.entity';
 import { CreateAdminDto } from '../admin/dto/admin.dto';
-import { LoginStaffDto } from "./dto/LoginStaff.dto"
+import { LoginStaffDto } from './dto/LoginStaff.dto';
 import { empty } from 'rxjs';
 import { IsEmail } from 'class-validator';
-import { StaffStatus } from "./entities/staff.entity"
-
+import { StaffStatus } from './entities/staff.entity';
 
 @Injectable()
 export class StaffService {
@@ -89,7 +88,7 @@ export class StaffService {
 
     @InjectRepository(BuildingEntity)
     private readonly buildingRepo: Repository<BuildingEntity>,
-  ) { }
+  ) {}
 
   async findAdmin(id: number) {
     const admin = await this.adminRepo.findOne({
@@ -156,9 +155,7 @@ export class StaffService {
       data.phone === undefined &&
       data.password === undefined
     ) {
-      throw new BadRequestException(
-        'At least one profile field is required',
-      );
+      throw new BadRequestException('At least one profile field is required');
     }
 
     const email = data.email?.trim().toLowerCase();
@@ -340,7 +337,6 @@ export class StaffService {
     let admin: AdminEntity | null = null;
     const hashedPassword = await bcrypt.hash(data.password_hash, saltRounds);
 
-
     const staff = this.staffRepo.create({
       ...data,
       status: data.status,
@@ -375,8 +371,8 @@ export class StaffService {
       email: staff.email,
       name: staff.name,
       phone: staff.phone,
-      status: staff.status
-    }
+      status: staff.status,
+    };
     return Objstaff;
   }
 
@@ -972,62 +968,17 @@ export class StaffService {
       total: report.length,
     };
   }
-  
 
-  async findAllWorkOrders(filterDto: FilterWorkOrderDto) {
-    const page = filterDto.page || 1;
-    const limit = filterDto.limit || 10;
-    const sortOrder = filterDto.sortOrder || 'DESC';
-
-    const qb = this.workOrderRepo
-      .createQueryBuilder('wo')
-      .leftJoinAndSelect('wo.landlord', 'landlord')
-      .skip((page - 1) * limit)
-      .take(limit)
-      .orderBy('wo.created_at', sortOrder);
-
-    if (filterDto.status) {
-      qb.andWhere('wo.status = :status', { status: filterDto.status });
-    }
-
-    if (filterDto.landlordId) {
-      qb.andWhere('landlord.id = :landlordId', {
-        landlordId: filterDto.landlordId,
-      });
-    }
-
-    if (filterDto.dateFrom) {
-      qb.andWhere('wo.created_at >= :dateFrom', { dateFrom: filterDto.dateFrom });
-    }
-
-    if (filterDto.dateTo) {
-      qb.andWhere('wo.created_at <= :dateTo', { dateTo: filterDto.dateTo });
-    }
-
-    if (filterDto.search) {
-      qb.andWhere('wo.id::text ILIKE :search', {
-        search: `%${filterDto.search}%`,
-      });
-    }
-
-    const [data, total] = await qb.getManyAndCount();
+  async findAllWorkOrders() {
+    const data = await this.workOrderRepo.find({
+      relations: { landlord: true },
+      order: { created_at: 'DESC' },
+    });
 
     return {
       data,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
+      total: data.length,
     };
-  }
-
-  async exportWorkOrders(filterDto: FilterWorkOrderDto) {
-    filterDto.page = 1;
-    filterDto.limit = 5000;
-
-    const result = await this.findAllWorkOrders(filterDto);
-
-    return result.data;
   }
 
   async createWorkOrder(staffId: number, body: CreateWorkOrderDto) {
@@ -1289,8 +1240,6 @@ export class StaffService {
         txn.tenant_id = order.tenant;
       }
 
-
-
       await this.transactionRepo.save(txn);
     }
 
@@ -1411,91 +1360,18 @@ export class StaffService {
     };
   }
 
-  async findAllIssues(filterDto: FilterWorkOrderDto) {
-    let page = filterDto.page;
-    let limit = filterDto.limit;
-    let sortBy = filterDto.sortBy;
-    let sortOrder = filterDto.sortOrder;
-
-    if (!page) {
-      page = 1;
-    }
-
-    if (!limit) {
-      limit = 10;
-    }
-
-    if (!sortBy) {
-      sortBy = 'created_at';
-    }
-
-    if (!sortOrder) {
-      sortOrder = 'DESC';
-    }
-
-    const qb = this.issueRepo
-      .createQueryBuilder('issue')
-      .leftJoinAndSelect('issue.tenant', 'tenant')
-      .leftJoinAndSelect('issue.property', 'property')
-      .leftJoinAndSelect('property.landlord', 'landlord')
-      .leftJoinAndSelect('property.building', 'building')
-      .leftJoinAndSelect('building.block', 'block')
-      .skip((page - 1) * limit)
-      .take(limit)
-      .orderBy(`issue.${sortBy}`, sortOrder);
-
-    if (filterDto.status) {
-      qb.andWhere('issue.status = :status', {
-        status: filterDto.status,
-      });
-    }
-
-    if (filterDto.propertyId) {
-      qb.andWhere('issue.property_id = :propertyId', {
-        propertyId: filterDto.propertyId,
-      });
-    }
-
-    if (filterDto.tenantId) {
-      qb.andWhere('issue.tenant_id = :tenantId', {
-        tenantId: filterDto.tenantId,
-      });
-    }
-
-    if (filterDto.dateFrom) {
-      qb.andWhere('issue.created_at >= :dateFrom', {
-        dateFrom: filterDto.dateFrom,
-      });
-    }
-
-    if (filterDto.dateTo) {
-      qb.andWhere('issue.created_at <= :dateTo', {
-        dateTo: filterDto.dateTo,
-      });
-    }
-
-    if (filterDto.search) {
-      qb.andWhere(
-        '(issue.description ILIKE :search OR tenant.name ILIKE :search)',
-        {
-          search: `%${filterDto.search}%`,
-        },
-      );
-    }
-
-    const result = await qb.getManyAndCount();
-    const data = result[0];
-    const total = result[1];
+  async findAllIssues(tenantId: number) {
+    const data = await this.issueRepo.find({
+      where: { tenant: { id: tenantId } },
+      relations: { tenant: true, property: true },
+      order: { created_at: 'DESC' },
+    });
 
     return {
       data,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
+      total: data.length,
     };
   }
-
   async updateIssueStatus(id: number, dto: IssueStatusDto) {
     const issue = await this.findIssue(id);
 
@@ -1554,71 +1430,31 @@ export class StaffService {
     return await this.workOrderRepo.save(workOrder);
   }
 
-  async getAllProperties(query: any) {
-    let page = query.page;
-    let limit = query.limit;
-
-    if (!page) {
-      page = 1;
-    }
-
-    if (!limit) {
-      limit = 10;
-    }
+  async getAllProperties(query: { landlordId?: number; buildingId?: number }) {
+    const { landlordId, buildingId } = query;
 
     const qb = this.propertyRepo
       .createQueryBuilder('prop')
-      .leftJoinAndSelect('prop.landlord', 'landlord')
       .leftJoinAndSelect('prop.building', 'building')
-      .leftJoinAndSelect('building.block', 'block')
+      .leftJoinAndSelect('prop.landlord', 'landlord')
       .leftJoinAndSelect('prop.tenant', 'tenant')
-      .skip((page - 1) * limit)
-      .take(limit)
       .orderBy('prop.created_at', 'DESC');
 
-    if (query.status) {
-      qb.andWhere('prop.status = :status', {
-        status: query.status,
-      });
+    // FIXED: Changed prop.landlord_id to prop.landlordId
+    if (landlordId) {
+      qb.andWhere('prop.landlordId = :landlordId', { landlordId });
     }
 
-    if (query.listingStatus) {
-      qb.andWhere('prop.listing_status = :listingStatus', {
-        listingStatus: query.listingStatus,
-      });
+    // FIXED: Changed prop.building_id to prop.buildingId
+    if (buildingId) {
+      qb.andWhere('prop.buildingId = :buildingId', { buildingId });
     }
 
-    if (query.buildingId) {
-      qb.andWhere('prop.building_id = :buildingId', {
-        buildingId: query.buildingId,
-      });
-    }
-
-    if (query.blockId) {
-      qb.andWhere('building.block_id = :blockId', {
-        blockId: query.blockId,
-      });
-    }
-
-    if (query.search) {
-      qb.andWhere(
-        '(prop.unit_number ILIKE :search OR landlord.name ILIKE :search)',
-        {
-          search: `%${query.search}%`,
-        },
-      );
-    }
-
-    const result = await qb.getManyAndCount();
-    const data = result[0];
-    const total = result[1];
+    const [data, total] = await qb.getManyAndCount();
 
     return {
       data,
       total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
     };
   }
 

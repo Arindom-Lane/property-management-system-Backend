@@ -41,7 +41,7 @@ import { JwtPayload } from '../auth/auth.service';
 
 @Controller('staff')
 export class StaffController {
-  constructor(private readonly staffService: StaffService) { }
+  constructor(private readonly staffService: StaffService) {}
 
   // ==========================================
   // PUBLIC ROUTES
@@ -178,14 +178,8 @@ export class StaffController {
 
   @Get('work-orders')
   @UseGuards(AuthGuard)
-  findAllWorkOrders(@Query() filterDto: FilterWorkOrderDto) {
-    return this.staffService.findAllWorkOrders(filterDto);
-  }
-
-  @Get('work-orders/export')
-  @UseGuards(AuthGuard)
-  exportWorkOrders(@Query() filterDto: FilterWorkOrderDto) {
-    return this.staffService.exportWorkOrders(filterDto);
+  findAllWorkOrders() {
+    return this.staffService.findAllWorkOrders();
   }
 
   @Get('work-orders/:id')
@@ -264,10 +258,9 @@ export class StaffController {
 
   @Get('issues')
   @UseGuards(AuthGuard)
-  findAllIssues(@Query() filterDto: FilterWorkOrderDto) {
-    return this.staffService.findAllIssues(filterDto);
+  findAllIssues(@Query('tenantId') tenantId: number) {
+    return this.staffService.findAllIssues(tenantId);
   }
-
   @Get('issues/:id')
   @UseGuards(AuthGuard)
   findIssueById(@Param('id', ParseIntPipe) id: number) {
@@ -302,8 +295,11 @@ export class StaffController {
 
   @Get('properties')
   @UseGuards(AuthGuard)
-  getAllProperties(@Query() query: any) {
-    return this.staffService.getAllProperties(query);
+  getAllProperties(
+    @Query('landlordId') landlordId?: number,
+    @Query('buildingId') buildingId?: number,
+  ) {
+    return this.staffService.getAllProperties({ landlordId, buildingId });
   }
 
   @Get('properties/:id')

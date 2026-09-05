@@ -472,38 +472,36 @@ or
 16. LIST WORK ORDERS
 ------------------------------------------------
 
-GET http://localhost:3000/staff/work-orders?status=pending&landlordId=2&dateFrom=2026-09-01&dateTo=2026-09-30&search=10&page=1&limit=10&sortOrder=DESC
+GET http://localhost:3000/staff/work-orders
 [AUTH]
 Body: none
-
-this is based on this dto file
-import {
-  IsOptional,
-  IsEnum,
-  IsDateString,
-  IsString,
-  IsInt,
-  Min,
-} from 'class-validator';
-import { Type } from 'class-transformer';
-import { OrderStatus } from '../entities/work_order.entity';
-
-export class FilterWorkOrderDto {
-  @IsOptional()
-  @IsEnum(OrderStatus)
-  status?: OrderStatus;
-
-  @IsOptional() @Type(() => Number) @IsInt() @Min(1) workerId?: number;
-  @IsOptional() @Type(() => Number) @IsInt() @Min(1) propertyId?: number;
-  @IsOptional() @Type(() => Number) @IsInt() @Min(1) landlordId?: number;
-  @IsOptional() @Type(() => Number) @IsInt() @Min(1) tenantId?: number;
-  @IsOptional() @IsDateString() dateFrom?: string;
-  @IsOptional() @IsDateString() dateTo?: string;
-  @IsOptional() @IsString() search?: string;
-  @IsOptional() @Type(() => Number) @IsInt() @Min(1) page?: number = 1;
-  @IsOptional() @Type(() => Number) @IsInt() @Min(1) limit?: number = 10;
-  @IsOptional() @IsString() sortBy?: string = 'created_at';
-  @IsOptional() @IsString() sortOrder?: 'ASC' | 'DESC' = 'DESC';
+{
+    "data": [
+        {
+            "id": 1,
+            "landlord": {
+                "id": 4,
+                "name": "fahim",
+                "email": "fahim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                "status": "active",
+                "created_at": "2026-09-05T06:12:54.473Z"
+            },
+            "created_by_type": "staff",
+            "created_by_id": 1,
+            "status": "pending",
+            "created_at": "2026-09-05T06:45:48.824Z",
+            "completed_at": null,
+            "labor_cost": "0.00",
+            "materials_cost": "0.00",
+            "additional_cost": "0.00"
+        }
+    ],
+    "total": 1,
+    "page": 1,
+    "limit": 10,
+    "totalPages": 1
 }
 
 
@@ -535,30 +533,6 @@ Success response (200):
   "totalPages": 1
 }
 
-------------------------------------------------
-17. EXPORT WORK ORDERS
-------------------------------------------------
-
-GET http://localhost:3000/staff/work-orders/export?status=complete&dateFrom=2026-09-01&dateTo=2026-09-30
-[AUTH]
-Body: none
-
-Success response (200): an array of work-order objects, with the same object
-shape as the data items in route 16. The service forces page=1 and limit=5000.
-
-[
-  {
-    "id": 10,
-    "status": "complete",
-    "created_by_type": "staff",
-    "created_by_id": 1,
-    "labor_cost": 3000,
-    "materials_cost": 500,
-    "additional_cost": 0,
-    "created_at": "2026-09-05T04:36:38.000Z",
-    "completed_at": "2026-09-05T05:00:00.000Z"
-  }
-]
 
 ------------------------------------------------
 18. GET WORK ORDER
@@ -572,22 +546,184 @@ Success response (200): one work-order object with populated worker, review,
 property, landlord, tenant, staff, and issue relations.
 
 {
-  "id": 10,
-  "status": "pending",
-  "created_by_type": "staff",
-  "created_by_id": 1,
-  "labor_cost": 0,
-  "materials_cost": 0,
-  "additional_cost": 0,
-  "created_at": "2026-09-05T04:36:38.000Z",
-  "completed_at": null,
-  "worker": null,
-  "property": {"id": 10, "unit_number": "A-101"},
-  "landlord": {"id": 2, "name": "Landlord One"},
-  "tenant": {"id": 3, "name": "Tenant One"},
-  "staff": {"id": 1, "name": "John Staff"},
-  "issue": {"id": 4, "description": "Broken light"},
-  "review": null
+    "id": 1,
+    "issue": {
+        "id": 2,
+        "tenant": {
+            "id": 1,
+            "name": "Karim",
+            "email": "karim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+            "nid_number": "1234567890123",
+            "nid_document_url": "https://example.com/nid.pdf",
+            "has_vehicle": true,
+            "status": "APPROVED",
+            "property": {
+                "id": 2,
+                "unit_number": "A-102",
+                "rent_amount": "15000.00",
+                "service_charge": "2000.00",
+                "has_parking": true,
+                "parking_fee": "1000.00",
+                "listing_status": "for_rent",
+                "status": "vacant",
+                "created_by": "Admin",
+                "created_at": "2026-09-05T06:23:30.562Z"
+            },
+            "approved_by": {
+                "id": 4,
+                "name": "fahim",
+                "email": "fahim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                "status": "active",
+                "created_at": "2026-09-05T06:12:54.473Z"
+            },
+            "created_at": "2026-09-05T06:14:36.621Z"
+        },
+        "property": {
+            "id": 2,
+            "unit_number": "A-102",
+            "landlord": {
+                "id": 4,
+                "name": "fahim",
+                "email": "fahim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                "status": "active",
+                "created_at": "2026-09-05T06:12:54.473Z"
+            },
+            "rent_amount": "15000.00",
+            "service_charge": "2000.00",
+            "has_parking": true,
+            "parking_fee": "1000.00",
+            "listing_status": "for_rent",
+            "status": "vacant",
+            "created_by": "Admin",
+            "created_at": "2026-09-05T06:23:30.562Z"
+        },
+        "description": "gas",
+        "image_url": null,
+        "status": "IN_PROGRESS",
+        "created_at": "2026-09-05T06:35:46.410Z"
+    },
+    "property": {
+        "id": 2,
+        "unit_number": "A-102",
+        "landlord": {
+            "id": 4,
+            "name": "fahim",
+            "email": "fahim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+            "status": "active",
+            "created_at": "2026-09-05T06:12:54.473Z"
+        },
+        "rent_amount": "15000.00",
+        "service_charge": "2000.00",
+        "has_parking": true,
+        "parking_fee": "1000.00",
+        "listing_status": "for_rent",
+        "status": "vacant",
+        "created_by": "Admin",
+        "created_at": "2026-09-05T06:23:30.562Z",
+        "tenant": {
+            "id": 1,
+            "name": "Karim",
+            "email": "karim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+            "nid_number": "1234567890123",
+            "nid_document_url": "https://example.com/nid.pdf",
+            "has_vehicle": true,
+            "status": "APPROVED",
+            "property": {
+                "id": 2,
+                "unit_number": "A-102",
+                "rent_amount": "15000.00",
+                "service_charge": "2000.00",
+                "has_parking": true,
+                "parking_fee": "1000.00",
+                "listing_status": "for_rent",
+                "status": "vacant",
+                "created_by": "Admin",
+                "created_at": "2026-09-05T06:23:30.562Z"
+            },
+            "approved_by": {
+                "id": 4,
+                "name": "fahim",
+                "email": "fahim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                "status": "active",
+                "created_at": "2026-09-05T06:12:54.473Z"
+            },
+            "created_at": "2026-09-05T06:14:36.621Z"
+        }
+    },
+    "landlord": {
+        "id": 4,
+        "name": "fahim",
+        "email": "fahim@gmail.com",
+        "phone": "01711111111",
+        "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+        "status": "active",
+        "created_at": "2026-09-05T06:12:54.473Z"
+    },
+    "tenant": {
+        "id": 1,
+        "name": "Karim",
+        "email": "karim@gmail.com",
+        "phone": "01711111111",
+        "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+        "nid_number": "1234567890123",
+        "nid_document_url": "https://example.com/nid.pdf",
+        "has_vehicle": true,
+        "status": "APPROVED",
+        "property": {
+            "id": 2,
+            "unit_number": "A-102",
+            "rent_amount": "15000.00",
+            "service_charge": "2000.00",
+            "has_parking": true,
+            "parking_fee": "1000.00",
+            "listing_status": "for_rent",
+            "status": "vacant",
+            "created_by": "Admin",
+            "created_at": "2026-09-05T06:23:30.562Z"
+        },
+        "approved_by": {
+            "id": 4,
+            "name": "fahim",
+            "email": "fahim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+            "status": "active",
+            "created_at": "2026-09-05T06:12:54.473Z"
+        },
+        "created_at": "2026-09-05T06:14:36.621Z"
+    },
+    "staff": {
+        "id": 1,
+        "name": "arino",
+        "email": "arino@gmail.com",
+        "phone": "00000000000",
+        "password_hash": "$2b$10$.GIg/7dkwTsP9P.xXIRMhOEsfCb1JaN0OYA/k222mxQ0iVtgSO1rC",
+        "status": "active",
+        "created_by": null,
+        "created_at": "2026-08-21T04:19:26.191Z"
+    },
+    "worker": null,
+    "review": null,
+    "created_by_type": "staff",
+    "created_by_id": 1,
+    "status": "pending",
+    "created_at": "2026-09-05T06:45:48.824Z",
+    "completed_at": null,
+    "labor_cost": "0.00",
+    "materials_cost": "0.00",
+    "additional_cost": "0.00"
 }
 
 ------------------------------------------------
@@ -598,10 +734,10 @@ POST http://localhost:3000/staff/work-orders?staffId=1
 [AUTH]
 Body:
 {
-  "property_id": 10,
-  "issue_id": 4,
-  "landlord_id": 2,
-  "tenant_id": 3,
+  "property_id": 2,
+  "issue_id": 2,
+  "landlord_id": 4,
+  "tenant_id": 1,
   "created_by_type": "staff",
   "created_by_id": 1
 }
@@ -612,26 +748,348 @@ The service creates the order as pending and initializes all costs to 0.
 
 Success response (201):
 {
-  "issue": {"id": 4, "description": "Broken light"},
-  "property": {"id": 10, "unit_number": "A-101"},
-  "landlord": {"id": 2, "name": "Landlord One"},
-  "tenant": {"id": 3, "name": "Tenant One"},
-  "staff": {"id": 1, "name": "John Staff"},
-  "created_by_type": "staff",
-  "created_by_id": 1,
-  "status": "pending",
-  "labor_cost": 0,
-  "materials_cost": 0,
-  "additional_cost": 0,
-  "id": 10,
-  "created_at": "2026-09-05T04:36:38.000Z"
+    "id": 1,
+    "issue": {
+        "id": 2,
+        "tenant": {
+            "id": 1,
+            "name": "Karim",
+            "email": "karim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+            "nid_number": "1234567890123",
+            "nid_document_url": "https://example.com/nid.pdf",
+            "has_vehicle": true,
+            "status": "APPROVED",
+            "property": {
+                "id": 2,
+                "unit_number": "A-102",
+                "rent_amount": "15000.00",
+                "service_charge": "2000.00",
+                "has_parking": true,
+                "parking_fee": "1000.00",
+                "listing_status": "for_rent",
+                "status": "vacant",
+                "created_by": "Admin",
+                "created_at": "2026-09-05T06:23:30.562Z"
+            },
+            "approved_by": {
+                "id": 4,
+                "name": "fahim",
+                "email": "fahim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                "status": "active",
+                "created_at": "2026-09-05T06:12:54.473Z"
+            },
+            "created_at": "2026-09-05T06:14:36.621Z"
+        },
+        "property": {
+            "id": 2,
+            "unit_number": "A-102",
+            "landlord": {
+                "id": 4,
+                "name": "fahim",
+                "email": "fahim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                "status": "active",
+                "created_at": "2026-09-05T06:12:54.473Z"
+            },
+            "rent_amount": "15000.00",
+            "service_charge": "2000.00",
+            "has_parking": true,
+            "parking_fee": "1000.00",
+            "listing_status": "for_rent",
+            "status": "vacant",
+            "created_by": "Admin",
+            "created_at": "2026-09-05T06:23:30.562Z"
+        },
+        "description": "gas",
+        "image_url": null,
+        "status": "OPEN",
+        "created_at": "2026-09-05T06:35:46.410Z"
+    },
+    "property": {
+        "id": 2,
+        "unit_number": "A-102",
+        "landlord": {
+            "id": 4,
+            "name": "fahim",
+            "email": "fahim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+            "status": "active",
+            "created_at": "2026-09-05T06:12:54.473Z"
+        },
+        "rent_amount": "15000.00",
+        "service_charge": "2000.00",
+        "has_parking": true,
+        "parking_fee": "1000.00",
+        "listing_status": "for_rent",
+        "status": "vacant",
+        "created_by": "Admin",
+        "created_at": "2026-09-05T06:23:30.562Z",
+        "tenant": {
+            "id": 1,
+            "name": "Karim",
+            "email": "karim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+            "nid_number": "1234567890123",
+            "nid_document_url": "https://example.com/nid.pdf",
+            "has_vehicle": true,
+            "status": "APPROVED",
+            "property": {
+                "id": 2,
+                "unit_number": "A-102",
+                "rent_amount": "15000.00",
+                "service_charge": "2000.00",
+                "has_parking": true,
+                "parking_fee": "1000.00",
+                "listing_status": "for_rent",
+                "status": "vacant",
+                "created_by": "Admin",
+                "created_at": "2026-09-05T06:23:30.562Z"
+            },
+            "approved_by": {
+                "id": 4,
+                "name": "fahim",
+                "email": "fahim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                "status": "active",
+                "created_at": "2026-09-05T06:12:54.473Z"
+            },
+            "created_at": "2026-09-05T06:14:36.621Z"
+        },
+        "transactions": [],
+        "workOrders": []
+    },
+    "landlord": {
+        "id": 4,
+        "name": "fahim",
+        "email": "fahim@gmail.com",
+        "phone": "01711111111",
+        "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+        "status": "active",
+        "properties": [
+            {
+                "id": 2,
+                "unit_number": "A-102",
+                "rent_amount": "15000.00",
+                "service_charge": "2000.00",
+                "has_parking": true,
+                "parking_fee": "1000.00",
+                "listing_status": "for_rent",
+                "status": "vacant",
+                "created_by": "Admin",
+                "created_at": "2026-09-05T06:23:30.562Z"
+            }
+        ],
+        "tenants": [
+            {
+                "id": 1,
+                "name": "Karim",
+                "email": "karim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+                "nid_number": "1234567890123",
+                "nid_document_url": "https://example.com/nid.pdf",
+                "has_vehicle": true,
+                "status": "APPROVED",
+                "property": {
+                    "id": 2,
+                    "unit_number": "A-102",
+                    "rent_amount": "15000.00",
+                    "service_charge": "2000.00",
+                    "has_parking": true,
+                    "parking_fee": "1000.00",
+                    "listing_status": "for_rent",
+                    "status": "vacant",
+                    "created_by": "Admin",
+                    "created_at": "2026-09-05T06:23:30.562Z"
+                },
+                "approved_by": {
+                    "id": 4,
+                    "name": "fahim",
+                    "email": "fahim@gmail.com",
+                    "phone": "01711111111",
+                    "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                    "status": "active",
+                    "created_at": "2026-09-05T06:12:54.473Z"
+                },
+                "created_at": "2026-09-05T06:14:36.621Z"
+            }
+        ],
+        "created_at": "2026-09-05T06:12:54.473Z"
+    },
+    "tenant": {
+        "id": 1,
+        "name": "Karim",
+        "email": "karim@gmail.com",
+        "phone": "01711111111",
+        "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+        "nid_number": "1234567890123",
+        "nid_document_url": "https://example.com/nid.pdf",
+        "has_vehicle": true,
+        "status": "APPROVED",
+        "property": {
+            "id": 2,
+            "unit_number": "A-102",
+            "landlord": {
+                "id": 4,
+                "name": "fahim",
+                "email": "fahim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                "status": "active",
+                "created_at": "2026-09-05T06:12:54.473Z"
+            },
+            "rent_amount": "15000.00",
+            "service_charge": "2000.00",
+            "has_parking": true,
+            "parking_fee": "1000.00",
+            "listing_status": "for_rent",
+            "status": "vacant",
+            "created_by": "Admin",
+            "created_at": "2026-09-05T06:23:30.562Z"
+        },
+        "approved_by": {
+            "id": 4,
+            "name": "fahim",
+            "email": "fahim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+            "status": "active",
+            "created_at": "2026-09-05T06:12:54.473Z"
+        },
+        "issues": [
+            {
+                "id": 6,
+                "tenant": {
+                    "id": 1,
+                    "name": "Karim",
+                    "email": "karim@gmail.com",
+                    "phone": "01711111111",
+                    "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+                    "nid_number": "1234567890123",
+                    "nid_document_url": "https://example.com/nid.pdf",
+                    "has_vehicle": true,
+                    "status": "APPROVED",
+                    "created_at": "2026-09-05T06:14:36.621Z"
+                },
+                "property": {
+                    "id": 2,
+                    "unit_number": "A-102",
+                    "rent_amount": "15000.00",
+                    "service_charge": "2000.00",
+                    "has_parking": true,
+                    "parking_fee": "1000.00",
+                    "listing_status": "for_rent",
+                    "status": "vacant",
+                    "created_by": "Admin",
+                    "created_at": "2026-09-05T06:23:30.562Z"
+                },
+                "description": "internet",
+                "image_url": null,
+                "status": "IN_PROGRESS",
+                "created_at": "2026-09-05T06:38:59.653Z"
+            },
+            {
+                "id": 3,
+                "tenant": {
+                    "id": 1,
+                    "name": "Karim",
+                    "email": "karim@gmail.com",
+                    "phone": "01711111111",
+                    "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+                    "nid_number": "1234567890123",
+                    "nid_document_url": "https://example.com/nid.pdf",
+                    "has_vehicle": true,
+                    "status": "APPROVED",
+                    "created_at": "2026-09-05T06:14:36.621Z"
+                },
+                "property": {
+                    "id": 2,
+                    "unit_number": "A-102",
+                    "rent_amount": "15000.00",
+                    "service_charge": "2000.00",
+                    "has_parking": true,
+                    "parking_fee": "1000.00",
+                    "listing_status": "for_rent",
+                    "status": "vacant",
+                    "created_by": "Admin",
+                    "created_at": "2026-09-05T06:23:30.562Z"
+                },
+                "description": "light",
+                "image_url": null,
+                "status": "RESOLVED",
+                "created_at": "2026-09-05T06:36:10.924Z"
+            },
+            {
+                "id": 2,
+                "tenant": {
+                    "id": 1,
+                    "name": "Karim",
+                    "email": "karim@gmail.com",
+                    "phone": "01711111111",
+                    "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+                    "nid_number": "1234567890123",
+                    "nid_document_url": "https://example.com/nid.pdf",
+                    "has_vehicle": true,
+                    "status": "APPROVED",
+                    "created_at": "2026-09-05T06:14:36.621Z"
+                },
+                "property": {
+                    "id": 2,
+                    "unit_number": "A-102",
+                    "rent_amount": "15000.00",
+                    "service_charge": "2000.00",
+                    "has_parking": true,
+                    "parking_fee": "1000.00",
+                    "listing_status": "for_rent",
+                    "status": "vacant",
+                    "created_by": "Admin",
+                    "created_at": "2026-09-05T06:23:30.562Z"
+                },
+                "description": "gas",
+                "image_url": null,
+                "status": "OPEN",
+                "created_at": "2026-09-05T06:35:46.410Z"
+            }
+        ],
+        "created_at": "2026-09-05T06:14:36.621Z",
+        "reviews": []
+    },
+    "staff": {
+        "id": 1,
+        "name": "arino",
+        "email": "arino@gmail.com",
+        "phone": "00000000000",
+        "password_hash": "$2b$10$.GIg/7dkwTsP9P.xXIRMhOEsfCb1JaN0OYA/k222mxQ0iVtgSO1rC",
+        "status": "active",
+        "created_by": null,
+        "created_at": "2026-08-21T04:19:26.191Z"
+    },
+    "created_by_type": "staff",
+    "created_by_id": 1,
+    "status": "pending",
+    "created_at": "2026-09-05T06:45:48.824Z",
+    "completed_at": null,
+    "labor_cost": "0.00",
+    "materials_cost": "0.00",
+    "additional_cost": "0.00"
 }
+
+
+this many things miht be not needed, use only the once that you feel like must be shown to the staff
 
 ------------------------------------------------
 20. UPDATE WORK ORDER
 ------------------------------------------------
 
-PATCH http://localhost:3000/staff/work-orders/10
+PATCH http://localhost:3000/staff/work-orders/1
 [AUTH]
 Body (all fields optional):
 {
@@ -644,14 +1102,184 @@ Body (all fields optional):
 Success response (200): the updated work-order entity.
 
 {
-  "id": 10,
-  "status": "assigned",
-  "labor_cost": 3000,
-  "materials_cost": 500,
-  "additional_cost": 0,
-  "created_by_type": "staff",
-  "created_by_id": 1,
-  "created_at": "2026-09-05T04:36:38.000Z"
+    "id": 1,
+    "issue": {
+        "id": 2,
+        "tenant": {
+            "id": 1,
+            "name": "Karim",
+            "email": "karim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+            "nid_number": "1234567890123",
+            "nid_document_url": "https://example.com/nid.pdf",
+            "has_vehicle": true,
+            "status": "APPROVED",
+            "property": {
+                "id": 2,
+                "unit_number": "A-102",
+                "rent_amount": "15000.00",
+                "service_charge": "2000.00",
+                "has_parking": true,
+                "parking_fee": "1000.00",
+                "listing_status": "for_rent",
+                "status": "vacant",
+                "created_by": "Admin",
+                "created_at": "2026-09-05T06:23:30.562Z"
+            },
+            "approved_by": {
+                "id": 4,
+                "name": "fahim",
+                "email": "fahim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                "status": "active",
+                "created_at": "2026-09-05T06:12:54.473Z"
+            },
+            "created_at": "2026-09-05T06:14:36.621Z"
+        },
+        "property": {
+            "id": 2,
+            "unit_number": "A-102",
+            "landlord": {
+                "id": 4,
+                "name": "fahim",
+                "email": "fahim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                "status": "active",
+                "created_at": "2026-09-05T06:12:54.473Z"
+            },
+            "rent_amount": "15000.00",
+            "service_charge": "2000.00",
+            "has_parking": true,
+            "parking_fee": "1000.00",
+            "listing_status": "for_rent",
+            "status": "vacant",
+            "created_by": "Admin",
+            "created_at": "2026-09-05T06:23:30.562Z"
+        },
+        "description": "gas",
+        "image_url": null,
+        "status": "IN_PROGRESS",
+        "created_at": "2026-09-05T06:35:46.410Z"
+    },
+    "property": {
+        "id": 2,
+        "unit_number": "A-102",
+        "landlord": {
+            "id": 4,
+            "name": "fahim",
+            "email": "fahim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+            "status": "active",
+            "created_at": "2026-09-05T06:12:54.473Z"
+        },
+        "rent_amount": "15000.00",
+        "service_charge": "2000.00",
+        "has_parking": true,
+        "parking_fee": "1000.00",
+        "listing_status": "for_rent",
+        "status": "vacant",
+        "created_by": "Admin",
+        "created_at": "2026-09-05T06:23:30.562Z",
+        "tenant": {
+            "id": 1,
+            "name": "Karim",
+            "email": "karim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+            "nid_number": "1234567890123",
+            "nid_document_url": "https://example.com/nid.pdf",
+            "has_vehicle": true,
+            "status": "APPROVED",
+            "property": {
+                "id": 2,
+                "unit_number": "A-102",
+                "rent_amount": "15000.00",
+                "service_charge": "2000.00",
+                "has_parking": true,
+                "parking_fee": "1000.00",
+                "listing_status": "for_rent",
+                "status": "vacant",
+                "created_by": "Admin",
+                "created_at": "2026-09-05T06:23:30.562Z"
+            },
+            "approved_by": {
+                "id": 4,
+                "name": "fahim",
+                "email": "fahim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                "status": "active",
+                "created_at": "2026-09-05T06:12:54.473Z"
+            },
+            "created_at": "2026-09-05T06:14:36.621Z"
+        }
+    },
+    "landlord": {
+        "id": 4,
+        "name": "fahim",
+        "email": "fahim@gmail.com",
+        "phone": "01711111111",
+        "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+        "status": "active",
+        "created_at": "2026-09-05T06:12:54.473Z"
+    },
+    "tenant": {
+        "id": 1,
+        "name": "Karim",
+        "email": "karim@gmail.com",
+        "phone": "01711111111",
+        "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+        "nid_number": "1234567890123",
+        "nid_document_url": "https://example.com/nid.pdf",
+        "has_vehicle": true,
+        "status": "APPROVED",
+        "property": {
+            "id": 2,
+            "unit_number": "A-102",
+            "rent_amount": "15000.00",
+            "service_charge": "2000.00",
+            "has_parking": true,
+            "parking_fee": "1000.00",
+            "listing_status": "for_rent",
+            "status": "vacant",
+            "created_by": "Admin",
+            "created_at": "2026-09-05T06:23:30.562Z"
+        },
+        "approved_by": {
+            "id": 4,
+            "name": "fahim",
+            "email": "fahim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+            "status": "active",
+            "created_at": "2026-09-05T06:12:54.473Z"
+        },
+        "created_at": "2026-09-05T06:14:36.621Z"
+    },
+    "staff": {
+        "id": 1,
+        "name": "arino",
+        "email": "arino@gmail.com",
+        "phone": "00000000000",
+        "password_hash": "$2b$10$.GIg/7dkwTsP9P.xXIRMhOEsfCb1JaN0OYA/k222mxQ0iVtgSO1rC",
+        "status": "active",
+        "created_by": null,
+        "created_at": "2026-08-21T04:19:26.191Z"
+    },
+    "worker": null,
+    "review": null,
+    "created_by_type": "staff",
+    "created_by_id": 1,
+    "status": "assigned",
+    "created_at": "2026-09-05T06:45:48.824Z",
+    "completed_at": null,
+    "labor_cost": 3000,
+    "materials_cost": 500,
+    "additional_cost": 0
 }
 
 Allowed status transitions:
@@ -663,7 +1291,7 @@ tenant_confirmed -> complete or assigned
 21. DISPATCH WORKER
 ------------------------------------------------
 
-PATCH http://localhost:3000/staff/work-orders/10/dispatch
+PATCH http://localhost:3000/staff/work-orders/1/dispatch
 [AUTH]
 Body:
 {
@@ -674,41 +1302,221 @@ Success response (200): the updated work-order entity with its worker and
 related records populated.
 
 {
-  "id": 10,
-  "status": "assigned",
-  "worker": {
     "id": 1,
-    "name": "Worker One",
-    "status": "busy"
-  },
-  "labor_cost": 0,
-  "materials_cost": 0,
-  "additional_cost": 0
+    "issue": {
+        "id": 2,
+        "tenant": {
+            "id": 1,
+            "name": "Karim",
+            "email": "karim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+            "nid_number": "1234567890123",
+            "nid_document_url": "https://example.com/nid.pdf",
+            "has_vehicle": true,
+            "status": "APPROVED",
+            "property": {
+                "id": 2,
+                "unit_number": "A-102",
+                "rent_amount": "15000.00",
+                "service_charge": "2000.00",
+                "has_parking": true,
+                "parking_fee": "1000.00",
+                "listing_status": "for_rent",
+                "status": "vacant",
+                "created_by": "Admin",
+                "created_at": "2026-09-05T06:23:30.562Z"
+            },
+            "approved_by": {
+                "id": 4,
+                "name": "fahim",
+                "email": "fahim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                "status": "active",
+                "created_at": "2026-09-05T06:12:54.473Z"
+            },
+            "created_at": "2026-09-05T06:14:36.621Z"
+        },
+        "property": {
+            "id": 2,
+            "unit_number": "A-102",
+            "landlord": {
+                "id": 4,
+                "name": "fahim",
+                "email": "fahim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                "status": "active",
+                "created_at": "2026-09-05T06:12:54.473Z"
+            },
+            "rent_amount": "15000.00",
+            "service_charge": "2000.00",
+            "has_parking": true,
+            "parking_fee": "1000.00",
+            "listing_status": "for_rent",
+            "status": "vacant",
+            "created_by": "Admin",
+            "created_at": "2026-09-05T06:23:30.562Z"
+        },
+        "description": "gas",
+        "image_url": null,
+        "status": "IN_PROGRESS",
+        "created_at": "2026-09-05T06:35:46.410Z"
+    },
+    "property": {
+        "id": 2,
+        "unit_number": "A-102",
+        "landlord": {
+            "id": 4,
+            "name": "fahim",
+            "email": "fahim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+            "status": "active",
+            "created_at": "2026-09-05T06:12:54.473Z"
+        },
+        "rent_amount": "15000.00",
+        "service_charge": "2000.00",
+        "has_parking": true,
+        "parking_fee": "1000.00",
+        "listing_status": "for_rent",
+        "status": "vacant",
+        "created_by": "Admin",
+        "created_at": "2026-09-05T06:23:30.562Z",
+        "tenant": {
+            "id": 1,
+            "name": "Karim",
+            "email": "karim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+            "nid_number": "1234567890123",
+            "nid_document_url": "https://example.com/nid.pdf",
+            "has_vehicle": true,
+            "status": "APPROVED",
+            "property": {
+                "id": 2,
+                "unit_number": "A-102",
+                "rent_amount": "15000.00",
+                "service_charge": "2000.00",
+                "has_parking": true,
+                "parking_fee": "1000.00",
+                "listing_status": "for_rent",
+                "status": "vacant",
+                "created_by": "Admin",
+                "created_at": "2026-09-05T06:23:30.562Z"
+            },
+            "approved_by": {
+                "id": 4,
+                "name": "fahim",
+                "email": "fahim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                "status": "active",
+                "created_at": "2026-09-05T06:12:54.473Z"
+            },
+            "created_at": "2026-09-05T06:14:36.621Z"
+        }
+    },
+    "landlord": {
+        "id": 4,
+        "name": "fahim",
+        "email": "fahim@gmail.com",
+        "phone": "01711111111",
+        "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+        "status": "active",
+        "created_at": "2026-09-05T06:12:54.473Z"
+    },
+    "tenant": {
+        "id": 1,
+        "name": "Karim",
+        "email": "karim@gmail.com",
+        "phone": "01711111111",
+        "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+        "nid_number": "1234567890123",
+        "nid_document_url": "https://example.com/nid.pdf",
+        "has_vehicle": true,
+        "status": "APPROVED",
+        "property": {
+            "id": 2,
+            "unit_number": "A-102",
+            "rent_amount": "15000.00",
+            "service_charge": "2000.00",
+            "has_parking": true,
+            "parking_fee": "1000.00",
+            "listing_status": "for_rent",
+            "status": "vacant",
+            "created_by": "Admin",
+            "created_at": "2026-09-05T06:23:30.562Z"
+        },
+        "approved_by": {
+            "id": 4,
+            "name": "fahim",
+            "email": "fahim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+            "status": "active",
+            "created_at": "2026-09-05T06:12:54.473Z"
+        },
+        "created_at": "2026-09-05T06:14:36.621Z"
+    },
+    "staff": {
+        "id": 1,
+        "name": "arino",
+        "email": "arino@gmail.com",
+        "phone": "00000000000",
+        "password_hash": "$2b$10$.GIg/7dkwTsP9P.xXIRMhOEsfCb1JaN0OYA/k222mxQ0iVtgSO1rC",
+        "status": "active",
+        "created_by": null,
+        "created_at": "2026-08-21T04:19:26.191Z"
+    },
+    "worker": {
+        "id": 1,
+        "name": "Worker One Updated",
+        "email": "worker.updated@example.com",
+        "phone": "+8801812345678",
+        "worker_area": "Plumbing",
+        "status": "busy",
+        "created_at": "2026-08-21T06:47:01.213Z"
+    },
+    "review": null,
+    "created_by_type": "staff",
+    "created_by_id": 1,
+    "status": "assigned",
+    "created_at": "2026-09-05T06:45:48.824Z",
+    "completed_at": null,
+    "labor_cost": "3000.00",
+    "materials_cost": "500.00",
+    "additional_cost": "0.00"
 }
 
 ------------------------------------------------
 22. REMOVE WORKER FROM ORDER
 ------------------------------------------------
 
-PATCH http://localhost:3000/staff/work-orders/10/remove-worker
+PATCH http://localhost:3000/staff/work-orders/1/remove-worker
 [AUTH]
 Body: none
 
 Success response (200):
 {
-  "id": 10,
-  "status": "pending",
-  "worker": null,
-  "labor_cost": 0,
-  "materials_cost": 0,
-  "additional_cost": 0
+    "id": 1,
+    "worker": null,
+    "created_by_type": "staff",
+    "created_by_id": 1,
+    "status": "pending",
+    "created_at": "2026-09-05T06:45:48.824Z",
+    "completed_at": null,
+    "labor_cost": "3000.00",
+    "materials_cost": "500.00",
+    "additional_cost": "0.00"
 }
 
 ------------------------------------------------
 23. COMPLETE WORK ORDER
 ------------------------------------------------
 
-PATCH http://localhost:3000/staff/work-orders/10/complete
+PATCH http://localhost:3000/staff/work-orders/1/complete
 [AUTH]
 Body (all fields optional, each must be >= 0):
 {
@@ -723,17 +1531,109 @@ transaction is created when the total cost is greater than zero.
 
 Success response (200):
 {
-  "id": 10,
-  "status": "complete",
-  "labor_cost": 3000,
-  "materials_cost": 500,
-  "additional_cost": 100,
-  "completed_at": "2026-09-05T05:00:00.000Z",
-  "worker": {"id": 1, "status": "free"},
-  "property": {"id": 10, "unit_number": "A-101"},
-  "landlord": {"id": 2, "name": "Landlord One"},
-  "tenant": {"id": 3, "name": "Tenant One"},
-  "issue": {"id": 4, "status": "RESOLVED"}
+    "id": 1,
+    "issue": {
+        "id": 2,
+        "tenant": {
+            "id": 1,
+            "name": "Karim",
+            "email": "karim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+            "nid_number": "1234567890123",
+            "nid_document_url": "https://example.com/nid.pdf",
+            "has_vehicle": true,
+            "status": "APPROVED",
+            "created_at": "2026-09-05T06:14:36.621Z"
+        },
+        "property": {
+            "id": 2,
+            "unit_number": "A-102",
+            "rent_amount": "15000.00",
+            "service_charge": "2000.00",
+            "has_parking": true,
+            "parking_fee": "1000.00",
+            "listing_status": "for_rent",
+            "status": "vacant",
+            "created_by": "Admin",
+            "created_at": "2026-09-05T06:23:30.562Z"
+        },
+        "description": "gas",
+        "image_url": null,
+        "status": "RESOLVED",
+        "created_at": "2026-09-05T06:35:46.410Z"
+    },
+    "property": {
+        "id": 2,
+        "unit_number": "A-102",
+        "rent_amount": "15000.00",
+        "service_charge": "2000.00",
+        "has_parking": true,
+        "parking_fee": "1000.00",
+        "listing_status": "for_rent",
+        "status": "vacant",
+        "created_by": "Admin",
+        "created_at": "2026-09-05T06:23:30.562Z"
+    },
+    "landlord": {
+        "id": 4,
+        "name": "fahim",
+        "email": "fahim@gmail.com",
+        "phone": "01711111111",
+        "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+        "status": "active",
+        "created_at": "2026-09-05T06:12:54.473Z"
+    },
+    "tenant": {
+        "id": 1,
+        "name": "Karim",
+        "email": "karim@gmail.com",
+        "phone": "01711111111",
+        "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+        "nid_number": "1234567890123",
+        "nid_document_url": "https://example.com/nid.pdf",
+        "has_vehicle": true,
+        "status": "APPROVED",
+        "property": {
+            "id": 2,
+            "unit_number": "A-102",
+            "rent_amount": "15000.00",
+            "service_charge": "2000.00",
+            "has_parking": true,
+            "parking_fee": "1000.00",
+            "listing_status": "for_rent",
+            "status": "vacant",
+            "created_by": "Admin",
+            "created_at": "2026-09-05T06:23:30.562Z"
+        },
+        "approved_by": {
+            "id": 4,
+            "name": "fahim",
+            "email": "fahim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+            "status": "active",
+            "created_at": "2026-09-05T06:12:54.473Z"
+        },
+        "created_at": "2026-09-05T06:14:36.621Z"
+    },
+    "worker": {
+        "id": 1,
+        "name": "Worker One Updated",
+        "email": "worker.updated@example.com",
+        "phone": "+8801812345678",
+        "worker_area": "Plumbing",
+        "status": "busy",
+        "created_at": "2026-08-21T06:47:01.213Z"
+    },
+    "created_by_type": "staff",
+    "created_by_id": 1,
+    "status": "complete",
+    "created_at": "2026-09-05T06:45:48.824Z",
+    "completed_at": "2026-09-05T07:12:34.720Z",
+    "labor_cost": "3000.003000",
+    "materials_cost": "500.00500",
+    "additional_cost": "0.00100"
 }
 
 ------------------------------------------------
@@ -757,16 +1657,198 @@ Success response (200):
 25. REOPEN WORK ORDER
 ------------------------------------------------
 
-PATCH http://localhost:3000/staff/work-orders/10/reopen
+PATCH http://localhost:3000/staff/work-orders/1/reopen
 [AUTH]
 Body: none
 
 Success response (200):
 {
-  "id": 10,
-  "status": "pending",
-  "completed_at": "2026-09-05T05:00:00.000Z",
-  "worker": {"id": 1, "status": "busy"}
+    "id": 1,
+    "issue": {
+        "id": 2,
+        "tenant": {
+            "id": 1,
+            "name": "Karim",
+            "email": "karim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+            "nid_number": "1234567890123",
+            "nid_document_url": "https://example.com/nid.pdf",
+            "has_vehicle": true,
+            "status": "APPROVED",
+            "property": {
+                "id": 2,
+                "unit_number": "A-102",
+                "rent_amount": "15000.00",
+                "service_charge": "2000.00",
+                "has_parking": true,
+                "parking_fee": "1000.00",
+                "listing_status": "for_rent",
+                "status": "vacant",
+                "created_by": "Admin",
+                "created_at": "2026-09-05T06:23:30.562Z"
+            },
+            "approved_by": {
+                "id": 4,
+                "name": "fahim",
+                "email": "fahim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                "status": "active",
+                "created_at": "2026-09-05T06:12:54.473Z"
+            },
+            "created_at": "2026-09-05T06:14:36.621Z"
+        },
+        "property": {
+            "id": 2,
+            "unit_number": "A-102",
+            "landlord": {
+                "id": 4,
+                "name": "fahim",
+                "email": "fahim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                "status": "active",
+                "created_at": "2026-09-05T06:12:54.473Z"
+            },
+            "rent_amount": "15000.00",
+            "service_charge": "2000.00",
+            "has_parking": true,
+            "parking_fee": "1000.00",
+            "listing_status": "for_rent",
+            "status": "vacant",
+            "created_by": "Admin",
+            "created_at": "2026-09-05T06:23:30.562Z"
+        },
+        "description": "gas",
+        "image_url": null,
+        "status": "IN_PROGRESS",
+        "created_at": "2026-09-05T06:35:46.410Z"
+    },
+    "property": {
+        "id": 2,
+        "unit_number": "A-102",
+        "landlord": {
+            "id": 4,
+            "name": "fahim",
+            "email": "fahim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+            "status": "active",
+            "created_at": "2026-09-05T06:12:54.473Z"
+        },
+        "rent_amount": "15000.00",
+        "service_charge": "2000.00",
+        "has_parking": true,
+        "parking_fee": "1000.00",
+        "listing_status": "for_rent",
+        "status": "vacant",
+        "created_by": "Admin",
+        "created_at": "2026-09-05T06:23:30.562Z",
+        "tenant": {
+            "id": 1,
+            "name": "Karim",
+            "email": "karim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+            "nid_number": "1234567890123",
+            "nid_document_url": "https://example.com/nid.pdf",
+            "has_vehicle": true,
+            "status": "APPROVED",
+            "property": {
+                "id": 2,
+                "unit_number": "A-102",
+                "rent_amount": "15000.00",
+                "service_charge": "2000.00",
+                "has_parking": true,
+                "parking_fee": "1000.00",
+                "listing_status": "for_rent",
+                "status": "vacant",
+                "created_by": "Admin",
+                "created_at": "2026-09-05T06:23:30.562Z"
+            },
+            "approved_by": {
+                "id": 4,
+                "name": "fahim",
+                "email": "fahim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                "status": "active",
+                "created_at": "2026-09-05T06:12:54.473Z"
+            },
+            "created_at": "2026-09-05T06:14:36.621Z"
+        }
+    },
+    "landlord": {
+        "id": 4,
+        "name": "fahim",
+        "email": "fahim@gmail.com",
+        "phone": "01711111111",
+        "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+        "status": "active",
+        "created_at": "2026-09-05T06:12:54.473Z"
+    },
+    "tenant": {
+        "id": 1,
+        "name": "Karim",
+        "email": "karim@gmail.com",
+        "phone": "01711111111",
+        "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+        "nid_number": "1234567890123",
+        "nid_document_url": "https://example.com/nid.pdf",
+        "has_vehicle": true,
+        "status": "APPROVED",
+        "property": {
+            "id": 2,
+            "unit_number": "A-102",
+            "rent_amount": "15000.00",
+            "service_charge": "2000.00",
+            "has_parking": true,
+            "parking_fee": "1000.00",
+            "listing_status": "for_rent",
+            "status": "vacant",
+            "created_by": "Admin",
+            "created_at": "2026-09-05T06:23:30.562Z"
+        },
+        "approved_by": {
+            "id": 4,
+            "name": "fahim",
+            "email": "fahim@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+            "status": "active",
+            "created_at": "2026-09-05T06:12:54.473Z"
+        },
+        "created_at": "2026-09-05T06:14:36.621Z"
+    },
+    "staff": {
+        "id": 1,
+        "name": "arino",
+        "email": "arino@gmail.com",
+        "phone": "00000000000",
+        "password_hash": "$2b$10$.GIg/7dkwTsP9P.xXIRMhOEsfCb1JaN0OYA/k222mxQ0iVtgSO1rC",
+        "status": "active",
+        "created_by": null,
+        "created_at": "2026-08-21T04:19:26.191Z"
+    },
+    "worker": {
+        "id": 1,
+        "name": "Worker One Updated",
+        "email": "worker.updated@example.com",
+        "phone": "+8801812345678",
+        "worker_area": "Plumbing",
+        "status": "free",
+        "created_at": "2026-08-21T06:47:01.213Z"
+    },
+    "review": null,
+    "created_by_type": "staff",
+    "created_by_id": 1,
+    "status": "pending",
+    "created_at": "2026-09-05T06:45:48.824Z",
+    "completed_at": "2026-09-05T07:15:33.331Z",
+    "labor_cost": "3000.00",
+    "materials_cost": "500.02",
+    "additional_cost": "0.00"
 }
 
 ------------------------------------------------
@@ -786,7 +1868,7 @@ Success response (200):
 27. LIST ISSUES
 ------------------------------------------------
 
-GET http://localhost:3000/staff/issues?status=OPEN&propertyId=10&tenantId=3&dateFrom=2026-09-01&dateTo=2026-09-30&search=light&page=1&limit=10&sortBy=created_at&sortOrder=DESC
+GET http://localhost:3000/staff/issues?tenantId=1
 [AUTH]
 Body: none
 
@@ -795,49 +1877,243 @@ sortBy=created_at, sortOrder=DESC.
 
 Success response (200):
 {
-  "data": [
-    {
-      "id": 4,
-      "description": "Broken light",
-      "image_url": null,
-      "status": "OPEN",
-      "created_at": "2026-09-05T04:36:38.000Z",
-      "tenant": {"id": 3, "name": "Tenant One"},
-      "property": {"id": 10, "unit_number": "A-101"},
-      "landlord": {"id": 2, "name": "Landlord One"}
-    }
-  ],
-  "total": 1,
-  "page": 1,
-  "limit": 10,
-  "totalPages": 1
+    "data": [
+        {
+            "id": 6,
+            "tenant": {
+                "id": 1,
+                "name": "Karim",
+                "email": "karim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+                "nid_number": "1234567890123",
+                "nid_document_url": "https://example.com/nid.pdf",
+                "has_vehicle": true,
+                "status": "APPROVED",
+                "property": {
+                    "id": 2,
+                    "unit_number": "A-102",
+                    "rent_amount": "15000.00",
+                    "service_charge": "2000.00",
+                    "has_parking": true,
+                    "parking_fee": "1000.00",
+                    "listing_status": "for_rent",
+                    "status": "vacant",
+                    "created_by": "Admin",
+                    "created_at": "2026-09-05T06:23:30.562Z"
+                },
+                "approved_by": {
+                    "id": 4,
+                    "name": "fahim",
+                    "email": "fahim@gmail.com",
+                    "phone": "01711111111",
+                    "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                    "status": "active",
+                    "created_at": "2026-09-05T06:12:54.473Z"
+                },
+                "created_at": "2026-09-05T06:14:36.621Z"
+            },
+            "property": {
+                "id": 2,
+                "unit_number": "A-102",
+                "rent_amount": "15000.00",
+                "service_charge": "2000.00",
+                "has_parking": true,
+                "parking_fee": "1000.00",
+                "listing_status": "for_rent",
+                "status": "vacant",
+                "created_by": "Admin",
+                "created_at": "2026-09-05T06:23:30.562Z"
+            },
+            "description": "internet",
+            "image_url": null,
+            "status": "IN_PROGRESS",
+            "created_at": "2026-09-05T06:38:59.653Z"
+        },
+        {
+            "id": 3,
+            "tenant": {
+                "id": 1,
+                "name": "Karim",
+                "email": "karim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+                "nid_number": "1234567890123",
+                "nid_document_url": "https://example.com/nid.pdf",
+                "has_vehicle": true,
+                "status": "APPROVED",
+                "property": {
+                    "id": 2,
+                    "unit_number": "A-102",
+                    "rent_amount": "15000.00",
+                    "service_charge": "2000.00",
+                    "has_parking": true,
+                    "parking_fee": "1000.00",
+                    "listing_status": "for_rent",
+                    "status": "vacant",
+                    "created_by": "Admin",
+                    "created_at": "2026-09-05T06:23:30.562Z"
+                },
+                "approved_by": {
+                    "id": 4,
+                    "name": "fahim",
+                    "email": "fahim@gmail.com",
+                    "phone": "01711111111",
+                    "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                    "status": "active",
+                    "created_at": "2026-09-05T06:12:54.473Z"
+                },
+                "created_at": "2026-09-05T06:14:36.621Z"
+            },
+            "property": {
+                "id": 2,
+                "unit_number": "A-102",
+                "rent_amount": "15000.00",
+                "service_charge": "2000.00",
+                "has_parking": true,
+                "parking_fee": "1000.00",
+                "listing_status": "for_rent",
+                "status": "vacant",
+                "created_by": "Admin",
+                "created_at": "2026-09-05T06:23:30.562Z"
+            },
+            "description": "light",
+            "image_url": null,
+            "status": "RESOLVED",
+            "created_at": "2026-09-05T06:36:10.924Z"
+        },
+        {
+            "id": 2,
+            "tenant": {
+                "id": 1,
+                "name": "Karim",
+                "email": "karim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+                "nid_number": "1234567890123",
+                "nid_document_url": "https://example.com/nid.pdf",
+                "has_vehicle": true,
+                "status": "APPROVED",
+                "property": {
+                    "id": 2,
+                    "unit_number": "A-102",
+                    "rent_amount": "15000.00",
+                    "service_charge": "2000.00",
+                    "has_parking": true,
+                    "parking_fee": "1000.00",
+                    "listing_status": "for_rent",
+                    "status": "vacant",
+                    "created_by": "Admin",
+                    "created_at": "2026-09-05T06:23:30.562Z"
+                },
+                "approved_by": {
+                    "id": 4,
+                    "name": "fahim",
+                    "email": "fahim@gmail.com",
+                    "phone": "01711111111",
+                    "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                    "status": "active",
+                    "created_at": "2026-09-05T06:12:54.473Z"
+                },
+                "created_at": "2026-09-05T06:14:36.621Z"
+            },
+            "property": {
+                "id": 2,
+                "unit_number": "A-102",
+                "rent_amount": "15000.00",
+                "service_charge": "2000.00",
+                "has_parking": true,
+                "parking_fee": "1000.00",
+                "listing_status": "for_rent",
+                "status": "vacant",
+                "created_by": "Admin",
+                "created_at": "2026-09-05T06:23:30.562Z"
+            },
+            "description": "gas",
+            "image_url": null,
+            "status": "IN_PROGRESS",
+            "created_at": "2026-09-05T06:35:46.410Z"
+        }
+    ],
+    "total": 3
 }
 
 ------------------------------------------------
 28. GET ISSUE
 ------------------------------------------------
 
-GET http://localhost:3000/staff/issues/4
+GET http://localhost:3000/staff/issues/5
 [AUTH]
 Body: none
 
 Success response (200):
 {
-  "id": 4,
-  "description": "Broken light",
-  "image_url": null,
-  "status": "OPEN",
-  "created_at": "2026-09-05T04:36:38.000Z",
-  "tenant": {"id": 3, "name": "Tenant One"},
-  "property": {"id": 10, "unit_number": "A-101"},
-  "landlord": {"id": 2, "name": "Landlord One"}
+    "id": 5,
+    "tenant": {
+        "id": 3,
+        "name": "Karim",
+        "email": "kawdrim@gmail.com",
+        "phone": "01711111121",
+        "password_hash": "$2b$10$YRiTZf415BK18cYB5K7FuOfUDxO1SimwsRwT2WTB8Zal6uhNTu0f6",
+        "nid_number": "1234567820123",
+        "nid_document_url": "https://example.com/nid.pdf",
+        "has_vehicle": true,
+        "status": "APPROVED",
+        "property": {
+            "id": 3,
+            "unit_number": "A-103",
+            "rent_amount": "15000.00",
+            "service_charge": "2000.00",
+            "has_parking": true,
+            "parking_fee": "1000.00",
+            "listing_status": "for_rent",
+            "status": "vacant",
+            "created_by": "Admin",
+            "created_at": "2026-09-05T06:23:49.082Z"
+        },
+        "approved_by": {
+            "id": 5,
+            "name": "fahim",
+            "email": "mridha@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$RaBTJqN.Pvim1fkuFt2/TOKwTCqY.bFgbhOewfc5eP1quIoAhbqkG",
+            "status": "active",
+            "created_at": "2026-09-05T06:13:16.038Z"
+        },
+        "created_at": "2026-09-05T06:15:21.090Z"
+    },
+    "property": {
+        "id": 3,
+        "unit_number": "A-103",
+        "landlord": {
+            "id": 5,
+            "name": "fahim",
+            "email": "mridha@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$RaBTJqN.Pvim1fkuFt2/TOKwTCqY.bFgbhOewfc5eP1quIoAhbqkG",
+            "status": "active",
+            "created_at": "2026-09-05T06:13:16.038Z"
+        },
+        "rent_amount": "15000.00",
+        "service_charge": "2000.00",
+        "has_parking": true,
+        "parking_fee": "1000.00",
+        "listing_status": "for_rent",
+        "status": "vacant",
+        "created_by": "Admin",
+        "created_at": "2026-09-05T06:23:49.082Z"
+    },
+    "description": "dd",
+    "image_url": null,
+    "status": "OPEN",
+    "created_at": "2026-09-05T06:36:59.042Z"
 }
 
 ------------------------------------------------
 29. UPDATE ISSUE STATUS
 ------------------------------------------------
 
-PATCH http://localhost:3000/staff/issues/4/status
+PATCH http://localhost:3000/staff/issues/5/status
 [AUTH]
 Body:
 {
@@ -850,15 +2126,68 @@ service.
 
 Success response (200):
 {
-  "id": 4,
-  "description": "Broken light",
-  "image_url": null,
-  "status": "IN_PROGRESS",
-  "created_at": "2026-09-05T04:36:38.000Z",
-  "tenant": {"id": 3},
-  "property": {"id": 10}
+    "id": 5,
+    "tenant": {
+        "id": 3,
+        "name": "Karim",
+        "email": "kawdrim@gmail.com",
+        "phone": "01711111121",
+        "password_hash": "$2b$10$YRiTZf415BK18cYB5K7FuOfUDxO1SimwsRwT2WTB8Zal6uhNTu0f6",
+        "nid_number": "1234567820123",
+        "nid_document_url": "https://example.com/nid.pdf",
+        "has_vehicle": true,
+        "status": "APPROVED",
+        "property": {
+            "id": 3,
+            "unit_number": "A-103",
+            "rent_amount": "15000.00",
+            "service_charge": "2000.00",
+            "has_parking": true,
+            "parking_fee": "1000.00",
+            "listing_status": "for_rent",
+            "status": "vacant",
+            "created_by": "Admin",
+            "created_at": "2026-09-05T06:23:49.082Z"
+        },
+        "approved_by": {
+            "id": 5,
+            "name": "fahim",
+            "email": "mridha@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$RaBTJqN.Pvim1fkuFt2/TOKwTCqY.bFgbhOewfc5eP1quIoAhbqkG",
+            "status": "active",
+            "created_at": "2026-09-05T06:13:16.038Z"
+        },
+        "created_at": "2026-09-05T06:15:21.090Z"
+    },
+    "property": {
+        "id": 3,
+        "unit_number": "A-103",
+        "landlord": {
+            "id": 5,
+            "name": "fahim",
+            "email": "mridha@gmail.com",
+            "phone": "01711111111",
+            "password_hash": "$2b$10$RaBTJqN.Pvim1fkuFt2/TOKwTCqY.bFgbhOewfc5eP1quIoAhbqkG",
+            "status": "active",
+            "created_at": "2026-09-05T06:13:16.038Z"
+        },
+        "rent_amount": "15000.00",
+        "service_charge": "2000.00",
+        "has_parking": true,
+        "parking_fee": "1000.00",
+        "listing_status": "for_rent",
+        "status": "vacant",
+        "created_by": "Admin",
+        "created_at": "2026-09-05T06:23:49.082Z"
+    },
+    "description": "dd",
+    "image_url": null,
+    "status": "IN_PROGRESS",
+    "created_at": "2026-09-05T06:36:59.042Z"
 }
 
+/* dont need it now, i can just make the worker order and never use this
 ------------------------------------------------
 30. CONVERT ISSUE TO WORK ORDER
 ------------------------------------------------
@@ -888,39 +2217,63 @@ Success response (201):
   "additional_cost": 0,
   "id": 11,
   "created_at": "2026-09-05T04:36:38.000Z"
-}
+}*/
 
 ------------------------------------------------
 31. LIST PROPERTIES
 ------------------------------------------------
 
-GET http://localhost:3000/staff/properties?page=1&limit=10&status=vacant&listingStatus=for_rent&buildingId=5&blockId=2&search=A-101
-[AUTH]
+GET http://localhost:3000/staff/properties?landlordId=4
 Body: none
 
 All query parameters are optional. Success response (200):
 {
-  "data": [
-    {
-      "id": 10,
-      "unit_number": "A-101",
-      "rent_amount": 25000,
-      "service_charge": 3000,
-      "has_parking": true,
-      "parking_fee": 1000,
-      "listing_status": "for_rent",
-      "status": "vacant",
-      "building": {"id": 5, "name": "Building A"},
-      "block": {"id": 2, "name": "Block A"},
-      "landlord": {"id": 2, "name": "Landlord One"},
-      "tenant": null
-    }
-  ],
-  "total": 1,
-  "page": 1,
-  "limit": 10,
-  "totalPages": 1
+    "data": [
+        {
+            "id": 2,
+            "unit_number": "A-102",
+            "building": {
+                "id": 1,
+                "name": "Building 1",
+                "created_at": "2026-09-05T05:40:27.355Z"
+            },
+            "landlord": {
+                "id": 4,
+                "name": "fahim",
+                "email": "fahim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$EgvdV4CntOQsOKzgJBc0ye17iZxF0ngJia4r21.IdHQMk/g6a/.5m",
+                "status": "active",
+                "created_at": "2026-09-05T06:12:54.473Z"
+            },
+            "rent_amount": "15000.00",
+            "service_charge": "2000.00",
+            "has_parking": true,
+            "parking_fee": "1000.00",
+            "listing_status": "for_rent",
+            "status": "vacant",
+            "created_by": "Admin",
+            "created_at": "2026-09-05T06:23:30.562Z",
+            "tenant": {
+                "id": 1,
+                "name": "Karim",
+                "email": "karim@gmail.com",
+                "phone": "01711111111",
+                "password_hash": "$2b$10$FfWOIYtMgHmWtgxUYDVrr.uzXD6DD3I2ONd8UnrAz8Vx6ELOzqCgq",
+                "nid_number": "1234567890123",
+                "nid_document_url": "https://example.com/nid.pdf",
+                "has_vehicle": true,
+                "status": "APPROVED",
+                "created_at": "2026-09-05T06:14:36.621Z"
+            }
+        }
+    ],
+    "total": 1
 }
+
+or
+same api with 
+
 
 ------------------------------------------------
 32. GET PROPERTY DETAILS

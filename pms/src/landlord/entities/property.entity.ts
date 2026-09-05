@@ -7,12 +7,12 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { LandlordEntity } from 'src/landlord/entities/landlord.entity';
-import { BuildingEntity } from 'src/admin/entities/building.entity';
-import { TenantEntity } from 'src/tenant/entities/tenant.entity';
+import { LandlordEntity } from '../../landlord/entities/landlord.entity';
+import { BuildingEntity } from '../../admin/entities/building.entity';
+import { TenantEntity } from '../../tenant/entities/tenant.entity';
 import { TransactionEntity } from './transaction.entity';
 import { WorkOrder } from '../../staff/entities/work_order.entity';       // <-- Import WorkOrder
-import { IssueEntity } from 'src/tenant/entities/issue.entity'; // <-- Import IssueEntity (adjust path if needed)
+import { IssueEntity } from '../../tenant/entities/issue.entity'; // <-- Import IssueEntity (adjust path if needed)
 
 export enum ListingStatus {
   not_listed = 'not_listed',

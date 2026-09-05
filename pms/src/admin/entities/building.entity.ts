@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { AdminEntity } from './admin.entity';
 import { BlockEntity } from './block.entity';
-import { PropertyEntity } from 'src/landlord/entities/property.entity';
+import { PropertyEntity } from '../../landlord/entities/property.entity';
 
 @Entity('buildings')
 export class BuildingEntity  {

@@ -34,6 +34,7 @@ import { UpdateWorkerDto } from './dto/UpdateWorker.dto';
 import { FilterWorkerDto } from './dto/FilterWorker.dto';
 import { IssueStatusDto } from './dto/IssueStatus.dto';
 import { ConvertIssueDto } from './dto/ConvertIssue.dto';
+import { UpdateStaffProfileDto } from './dto/UpdateStaffProfile.dto';
 import {
   TransactionEntity,
   Trnsaction_type,
@@ -140,6 +141,71 @@ export class StaffService {
     }
 
     return staff;
+  }
+
+  async updateStaffProfile(id: number, data: UpdateStaffProfileDto) {
+    const staff = await this.staffRepo.findOne({ where: { id } });
+
+    if (!staff) {
+      throw new NotFoundException('Staff not found!');
+    }
+
+    if (
+      data.name === undefined &&
+      data.email === undefined &&
+      data.phone === undefined &&
+      data.password === undefined
+    ) {
+      throw new BadRequestException(
+        'At least one profile field is required',
+      );
+    }
+
+    const email = data.email?.trim().toLowerCase();
+    const phone = data.phone?.trim();
+
+    if (email !== undefined && email !== staff.email) {
+      const existingEmail = await this.staffRepo.findOne({
+        where: { email },
+      });
+
+      if (existingEmail && existingEmail.id !== staff.id) {
+        throw new ForbiddenException('Staff email already exists');
+      }
+
+      staff.email = email;
+    }
+
+    if (phone !== undefined && phone !== staff.phone) {
+      const existingPhone = await this.staffRepo.findOne({
+        where: { phone },
+      });
+
+      if (existingPhone && existingPhone.id !== staff.id) {
+        throw new ForbiddenException('Staff phone already exists');
+      }
+
+      staff.phone = phone;
+    }
+
+    if (data.name !== undefined) {
+      staff.name = data.name.trim();
+    }
+
+    if (data.password !== undefined) {
+      staff.password_hash = await bcrypt.hash(data.password, 10);
+    }
+
+    const updatedStaff = await this.staffRepo.save(staff);
+
+    return {
+      id: updatedStaff.id,
+      name: updatedStaff.name,
+      email: updatedStaff.email,
+      phone: updatedStaff.phone,
+      status: updatedStaff.status,
+      created_at: updatedStaff.created_at,
+    };
   }
 
   async findIssue(id: number) {
@@ -906,98 +972,45 @@ export class StaffService {
       total: report.length,
     };
   }
+  
 
   async findAllWorkOrders(filterDto: FilterWorkOrderDto) {
-    let page = filterDto.page;
-    let limit = filterDto.limit;
-    let sortBy = filterDto.sortBy;
-    let sortOrder = filterDto.sortOrder;
-
-    if (!page) {
-      page = 1;
-    }
-
-    if (!limit) {
-      limit = 10;
-    }
-
-    if (!sortBy) {
-      sortBy = 'created_at';
-    }
-
-    if (!sortOrder) {
-      sortOrder = 'DESC';
-    }
+    const page = filterDto.page || 1;
+    const limit = filterDto.limit || 10;
+    const sortOrder = filterDto.sortOrder || 'DESC';
 
     const qb = this.workOrderRepo
       .createQueryBuilder('wo')
-      .leftJoinAndSelect('wo.worker', 'worker')
-      .leftJoinAndSelect('wo.property', 'property')
-      .leftJoinAndSelect('property.landlord', 'landlord')
-      .leftJoinAndSelect('property.building', 'building')
-      .leftJoinAndSelect('building.block', 'block')
-      .leftJoinAndSelect('wo.tenant', 'tenant')
-      .leftJoinAndSelect('wo.staff', 'staff')
-      .leftJoinAndSelect('wo.issue', 'issue')
-      .leftJoinAndSelect('wo.review', 'review')
+      .leftJoinAndSelect('wo.landlord', 'landlord')
       .skip((page - 1) * limit)
       .take(limit)
-      .orderBy(`wo.${sortBy}`, sortOrder);
+      .orderBy('wo.created_at', sortOrder);
 
     if (filterDto.status) {
-      qb.andWhere('wo.status = :status', {
-        status: filterDto.status,
-      });
-    }
-
-    if (filterDto.workerId) {
-      qb.andWhere('wo.worker_id = :workerId', {
-        workerId: filterDto.workerId,
-      });
-    }
-
-    if (filterDto.propertyId) {
-      qb.andWhere('wo.property_id = :propertyId', {
-        propertyId: filterDto.propertyId,
-      });
+      qb.andWhere('wo.status = :status', { status: filterDto.status });
     }
 
     if (filterDto.landlordId) {
-      qb.andWhere('property.landlord_id = :landlordId', {
+      qb.andWhere('landlord.id = :landlordId', {
         landlordId: filterDto.landlordId,
       });
     }
 
-    if (filterDto.tenantId) {
-      qb.andWhere('wo.tenant_id = :tenantId', {
-        tenantId: filterDto.tenantId,
-      });
-    }
-
     if (filterDto.dateFrom) {
-      qb.andWhere('wo.created_at >= :dateFrom', {
-        dateFrom: filterDto.dateFrom,
-      });
+      qb.andWhere('wo.created_at >= :dateFrom', { dateFrom: filterDto.dateFrom });
     }
 
     if (filterDto.dateTo) {
-      qb.andWhere('wo.created_at <= :dateTo', {
-        dateTo: filterDto.dateTo,
-      });
+      qb.andWhere('wo.created_at <= :dateTo', { dateTo: filterDto.dateTo });
     }
 
     if (filterDto.search) {
-      qb.andWhere(
-        '(wo.id::text ILIKE :search OR property.unit_number ILIKE :search OR issue.description ILIKE :search OR worker.name ILIKE :search OR tenant.name ILIKE :search)',
-        {
-          search: `%${filterDto.search}%`,
-        },
-      );
+      qb.andWhere('wo.id::text ILIKE :search', {
+        search: `%${filterDto.search}%`,
+      });
     }
 
-    const result = await qb.getManyAndCount();
-    const data = result[0];
-    const total = result[1];
+    const [data, total] = await qb.getManyAndCount();
 
     return {
       data,

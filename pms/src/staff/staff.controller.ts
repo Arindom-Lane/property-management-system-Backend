@@ -2,12 +2,14 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   ParseIntPipe,
   Patch,
   Post,
   Query,
+  Req,
   UsePipes,
   ValidationPipe,
   UseGuards,
@@ -31,8 +33,11 @@ import { FilterWorkerDto } from './dto/FilterWorker.dto';
 
 import { IssueStatusDto } from './dto/IssueStatus.dto';
 import { ConvertIssueDto } from './dto/ConvertIssue.dto';
+import { UpdateStaffProfileDto } from './dto/UpdateStaffProfile.dto';
 
 import { AuthGuard } from '../auth/auth.guard';
+import { AccountType } from '../auth/dto/login.dto';
+import { JwtPayload } from '../auth/auth.service';
 
 @Controller('staff')
 export class StaffController {
@@ -75,6 +80,20 @@ export class StaffController {
   @UseGuards(AuthGuard)
   findStaff(@Param('id', ParseIntPipe) id: number) {
     return this.staffService.findStaff(id);
+  }
+
+  @Patch('profile')
+  @UseGuards(AuthGuard)
+  @UsePipes(new ValidationPipe())
+  updateProfile(
+    @Req() request: { user: JwtPayload },
+    @Body() dto: UpdateStaffProfileDto,
+  ) {
+    if (request.user.accountType !== AccountType.STAFF) {
+      throw new ForbiddenException('Only staff can update a staff profile');
+    }
+
+    return this.staffService.updateStaffProfile(request.user.sub, dto);
   }
 
   // ==========================================

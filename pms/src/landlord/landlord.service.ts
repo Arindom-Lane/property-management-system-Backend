@@ -12,6 +12,7 @@ import { TenantStatus } from '../tenant/entities/tenant.entity.js';
 import { WorkOrder } from '../staff/entities/work_order.entity.js';
 import { CreateWorkOrderDto } from '../staff/dto/CreateWorkOrder.dto';
 import { TransactionEntity } from './entities/transaction.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class LandlordService {
@@ -32,10 +33,14 @@ constructor(
 
   /////////Authentication
 
-  registerLandlord(landlordDto: LandlordDto): Promise<LandlordEntity> {
-    const landlord = this.landlordRepository.create(landlordDto);
-    return this.landlordRepository.save(landlord);
-  }
+  // landlord.service.ts — registerLandlord
+
+
+async registerLandlord(landlordDto: LandlordDto): Promise<LandlordEntity> {
+  const hashed = await bcrypt.hash(landlordDto.password_hash, 10);
+  const landlord = this.landlordRepository.create({ ...landlordDto, password_hash: hashed });
+  return this.landlordRepository.save(landlord);
+}
 
   async loginLandlord(name: string, password_hash: string): Promise<{ message: string }> {
     const landlord = await this.landlordRepository.findOne({
@@ -383,6 +388,16 @@ constructor(
       return transactions.transactions;
     }
 
+
+    getLandlordDashboardSummery(landlordId: number): Promise<any> {
+      return this.landlordRepository.query(`
+        SELECT 
+          (SELECT COUNT(*) FROM property_entity WHERE landlordId = ${landlordId}) AS total_properties,
+          (SELECT COUNT(*) FROM tenant_entity WHERE approved_byId = ${landlordId}) AS total_tenants,
+          (SELECT COUNT(*) FROM work_order WHERE landlordId = ${landlordId}) AS total_work_orders,
+          (SELECT SUM(amount) FROM transaction_entity WHERE landlordId = ${landlordId} AND status = 'completed') AS total_income
+      `);
+    }
 
 
 

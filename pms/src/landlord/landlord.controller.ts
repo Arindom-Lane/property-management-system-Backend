@@ -1,4 +1,4 @@
-import { Controller, Post,Body, Get, Param, Put, Patch } from '@nestjs/common';
+import { Controller, Post,Body, Get, Param, Put, Patch,Query } from '@nestjs/common';
 import { LandlordService } from './landlord.service';
 import { LandlordEntity } from './entities/landlord.entity';
 import { LandlordDto } from './dto/landlord.dto';
@@ -14,17 +14,17 @@ export class LandlordController {
   constructor(private readonly landlordService: LandlordService) {}
 
 
-  ///Authenticaation
+//   ///Authenticaation
 
-  @Post('register')
-     registerLandlord(@Body() landlordDto: LandlordDto): Promise<LandlordEntity> {
-        return this.landlordService.registerLandlord(landlordDto);
-    }
+//   @Post('register')
+//      registerLandlord(@Body() landlordDto: LandlordDto): Promise<LandlordEntity> {
+//         return this.landlordService.registerLandlord(landlordDto);
+//     }
 
-    @Post('login')
-  loginLandLord(@Body('name') name: string,@Body('password_hash') password_hash: string,): Promise<{ message: string }> {
-    return this.landlordService.loginLandlord(name, password_hash);
-  }
+//     @Post('login')
+//   loginLandLord(@Body('name') name: string,@Body('password_hash') password_hash: string,): Promise<{ message: string }> {
+//     return this.landlordService.loginLandlord(name, password_hash);
+//   }
 
 
 
@@ -133,6 +133,8 @@ export class LandlordController {
 
     //////////////// view landlord transactions
 
+
+
     @Get('transactions/:landlordId')
     getLandlordTransactions(@Param('landlordId') landlordId: number): Promise<any> {
         return this.landlordService.getLandlordTransactions(landlordId);
@@ -140,10 +142,13 @@ export class LandlordController {
 
 
     @Get('dashboard/summery')
-    getLandlordDashboardSummery( landlordId: number): Promise<any> {
-        return this.landlordService.getLandlordDashboardSummery(landlordId);
+    getLandlordDashboardSummery(
+      @Query('landlordId') landlordId: number,
+    ): Promise<any> {
+      return this.landlordService.getLandlordDashboardSummery(landlordId);
     }
 
+  
 
     
 

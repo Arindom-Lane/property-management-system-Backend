@@ -390,14 +390,18 @@ async registerLandlord(landlordDto: LandlordDto): Promise<LandlordEntity> {
 
 
     getLandlordDashboardSummery(landlordId: number): Promise<any> {
-      return this.landlordRepository.query(`
-        SELECT 
-          (SELECT COUNT(*) FROM property_entity WHERE landlordId = ${landlordId}) AS total_properties,
-          (SELECT COUNT(*) FROM tenant_entity WHERE approved_byId = ${landlordId}) AS total_tenants,
-          (SELECT COUNT(*) FROM work_order WHERE landlordId = ${landlordId}) AS total_work_orders,
-          (SELECT SUM(amount) FROM transaction_entity WHERE landlordId = ${landlordId} AND status = 'completed') AS total_income
-      `);
+      return this.landlordRepository.query(
+        `
+        SELECT
+          (SELECT COUNT(*) FROM property WHERE "landlordId" = $1) AS total_properties,
+          (SELECT COUNT(*) FROM tenant WHERE approved_by = $1) AS total_tenants,
+          (SELECT COUNT(*) FROM work_order WHERE landlord_id = $1) AS total_work_orders,
+          (SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE "landlordId" = $1 AND status = 'paid') AS total_income
+        `,
+        [landlordId],
+      );
     }
+    
 
 
 

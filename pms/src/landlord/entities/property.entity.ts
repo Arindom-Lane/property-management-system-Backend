@@ -12,7 +12,8 @@ import { BuildingEntity } from '../../admin/entities/building.entity';
 import { TenantEntity } from '../../tenant/entities/tenant.entity';
 import { TransactionEntity } from './transaction.entity';
 import { WorkOrder } from '../../staff/entities/work_order.entity';       // <-- Import WorkOrder
-import { IssueEntity } from '../../tenant/entities/issue.entity'; // <-- Import IssueEntity (adjust path if needed)
+import { IssueEntity } from 'src/tenant/entities/issue.entity'; // <-- Import IssueEntity (adjust path if needed)
+import {BlockEntity} from 'src/admin/entities/block.entity.js'
 
 export enum ListingStatus {
   not_listed = 'not_listed',
@@ -88,4 +89,8 @@ export class PropertyEntity {
   // Maps to the 'property' property in IssueEntity
   @OneToMany(() => IssueEntity, (issue) => issue.property)
   issues: IssueEntity[];
+
+  // 3. ManyToOne: Property -> Block
+  @ManyToOne(() => BlockEntity, (block) => block.properties)
+  block: BlockEntity;
 }

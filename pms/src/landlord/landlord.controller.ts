@@ -139,6 +139,11 @@ export class LandlordController {
     }
 
 
+    @Get('dashboard/summery')
+    getLandlordDashboardSummery( landlordId: number): Promise<any> {
+        return this.landlordService.getLandlordDashboardSummery(landlordId);
+    }
+
 
     
 

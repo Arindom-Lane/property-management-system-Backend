@@ -258,7 +258,7 @@ export class StaffController {
 
   @Get('issues')
   @UseGuards(AuthGuard)
-  findAllIssues(@Query('tenantId') tenantId: number) {
+  findAllIssues (@Query('tenantId', new ParseIntPipe({ optional: true })) tenantId: number) {
     return this.staffService.findAllIssues(tenantId);
   }
   @Get('issues/:id')

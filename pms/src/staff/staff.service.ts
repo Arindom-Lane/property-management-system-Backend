@@ -1360,11 +1360,18 @@ export class StaffService {
     };
   }
 
-  async findAllIssues(tenantId: number) {
+  async findAllIssues(tenantId?: number) {
+    const where = tenantId ? { tenant: { id: tenantId } } : {};
+
     const data = await this.issueRepo.find({
-      where: { tenant: { id: tenantId } },
-      relations: { tenant: true, property: true },
-      order: { created_at: 'DESC' },
+      where,
+      relations: {
+        tenant: true,
+        property: true,
+      },
+      order: {
+        created_at: 'DESC',
+      },
     });
 
     return {

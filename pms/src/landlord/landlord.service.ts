@@ -11,7 +11,8 @@ import { TenantEntity } from '../tenant/entities/tenant.entity.js';
 import { TenantStatus } from '../tenant/entities/tenant.entity.js';
 import { WorkOrder } from '../staff/entities/work_order.entity.js';
 import { CreateWorkOrderDto } from '../staff/dto/CreateWorkOrder.dto';
-import { TransactionEntity } from './entities/transaction.entity';
+import { created_by_type, TransactionEntity } from './entities/transaction.entity';
+import { CreateTransactionDto } from 'src/staff/dto/CreateTransaction.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -25,6 +26,8 @@ constructor(
     private tenantRepository: Repository<TenantEntity>,
     @InjectRepository(WorkOrder)
     private workOrderRepository: Repository<WorkOrder>,
+    @InjectRepository(TransactionEntity)
+    private transactionRepository: Repository<TransactionEntity>,
   ) {}
 
 
@@ -324,6 +327,32 @@ async registerLandlord(landlordDto: LandlordDto): Promise<LandlordEntity> {
     }
 
 
+
+    ///////kick approved tenant
+    
+    async kickTenant(landlordid:number, tenantid:number):Promise<TenantEntity | null>{
+
+      const landlord = await this.landlordRepository.findOne({
+        where: { id: landlordid },
+        relations: { tenants: true },
+      });
+
+      if (!landlord) {
+        throw new UnauthorizedException('Landlord not found');
+      }
+      const tenant = await this.tenantRepository.findOne({
+        where: { id: tenantid },
+      });
+
+      if (!tenant) {
+        throw new UnauthorizedException('Tenant not found');
+      }
+
+      tenant.status = TenantStatus.REJECTED;
+      return this.tenantRepository.save(tenant);
+    }
+
+
     ////// create work order
     
     async createWorkOrder(landlordId: number, CreateWorkOrderDto: CreateWorkOrderDto): Promise<WorkOrder> {
@@ -367,6 +396,10 @@ async registerLandlord(landlordDto: LandlordDto): Promise<LandlordEntity> {
       return workOrders;
     }
 
+///////////////Transactions
+
+
+   
 
     async getLandlordTransactions (landlordId: number): Promise<TransactionEntity[] | null> {
       const landlord = await this.landlordRepository.findOne({
@@ -390,23 +423,120 @@ async registerLandlord(landlordDto: LandlordDto): Promise<LandlordEntity> {
 
 
     getLandlordDashboardSummery(landlordId: number): Promise<any> {
-      return this.landlordRepository.query(`
-        SELECT 
-          (SELECT COUNT(*) FROM property_entity WHERE landlordId = ${landlordId}) AS total_properties,
-          (SELECT COUNT(*) FROM tenant_entity WHERE approved_byId = ${landlordId}) AS total_tenants,
-          (SELECT COUNT(*) FROM work_order WHERE landlordId = ${landlordId}) AS total_work_orders,
-          (SELECT SUM(amount) FROM transaction_entity WHERE landlordId = ${landlordId} AND status = 'completed') AS total_income
-      `);
+      return this.landlordRepository.query(
+        `
+        SELECT
+          (SELECT COUNT(*) FROM property WHERE "landlordId" = $1) AS total_properties,
+          (SELECT COUNT(*) FROM tenant WHERE approved_by = $1) AS total_tenants,
+          (SELECT COUNT(*) FROM work_order WHERE landlord_id = $1) AS total_work_orders,
+          (SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE "landlordId" = $1 AND status = 'paid') AS total_income
+        `,
+        [landlordId],
+      );
     }
+    
+//////////issue get 
+
+    async getLandlordIssuesofTenants(landlordId: number): Promise<any> {
+      return this.landlordRepository.query(
+        `
+        SELECT i.* 
+        FROM issue i
+        JOIN tenant t ON i."tenant_id" = t.id
+        WHERE t.approved_by = $1
+        `,
+        [landlordId],
+      );
+    }
+
+
+    ////////assign property to tenant
+
+    async assignPropertyToTenant(landlordId: number, tenantId: number, propertyId: number): Promise<TenantEntity | null> {
+        const landlord = await this.landlordRepository.findOne({
+            where: { id: landlordId },
+        });
+
+        if (!landlord) {
+            throw new UnauthorizedException('Landlord not found');
+        }
+
+        const property = await this.propertyRepository.findOne({
+            where: { id: propertyId, landlord: { id: landlordId } },
+        });
+
+        if (!property) {
+            throw new UnauthorizedException('Property not found or does not belong to this landlord');
+        }
+
+        const tenant = await this.tenantRepository.findOne({
+            where: { id: tenantId, approved_by: { id: landlordId } },
+        });
+
+        if (!tenant) {
+            throw new UnauthorizedException('Tenant not found or not approved by this landlord');
+        }
+
+        tenant.property = property;
+        return this.tenantRepository.save(tenant);
+    }
+
+
+    /// review
+
+
+    getLandlordReviews(landlordId: number): Promise<any> {
+      return this.landlordRepository.query(
+        `
+        SELECT i.* 
+        FROM review i
+        JOIN work_order w ON i."work_order_id" = w.id
+        WHERE w.landlord_id = $1
+        `,
+        [landlordId],
+      );
+    }
+
+
+    ///////////landlord make bills payment in transaction 
+
+    async createTransaction(
+  landlordId: number,
+  dto: CreateTransactionDto,
+): Promise<TransactionEntity> {
+
+  const landlord = await this.landlordRepository.findOne({
+    where: { id: landlordId },
+  });
+
+  if (!landlord) {
+    throw new UnauthorizedException('Landlord not found');
+  }
+
+  const property = await this.propertyRepository.findOne({
+    where: { id: dto.property_id },
+  });
+
+  if (!property) {
+    throw new UnauthorizedException('Property not found');
+  }
+
+  const transaction = this.transactionRepository.create({
+    type: dto.type,
+    amount: dto.amount,
+    property_id: property,
+    landlord: landlord,
+    payer_type: dto.payer_type,
+    status: dto.status,
+  });
+
+  return this.transactionRepository.save(transaction);
+}
+
 
 
 
 
   }
-
-
-
-
-
 
 

@@ -23,6 +23,8 @@ import { UpdateStaffDto } from './dto/updateStaff.dto';
 import { PropertyEntity } from 'src/landlord/entities/property.entity';
 import { CreatePropertyDto } from './dto/property.dto';
 import { UpdatePropertyDto } from './dto/updateProperty.dto';
+import { AnnouncementEntity } from './entities/announcement.entity';
+import { ComplaintEntity } from './entities/complaint.entity';
 
 
 @Injectable()
@@ -48,6 +50,12 @@ export class AdminService {
 
     @InjectRepository(BuildingEntity)
     private readonly buildingRepository: Repository<BuildingEntity>,
+
+    @InjectRepository(AnnouncementEntity)
+    private readonly announcementRepository: Repository<AnnouncementEntity>,
+
+    @InjectRepository(ComplaintEntity)
+    private readonly complaintRepository: Repository<ComplaintEntity>,
 
     private readonly jwtService: JwtService,
   ) {}
@@ -250,6 +258,19 @@ export class AdminService {
 
     if (!admin) {throw new NotFoundException('Admin not found');}
 
+    // block deletion if this admin still has dependent records (avoids raw 500 from FK constraint)
+    const [landlordCount, staffCount, buildingCount, announcementCount, complaintCount] = await Promise.all([
+        this.landlordRepository.count({ where: { created_by: { id: id } } }),
+        this.staffRepository.count({ where: { created_by: { id: id } } }),
+        this.buildingRepository.count({ where: { created_by: { id: id } } }),
+        this.announcementRepository.count({ where: { created_by: { id: id } } }),
+        this.complaintRepository.count({ where: { reviewed_by: { id: id } } }),
+    ]);
+
+    if (landlordCount > 0 || staffCount > 0 || buildingCount > 0 || announcementCount > 0 || complaintCount > 0) {
+        throw new ConflictException('Cannot delete admin: this admin still has dependent records (landlords, staff, buildings, announcements or complaints). Delete or reassign them first.');
+    }
+
     await this.adminRepository.remove(admin);
 
     return {message: 'Admin deleted successfully',};
@@ -441,6 +462,16 @@ export class AdminService {
 
     if (existingTenant) {throw new ConflictException('Tenant already exists');}
 
+    const existingNid = await this.tenantRepository.findOne({
+        where: {nid_number: createTenantDto.nid_number,},});
+
+    if (existingNid) {throw new ConflictException('Tenant with this nid_number already exists');}
+
+    const existingPhone = await this.tenantRepository.findOne({
+        where: {phone: createTenantDto.phone,},});
+
+    if (existingPhone) {throw new ConflictException('Tenant with this phone already exists');}
+
     const hashedPassword = await bcrypt.hash( createTenantDto.password, 10,
     );
 
@@ -562,6 +593,44 @@ export class AdminService {
     ) {
       throw new ConflictException(
         'Email already exists',
+      );
+    }
+  }
+
+  if (updateTenantDto.nid_number) {
+
+    const existingNid =
+      await this.tenantRepository.findOne({
+        where: {
+          nid_number: updateTenantDto.nid_number,
+        },
+      });
+
+    if (
+      existingNid &&
+      existingNid.id !== tenant.id
+    ) {
+      throw new ConflictException(
+        'Tenant with this nid_number already exists',
+      );
+    }
+  }
+
+  if (updateTenantDto.phone) {
+
+    const existingPhone =
+      await this.tenantRepository.findOne({
+        where: {
+          phone: updateTenantDto.phone,
+        },
+      });
+
+    if (
+      existingPhone &&
+      existingPhone.id !== tenant.id
+    ) {
+      throw new ConflictException(
+        'Tenant with this phone already exists',
       );
     }
   }

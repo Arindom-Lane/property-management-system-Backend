@@ -11,17 +11,24 @@ import { TenantEntity } from 'src/tenant/entities/tenant.entity';
 import { PropertyEntity } from 'src/landlord/entities/property.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './auth/jwt.strategy';
+import { jwtConstants } from 'src/auth/jwt-secret';
 import { BlockController } from './block.controller';
 import { BlockService } from './block.service';
 import { BuildingController } from './building.controller';
 import { BuildingService } from './building.service';
+import { AnnouncementEntity } from './entities/announcement.entity';
+import { ComplaintEntity } from './entities/complaint.entity';
+import { AnnouncementController } from './announcement.controller';
+import { AnnouncementService } from './announcement.service';
+import { ComplaintController } from './complaint.controller';
+import { ComplaintService } from './complaint.service';
 
 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AdminEntity,BlockEntity,BuildingEntity, LandlordEntity, TenantEntity, StaffEntity, PropertyEntity,]), 
-            JwtModule.register({secret: 'mySecretKey', signOptions: {expiresIn: '1d',},}),],
-  providers: [AdminService, BlockService, BuildingService, JwtStrategy,],
-  controllers: [AdminController,  BlockController, BuildingController],
+  imports: [TypeOrmModule.forFeature([AdminEntity,BlockEntity,BuildingEntity, LandlordEntity, TenantEntity, StaffEntity, PropertyEntity, AnnouncementEntity, ComplaintEntity,]), 
+            JwtModule.register({secret: jwtConstants.secret, signOptions: {expiresIn: '1d',},}),],
+  providers: [AdminService, BlockService, BuildingService, AnnouncementService, ComplaintService, JwtStrategy,],
+  controllers: [AdminController,  BlockController, BuildingController, AnnouncementController, ComplaintController],
 })
 export class AdminModule {}

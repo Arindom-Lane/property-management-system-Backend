@@ -6,9 +6,6 @@ import { LandlordModule } from './landlord/landlord.module';
 import { TenantModule } from './tenant/tenant.module';
 import { StaffModule } from './staff/staff.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { staffAuthService } from './staff/StaffAuth/staffAuth.service';
-import { staffAuthController } from './staff/StaffAuth/staffAuth.controller';
-import { StaffAuthModule  } from './staff/StaffAuth/staffAuth.module';
 
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
@@ -23,8 +20,8 @@ import { MailModule } from './mail/mail.module';
     database: 'property_Management_system',
     autoLoadEntities: true,
     synchronize: true,
-  }), StaffAuthModule ,],
-  controllers: [AppController, staffAuthController],
-  providers: [AppService, staffAuthService],
+  }), ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule { }

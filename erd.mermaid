@@ -6,6 +6,11 @@
 
 erDiagram
     ADMIN ||--o{ ADMIN : "creates"
+    ADMIN ||--o{ ANNOUNCEMENT : "publishes"
+    ADMIN ||--o{ COMPLAINT : "inspects"
+    LANDLORD ||--o{ COMPLAINT : "files"
+    TENANT ||--o{ COMPLAINT : "files"
+    STAFF ||--o{ COMPLAINT : "files"
     ADMIN ||--o{ LANDLORD : "creates"
     ADMIN ||--o{ STAFF : "creates"
     ADMIN ||--o{ BLOCK : "creates"
@@ -169,6 +174,27 @@ erDiagram
         int created_by_id
         datetime created_at
         datetime paid_at "nullable"
+    }
+
+    ANNOUNCEMENT {
+        int id PK
+        string title
+        text body
+        int created_by FK "Admin.id"
+        datetime created_at
+    }
+
+    COMPLAINT {
+        int id PK
+        string filed_by_type "LANDLORD, TENANT, or STAFF"
+        int filed_by_id "id of filer"
+        string against_type "LANDLORD, TENANT, or STAFF"
+        int against_id FK "nullable, id of the person complained about"
+        text description
+        string status "PENDING, IN_PROGRESS, RESOLVED, REJECTED"
+        text admin_note "nullable, admin inspection note"
+        int reviewed_by FK "Admin.id, nullable"
+        datetime created_at
     }
 
     REVIEW {

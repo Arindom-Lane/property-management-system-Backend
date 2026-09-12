@@ -10,7 +10,7 @@ import { LandlordEntity } from '../landlord/entities/landlord.entity';
 import {AuthModule } from '../auth/auth.module'
 import { JwtModule } from '@nestjs/jwt';    
 
-
+import { TransactionEntity } from '../landlord/entities/transaction.entity';
 
 @Module({
   imports: [
@@ -19,6 +19,7 @@ import { JwtModule } from '@nestjs/jwt';
       IssueEntity,
       PropertyEntity,
       LandlordEntity,
+      TransactionEntity,
     ]),
     AuthModule,
   ],

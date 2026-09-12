@@ -23,9 +23,8 @@ import { UpdateTenantDto } from './dto/update-tenant.dto';
 import { CreateIssueDto } from './dto/create-issue.dto';
 import { UpdateIssueDto } from './dto/update-issue.dto';
 
+import { TransactionEntity, Trnsaction_type,payer_type,status } from '../landlord/entities/transaction.entity';
 
-// import { CreatePaymentDto } from './dto/create-payment.dto';
-// import { UpdatePaymentDto } from './dto/update-payment.dto';
 
 import { JwtService } from '@nestjs/jwt';
 
@@ -44,7 +43,9 @@ export class TenantService {
     @InjectRepository(LandlordEntity)
     private readonly landlordRepository: Repository<LandlordEntity>,
 
-    
+    @InjectRepository(TransactionEntity)
+  private readonly transactionRepository: Repository<TransactionEntity>,
+
     private readonly jwtService: JwtService,
 
   ) {}
@@ -492,5 +493,89 @@ async deleteIssue(
 
   await this.issueRepository.delete(issueId);
 }
+async getTenantTransactions(tenantId: number) {
+  return this.transactionRepository.find({
+    where: {
+      tenant_id: {
+        id: tenantId,
+      },
+    },
+    order: {
+      created_at: 'DESC',
+    },
+  });
+}
 
+//pay transaction
+async payTransaction(
+  tenantId: number,
+  transactionId: number,
+) {
+  const transaction =
+    await this.transactionRepository.findOne({
+      where: {
+        id: transactionId,
+        tenant_id: {
+          id: tenantId,
+        },
+      },
+    });
+
+  if (!transaction) {
+    throw new NotFoundException(
+      'Transaction not found',
+    );
+  }
+
+  if (transaction.status === status.paid) {
+    throw new BadRequestException(
+      'Transaction already paid',
+    );
+  }
+
+  transaction.status = status.paid;
+  transaction.paid_at = new Date();
+
+  return this.transactionRepository.save(transaction);
+}
+//get payable work orders for a tenant
+async getPayableWorkOrders(tenantId: number) {
+  return this.transactionRepository.find({
+    where: {
+      tenant_id: { id: tenantId },
+      type: Trnsaction_type.work_order_cost,
+      payer_type: payer_type.tenant,
+      status: status.pending,
+    },
+    relations: {
+      work_order_id: true,
+    },
+    order: {
+      created_at: 'DESC',
+    },
+  });
+}
+//pay work order
+async payWorkOrder(tenantId: number, workOrderId: number) {
+  const transaction = await this.transactionRepository.findOne({
+    where: {
+      tenant_id: { id: tenantId },
+      work_order_id: { id: workOrderId },
+      type: Trnsaction_type.work_order_cost,
+      payer_type: payer_type.tenant,
+      status: status.pending,
+    },
+  });
+
+  if (!transaction) {
+    throw new NotFoundException(
+      'No payable work order transaction found',
+    );
+  }
+
+  transaction.status = status.paid;
+  transaction.paid_at = new Date();
+
+  return this.transactionRepository.save(transaction);
+}
  }

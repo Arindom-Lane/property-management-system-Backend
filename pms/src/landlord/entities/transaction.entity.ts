@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column,JoinColumn, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { LandlordEntity } from './landlord.entity';
 import { PropertyEntity } from './property.entity';
 import { TenantEntity } from 'src/tenant/entities/tenant.entity';
@@ -57,8 +57,9 @@ export class TransactionEntity {
     @ManyToOne(() => TenantEntity, (tanent) => tanent.id)
     tenant_id?: TenantEntity;
 
-    @OneToOne(() => WorkOrder, (workOder) => workOder.id)
-    work_order_id: WorkOrder;
+@OneToOne(() => WorkOrder, { nullable: true })
+@JoinColumn({ name: 'work_order_id' })
+work_order_id?: WorkOrder | null;
 
     @Column({
         type: "enum",
@@ -85,7 +86,12 @@ export class TransactionEntity {
     @CreateDateColumn()
     created_at: Date;
 
-    @CreateDateColumn()
-    paid_at?: Date;
+    // @CreateDateColumn()
+    // paid_at?: Date;
+    @Column({
+  type: 'timestamp',
+  nullable: true,
+})
+paid_at?: Date | null;
 
 }

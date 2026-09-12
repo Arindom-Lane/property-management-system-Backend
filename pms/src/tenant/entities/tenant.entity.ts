@@ -36,7 +36,7 @@ export class TenantEntity {
   phone: string;
 
   @Column()
-  password_hash: string;
+password_hash: string;
 
   @Column({ unique: true })
   nid_number: string;

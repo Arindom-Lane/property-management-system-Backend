@@ -13,7 +13,7 @@ import { TenantEntity } from 'src/tenant/entities/tenant.entity';
 import { TransactionEntity } from './transaction.entity';
 import { WorkOrder } from '../../staff/entities/work_order.entity';       // <-- Import WorkOrder
 import { IssueEntity } from 'src/tenant/entities/issue.entity'; // <-- Import IssueEntity (adjust path if needed)
-import {BlockEntity} from 'src/admin/entities/block.entity.js'
+import {BlockEntity} from '../../admin/entities/block.entity'
 
 export enum ListingStatus {
   not_listed = 'not_listed',

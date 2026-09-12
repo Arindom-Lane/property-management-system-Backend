@@ -90,7 +90,7 @@ export class PropertyEntity {
   @OneToMany(() => IssueEntity, (issue) => issue.property)
   issues: IssueEntity[];
 
-  // 3. ManyToOne: Property -> Block
-  @ManyToOne(() => BlockEntity, (block) => block.properties)
-  block: BlockEntity;
+  // // 3. ManyToOne: Property -> Block
+  // @ManyToOne(() => BlockEntity, (block) => block.properties)
+  // block: BlockEntity;
 }

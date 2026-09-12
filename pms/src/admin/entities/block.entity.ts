@@ -25,6 +25,6 @@ export class BlockEntity  {
     @OneToMany(() => BuildingEntity, (building) => building.block_id)
     building: BuildingEntity[]; 
 
-    @OneToMany(() => PropertyEntity, (property) => property.block)
-    properties: PropertyEntity[];
+    // @OneToMany(() => PropertyEntity, (property) => property.block)
+    // properties: PropertyEntity[];
 }

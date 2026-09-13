@@ -891,6 +891,7 @@ export class StaffService {
       recentOrders.push({
         id: order.id,
         property: propertyUnit,
+        property_id: order.property ? order.property.id : null,
         cost: order.labor_cost + order.materials_cost + order.additional_cost,
         rating,
       });
@@ -974,7 +975,13 @@ export class StaffService {
 
   async findAllWorkOrders() {
     const data = await this.workOrderRepo.find({
-      relations: { landlord: true },
+      relations: {
+        landlord: true,
+        property: true,
+        tenant: true,
+        issue: true,
+        worker: true,
+      },
       order: { created_at: 'DESC' },
     });
 
@@ -989,7 +996,11 @@ export class StaffService {
     const issue = await this.findIssue(body.issue_id);
     const property = await this.findProperty(body.property_id);
     const landlord = await this.findLandlord(body.landlord_id);
-    const tenant = await this.findTanent(body.tenant_id);
+    let tenant = issue.tenant;
+
+    if (body.tenant_id) {
+      tenant = await this.findTanent(body.tenant_id);
+    }
 
     if (!property.landlord || property.landlord.id !== landlord.id) {
       throw new BadRequestException(

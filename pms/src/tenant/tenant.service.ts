@@ -663,4 +663,28 @@ async payWorkOrder(tenantId: number, workOrderId: number) {
 
     return saved;
   }
+  getTenantDashboardSummery(tenantId: number): Promise<any> {
+    return this.tenantRepository
+      .createQueryBuilder('tenant')
+      .leftJoinAndSelect('tenant.property', 'property')
+      .leftJoinAndSelect('property.landlord', 'landlord')
+      .leftJoinAndSelect('tenant.issues', 'issues')
+      .leftJoinAndSelect('tenant.reviews', 'reviews')
+      .where('tenant.id = :tenantId', { tenantId })
+      .select([
+        'tenant.id',
+        'tenant.name',
+        'tenant.email',
+        'tenant.phone',
+        'property.id',
+        'property.unit_number',
+        'landlord.id',
+        'landlord.name',
+        'issues.id',
+        'issues.status',
+        'reviews.id',
+        'reviews.rating',
+      ])
+      .getOne();
+  }
  }

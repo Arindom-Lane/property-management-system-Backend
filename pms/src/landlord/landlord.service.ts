@@ -13,6 +13,7 @@ import { WorkOrder } from '../staff/entities/work_order.entity.js';
 import { CreateWorkOrderDto } from '../staff/dto/CreateWorkOrder.dto';
 import { created_by_type, TransactionEntity } from './entities/transaction.entity';
 import { CreateTransactionDto } from 'src/staff/dto/CreateTransaction.dto';
+import { IssueEntity } from '../tenant/entities/issue.entity';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -28,6 +29,8 @@ constructor(
     private workOrderRepository: Repository<WorkOrder>,
     @InjectRepository(TransactionEntity)
     private transactionRepository: Repository<TransactionEntity>,
+    @InjectRepository(IssueEntity)
+    private issueRepository: Repository<IssueEntity>,
   ) {}
 
 
@@ -453,6 +456,25 @@ async registerLandlord(landlordDto: LandlordDto): Promise<LandlordEntity> {
         `,
         [landlordId],
       );
+    }
+
+    /////////////////issue create
+
+    async createIssuebyLandlord(landlordId: number, CreateIssueDto: any): Promise<any> {
+      const landlord = await this.landlordRepository.findOne({
+        where: { id: landlordId },
+      });
+
+      if (!landlord) {
+        throw new UnauthorizedException('Landlord not found');
+      }
+      
+      const issue = this.issueRepository.create({
+        ...CreateIssueDto,
+        landlord: landlord,
+      });
+
+      return this.issueRepository.save(issue);
     }
 
 

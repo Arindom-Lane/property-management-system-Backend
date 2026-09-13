@@ -10,6 +10,7 @@ import { TenantEntity } from '../tenant/entities/tenant.entity.js';
 import { WorkOrder } from '../staff/entities/work_order.entity';
 import { TransactionEntity } from './entities/transaction.entity';
 import { CreateTransactionDto } from '../staff/dto/CreateTransaction.dto';
+import { CreateIssueDto } from 'src/tenant/dto/create-issue.dto';
 
 @Controller('landlord')
 export class LandlordController {
@@ -174,6 +175,13 @@ export class LandlordController {
     @Get('issues/:landlordId')
     getLandlordIssuesofTenants(@Param('landlordId') landlordId: number): Promise<any> {
       return this.landlordService.getLandlordIssuesofTenants(landlordId);
+    }
+
+
+    ///////////////issue create
+    @Post('issues/:landlordId')
+    createIssuebyLandlord(@Param('landlordId') landlordId: number, @Body() CreateIssueDto: CreateIssueDto): Promise<any> {
+      return this.landlordService.createIssuebyLandlord(landlordId, CreateIssueDto);
     }
 
 

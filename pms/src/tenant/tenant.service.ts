@@ -24,7 +24,7 @@ import { CreateIssueDto } from './dto/create-issue.dto';
 import { UpdateIssueDto } from './dto/update-issue.dto';
 
 import { TransactionEntity, Trnsaction_type,payer_type,status } from '../landlord/entities/transaction.entity';
-
+import { PusherService } from 'src/notification/pusher.service';
 
 
 import { JwtService } from '@nestjs/jwt';
@@ -48,6 +48,7 @@ export class TenantService {
   private readonly transactionRepository: Repository<TransactionEntity>,
 
     private readonly jwtService: JwtService,
+    private readonly pusherService: PusherService,
 
   ) {}
 
@@ -295,36 +296,49 @@ async getAssignedProperty(id: number): Promise<PropertyEntity> {
   return tenant.property;
 }
 async createIssue(
-  tenantId: number,
-  dto: CreateIssueDto,
-): Promise<IssueEntity> {
+    tenantId: number,
+    dto: CreateIssueDto,
+  ): Promise<IssueEntity> {
 
-  const tenant = await this.tenantRepository.findOne({
-    where: { id: tenantId },
-    relations: {
-      property: true,
-    },
-  });
+    const tenant = await this.tenantRepository.findOne({
+      where: { id: tenantId },
+      relations: {
+        property: { landlord: true }, // NEW: need landlord to notify
+      },
+    });
 
-  if (!tenant) {
-    throw new NotFoundException('Tenant not found.');
+    if (!tenant) {
+      throw new NotFoundException('Tenant not found.');
+    }
+
+    if (!tenant.property) {
+      throw new BadRequestException('Property is not assigned yet.');
+    }
+
+    const issue = this.issueRepository.create({
+      description: dto.description,
+      image_url: dto.image_url,
+      tenant,
+      property: tenant.property,
+    });
+
+    const savedIssue = await this.issueRepository.save(issue);
+
+    // NEW: real-time notify the landlord who owns this property
+    if (tenant.property.landlord) {
+      void this.pusherService.notifyLandlordNewIssue(
+        tenant.property.landlord.id,
+        {
+          issueId: savedIssue.id,
+          propertyId: tenant.property.id,
+          unitNumber: tenant.property.unit_number,
+          description: savedIssue.description,
+        },
+      );
+    }
+
+    return savedIssue;
   }
-
-  if (!tenant.property) {
-    throw new BadRequestException(
-      'Property is not assigned yet.',
-    );
-  }
-
-  const issue = this.issueRepository.create({
-    description: dto.description,
-    image_url: dto.image_url,
-    tenant,
-    property: tenant.property,
-  });
-
-  return await this.issueRepository.save(issue);
-}
 /*async getAssignedProperty(
   id: number,
 ): Promise<any> {
@@ -545,36 +559,53 @@ async getTenantTransactions(tenantId: number) {
 
 //pay transaction
 async payTransaction(
-  tenantId: number,
-  transactionId: number,
-) {
-  const transaction =
-    await this.transactionRepository.findOne({
-      where: {
-        id: transactionId,
-        tenant_id: {
-          id: tenantId,
+    tenantId: number,
+    transactionId: number,
+  ) {
+    const transaction =
+      await this.transactionRepository.findOne({
+        where: {
+          id: transactionId,
+          tenant_id: {
+            id: tenantId,
+          },
         },
-      },
-    });
+        relations: { property_id: { landlord: true } }, // NEW: need landlord + unit
+      });
 
-  if (!transaction) {
-    throw new NotFoundException(
-      'Transaction not found',
-    );
+    if (!transaction) {
+      throw new NotFoundException(
+        'Transaction not found',
+      );
+    }
+
+    if (transaction.status === status.paid) {
+      throw new BadRequestException(
+        'Transaction already paid',
+      );
+    }
+
+    transaction.status = status.paid;
+    transaction.paid_at = new Date();
+
+    const saved = await this.transactionRepository.save(transaction);
+
+    // NEW: notify the landlord that a payment came in
+    if (transaction.property_id?.landlord) {
+      void this.pusherService.notifyLandlordTransactionPaid(
+        transaction.property_id.landlord.id,
+        {
+          transactionId: saved.id,
+          propertyId: transaction.property_id.id,
+          unitNumber: transaction.property_id.unit_number,
+          amount: Number(saved.amount),
+          type: saved.type,
+        },
+      );
+    }
+
+    return saved;
   }
-
-  if (transaction.status === status.paid) {
-    throw new BadRequestException(
-      'Transaction already paid',
-    );
-  }
-
-  transaction.status = status.paid;
-  transaction.paid_at = new Date();
-
-  return this.transactionRepository.save(transaction);
-}
 //get payable work orders for a tenant
 async getPayableWorkOrders(tenantId: number) {
   return this.transactionRepository.find({
@@ -594,56 +625,42 @@ async getPayableWorkOrders(tenantId: number) {
 }
 //pay work order
 async payWorkOrder(tenantId: number, workOrderId: number) {
-  const transaction = await this.transactionRepository.findOne({
-    where: {
-      tenant_id: { id: tenantId },
-      work_order_id: { id: workOrderId },
-      type: Trnsaction_type.work_order_cost,
-      payer_type: payer_type.tenant,
-      status: status.pending,
-    },
-  });
+    const transaction = await this.transactionRepository.findOne({
+      where: {
+        tenant_id: { id: tenantId },
+        work_order_id: { id: workOrderId },
+        type: Trnsaction_type.work_order_cost,
+        payer_type: payer_type.tenant,
+        status: status.pending,
+      },
+      relations: { property_id: { landlord: true } }, // NEW
+    });
 
-  if (!transaction) {
-    throw new NotFoundException(
-      'No payable work order transaction found',
-    );
+    if (!transaction) {
+      throw new NotFoundException(
+        'No payable work order transaction found',
+      );
+    }
+
+    transaction.status = status.paid;
+    transaction.paid_at = new Date();
+
+    const saved = await this.transactionRepository.save(transaction);
+
+    // NEW: notify the landlord that a work-order payment came in
+    if (transaction.property_id?.landlord) {
+      void this.pusherService.notifyLandlordTransactionPaid(
+        transaction.property_id.landlord.id,
+        {
+          transactionId: saved.id,
+          propertyId: transaction.property_id.id,
+          unitNumber: transaction.property_id.unit_number,
+          amount: Number(saved.amount),
+          type: saved.type,
+        },
+      );
+    }
+
+    return saved;
   }
-
-  transaction.status = status.paid;
-  transaction.paid_at = new Date();
-
-  return this.transactionRepository.save(transaction);
-}
-//get tenant dashboard summery
-getTenantDashboardSummery(tenantId: number): Promise<any> {
-  return this.tenantRepository.query(
-    `
-    SELECT
-      (
-        SELECT COUNT(*)
-        FROM issue
-        WHERE tenant_id = $1
-          AND status != 'RESOLVED'
-      ) AS open_issues,
-
-      
-
-      (
-        SELECT COALESCE(SUM(amount), 0)
-        FROM transactions
-        WHERE "tenantIdId" = $1
-          AND status = 'pending'
-      ) AS total_due,
-
-      (
-        SELECT COALESCE(SUM(amount), 0)
-        FROM transactions
-        WHERE "tenantIdId" = $1
-          AND status = 'paid'
-      ) AS total_paid
-    `,
-    [tenantId],
-  );
-}
  }

@@ -16,6 +16,7 @@ import { CreateTransactionDto } from 'src/staff/dto/CreateTransaction.dto';
 import { IssueEntity } from '../tenant/entities/issue.entity';
 import * as bcrypt from 'bcrypt';
 import { CreateIssueDto } from 'src/tenant/dto/create-issue.dto';
+import { PusherService } from 'src/notification/pusher.service';
 
 @Injectable()
 export class LandlordService {
@@ -32,6 +33,7 @@ constructor(
     private transactionRepository: Repository<TransactionEntity>,
     @InjectRepository(IssueEntity)
     private issueRepository: Repository<IssueEntity>,
+    private pusherService: PusherService,
   ) {}
 
 
@@ -291,50 +293,68 @@ async registerLandlord(landlordDto: LandlordDto): Promise<LandlordEntity> {
     
     async approveTenant(landlordid:number, tenantid:number):Promise<TenantEntity | null>{
 
-      const landlord = await this.landlordRepository.findOne({
-        where: { id: landlordid },
-        relations: { tenants: true },
-      });
+    const landlord = await this.landlordRepository.findOne({
+      where: { id: landlordid },
+      relations: { tenants: true },
+    });
 
-      if (!landlord) {
-        throw new UnauthorizedException('Landlord not found');
-      }
-      const tenant = await this.tenantRepository.findOne({
-        where: { id: tenantid },
-      });
-
-      if (!tenant) {
-        throw new UnauthorizedException('Tenant not found');
-      }
-
-      tenant.status = TenantStatus.APPROVED;
-      return this.tenantRepository.save(tenant);
+    if (!landlord) {
+      throw new UnauthorizedException('Landlord not found');
     }
+    const tenant = await this.tenantRepository.findOne({
+      where: { id: tenantid },
+      relations: { property: true }, // NEW: to include unit number in the toast
+    });
+
+    if (!tenant) {
+      throw new UnauthorizedException('Tenant not found');
+    }
+
+    tenant.status = TenantStatus.APPROVED;
+    const saved = await this.tenantRepository.save(tenant);
+
+    // NEW: notify the tenant in real time
+    void this.pusherService.notifyTenantStatusChanged(saved.id, {
+      status: 'APPROVED',
+      propertyUnit: saved.property?.unit_number ?? null,
+    });
+
+    return saved;
+  }
 
 
     ///////////// reject tenant
 
     async rejectTenant(landlordid:number, tenantid:number):Promise<TenantEntity | null>{
 
-      const landlord = await this.landlordRepository.findOne({
-        where: { id: landlordid },
-        relations: { tenants: true },
-      });
+    const landlord = await this.landlordRepository.findOne({
+      where: { id: landlordid },
+      relations: { tenants: true },
+    });
 
-      if (!landlord) {
-        throw new UnauthorizedException('Landlord not found');
-      }
-      const tenant = await this.tenantRepository.findOne({
-        where: { id: tenantid },
-      });
-
-      if (!tenant) {
-        throw new UnauthorizedException('Tenant not found');
-      }
-
-      tenant.status = TenantStatus.REJECTED;
-      return this.tenantRepository.save(tenant);
+    if (!landlord) {
+      throw new UnauthorizedException('Landlord not found');
     }
+    const tenant = await this.tenantRepository.findOne({
+      where: { id: tenantid },
+      relations: { property: true }, // NEW
+    });
+
+    if (!tenant) {
+      throw new UnauthorizedException('Tenant not found');
+    }
+
+    tenant.status = TenantStatus.REJECTED;
+    const saved = await this.tenantRepository.save(tenant);
+
+    // NEW: notify the tenant in real time
+    void this.pusherService.notifyTenantStatusChanged(saved.id, {
+      status: 'REJECTED',
+      propertyUnit: saved.property?.unit_number ?? null,
+    });
+
+    return saved;
+  }
 
 
 
@@ -342,25 +362,35 @@ async registerLandlord(landlordDto: LandlordDto): Promise<LandlordEntity> {
     
     async kickTenant(landlordid:number, tenantid:number):Promise<TenantEntity | null>{
 
-      const landlord = await this.landlordRepository.findOne({
-        where: { id: landlordid },
-        relations: { tenants: true },
-      });
+    const landlord = await this.landlordRepository.findOne({
+      where: { id: landlordid },
+      relations: { tenants: true },
+    });
 
-      if (!landlord) {
-        throw new UnauthorizedException('Landlord not found');
-      }
-      const tenant = await this.tenantRepository.findOne({
-        where: { id: tenantid },
-      });
-
-      if (!tenant) {
-        throw new UnauthorizedException('Tenant not found');
-      }
-
-      tenant.status = TenantStatus.REJECTED;
-      return this.tenantRepository.save(tenant);
+    if (!landlord) {
+      throw new UnauthorizedException('Landlord not found');
     }
+    const tenant = await this.tenantRepository.findOne({
+      where: { id: tenantid },
+      relations: { property: true }, // NEW
+    });
+
+    if (!tenant) {
+      throw new UnauthorizedException('Tenant not found');
+    }
+
+    const unit = tenant.property?.unit_number ?? null; // grab before it's cleared elsewhere
+    tenant.status = TenantStatus.REJECTED;
+    const saved = await this.tenantRepository.save(tenant);
+
+    // NEW: notify the tenant in real time
+    void this.pusherService.notifyTenantStatusChanged(saved.id, {
+      status: 'REJECTED',
+      propertyUnit: unit,
+    });
+
+    return saved;
+  }
 
 
     ////// create work order

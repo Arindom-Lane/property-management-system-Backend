@@ -13,6 +13,7 @@ import { CreateStaffDto } from './dto/Staff.dto';
 import { UpdateStaffDto } from './dto/updateStaff.dto';
 import { CreatePropertyDto } from './dto/property.dto';
 import { UpdatePropertyDto } from './dto/updateProperty.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 
 @Controller('admin')
@@ -144,7 +145,7 @@ export class AdminController {
     //TENANT MODULE...
 
     @Post('tenant/create')
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(AuthGuard)
     @UsePipes(new ValidationPipe())
     createTenant(@Body() createTenantDto: CreateTenantDto,) {
     

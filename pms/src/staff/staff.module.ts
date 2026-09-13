@@ -15,7 +15,7 @@ import { TransactionEntity } from '../landlord/entities/transaction.entity'
 import { BlockEntity } from "../admin/entities/block.entity";
 import { BuildingEntity } from "../admin/entities/building.entity";
 import { AuthModule } from '../auth/auth.module';
-
+import { PusherService } from '../notification/pusher.service'
 
 
 @Module({
@@ -32,8 +32,8 @@ import { AuthModule } from '../auth/auth.module';
   TenantEntity,
   BlockEntity,
 ]),AuthModule],
-  providers: [StaffService],
+  providers: [StaffService, PusherService],
   controllers: [StaffController],
-  exports: [StaffService]
+  exports: [StaffService,]
 })
 export class StaffModule {}

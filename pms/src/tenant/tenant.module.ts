@@ -8,9 +8,9 @@ import { IssueEntity } from './entities/issue.entity';
 import { PropertyEntity } from '../landlord/entities/property.entity';
 import { LandlordEntity } from '../landlord/entities/landlord.entity';
 import {AuthModule } from '../auth/auth.module'
-import { JwtModule } from '@nestjs/jwt';    
 
 import { TransactionEntity } from '../landlord/entities/transaction.entity';
+import { PusherService } from 'src/notification/pusher.service';
 
 @Module({
   imports: [
@@ -24,6 +24,6 @@ import { TransactionEntity } from '../landlord/entities/transaction.entity';
     AuthModule,
   ],
   controllers: [TenantController],
-  providers: [TenantService],
+  providers: [TenantService, PusherService],
 })
 export class TenantModule {}

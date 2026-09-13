@@ -49,6 +49,7 @@ import { LoginStaffDto } from './dto/LoginStaff.dto';
 import { empty } from 'rxjs';
 import { IsEmail } from 'class-validator';
 import { StaffStatus } from './entities/staff.entity';
+import { PusherService } from '../notification/pusher.service';
 
 @Injectable()
 export class StaffService {
@@ -88,6 +89,7 @@ export class StaffService {
 
     @InjectRepository(BuildingEntity)
     private readonly buildingRepo: Repository<BuildingEntity>,
+    private readonly pusherService: PusherService,
   ) {}
 
   async findAdmin(id: number) {
@@ -1054,7 +1056,16 @@ export class StaffService {
       await this.issueRepo.save(issue);
     }
 
-    return await this.workOrderRepo.save(workOrder);
+    const savedOrder = await this.workOrderRepo.save(workOrder);
+
+    // NEW: notify the landlord a work order was created for their property
+    void this.pusherService.notifyLandlordWorkOrderCreated(landlord.id, {
+      workOrderId: savedOrder.id,
+      propertyId: property.id,
+      unitNumber: property.unit_number,
+    });
+
+    return savedOrder;
   }
 
   async updateWorkOrder(id: number, dto: UpdateWorkOrderDto) {
@@ -1283,7 +1294,22 @@ export class StaffService {
       await this.issueRepo.save(order.issue);
     }
 
-    return await this.workOrderRepo.save(order);
+    const savedOrder = await this.workOrderRepo.save(order);
+
+    // NEW: real-time notify the landlord who owns this work order/property
+    if (order.landlord && order.property) {
+      void this.pusherService.notifyLandlordWorkOrderComplete(
+        order.landlord.id,
+        {
+          workOrderId: savedOrder.id,
+          propertyId: order.property.id,
+          unitNumber: order.property.unit_number,
+          totalCost,
+        },
+      );
+    }
+
+    return savedOrder;
   }
 
   async tenantConfirmWorkOrder(id: number) {

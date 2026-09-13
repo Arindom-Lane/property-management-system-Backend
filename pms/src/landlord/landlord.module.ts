@@ -7,11 +7,12 @@ import { PropertyEntity } from './entities/property.entity';
 import { TransactionEntity } from './entities/transaction.entity';
 import { TenantEntity } from '../tenant/entities/tenant.entity';
 import { WorkOrder } from '../staff/entities/work_order.entity';
-import { IssueEntity } from 'src/tenant/entities/issue.entity';
+import { IssueEntity } from '../tenant/entities/issue.entity';
+import { PusherService } from '../notification/pusher.service';
 
 @Module({
   imports:[TypeOrmModule.forFeature([LandlordEntity,PropertyEntity,TransactionEntity,TenantEntity,WorkOrder,IssueEntity])],
-  providers: [LandlordService],
+  providers: [LandlordService, PusherService],
   controllers: [LandlordController]
 })
 export class LandlordModule {}

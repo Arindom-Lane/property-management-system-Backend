@@ -11,7 +11,7 @@ import { TenantEntity } from '../tenant/entities/tenant.entity.js';
 import { TenantStatus } from '../tenant/entities/tenant.entity.js';
 import { WorkOrder } from '../staff/entities/work_order.entity.js';
 import { CreateWorkOrderDto } from '../staff/dto/CreateWorkOrder.dto';
-import { created_by_type, TransactionEntity } from './entities/transaction.entity';
+import { created_by_type, payer_type, TransactionEntity, Trnsaction_type,status, } from './entities/transaction.entity';
 import { CreateTransactionDto } from 'src/staff/dto/CreateTransaction.dto';
 import { IssueEntity } from '../tenant/entities/issue.entity';
 import * as bcrypt from 'bcrypt';
@@ -609,9 +609,80 @@ async registerLandlord(landlordDto: LandlordDto): Promise<LandlordEntity> {
   return this.transactionRepository.save(transaction);
 }
 
+///////////////////issue update by landlord
 
+updateIssue(landlordId: number, issueId: number, updateData: Partial<IssueEntity>): Promise<IssueEntity | null> {
+  return this.issueRepository.findOne({ where: { id: issueId, landlord: { id: landlordId } } })
+    .then(issue => {
+      if (!issue) {
+        throw new UnauthorizedException('Issue not found or does not belong to this landlord');
+      }
+      Object.assign(issue, updateData);
+      return this.issueRepository.save(issue);
+    });
+} 
 
+///landlord pays his utility bill
+async payUtilityBill(
+  landlordId: number,
+  transactionId: number,
+): Promise<TransactionEntity> {
 
+  const transaction = await this.transactionRepository.findOne({
+    where: {
+      id: transactionId,
+      landlord: { id: landlordId },
+      payer_type: payer_type.landlord,
+      status: status.pending,
+    },
+    relations: {
+      property_id: true,
+      landlord: true,
+    },
+  });
+
+  if (!transaction) {
+    throw new UnauthorizedException(
+      'Utility bill transaction not found',
+    );
+  }
+
+  // Do not allow rent to be paid through this method
+  if (
+    transaction.type === Trnsaction_type.rent ||
+    transaction.type === Trnsaction_type.work_order_cost
+  ) {
+    throw new UnauthorizedException(
+      'Rent and work order transactions cannot be paid as utility bills',
+    );
+  }
+
+  transaction.status = status.paid;
+  transaction.paid_at = new Date();
+
+  return await this.transactionRepository.save(transaction);
+}
+
+getTenantTransactions(landlordId: number, tenantId: number): Promise<TransactionEntity[] | null> {
+  return this.transactionRepository.find({
+    where: {
+      landlord: { id: landlordId },
+      tenant_id: { id: tenantId },
+    },
+    relations: {
+      property_id: true,
+      landlord: true,
+      tenant_id: true,
+    },
+  });
+}
+
+createTransactionForUtilityBill(
+  landlordId: number,
+  dto: CreateTransactionDto,
+): Promise<TransactionEntity> {
+  return this.createTransaction(landlordId, dto);
+}
 
   }
 

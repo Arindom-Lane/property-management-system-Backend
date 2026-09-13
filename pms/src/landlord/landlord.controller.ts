@@ -1,4 +1,17 @@
-import { Controller, Post,Body, Get, Param, Put, Patch,Query } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  Put,
+  Patch,
+  Query,
+  Delete,
+  ParseIntPipe,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { LandlordService } from './landlord.service';
 import { LandlordEntity } from './entities/landlord.entity';
 import { LandlordDto } from './dto/landlord.dto';
@@ -11,6 +24,7 @@ import { WorkOrder } from '../staff/entities/work_order.entity';
 import { TransactionEntity } from './entities/transaction.entity';
 import { CreateTransactionDto } from '../staff/dto/CreateTransaction.dto';
 import { CreateIssueDto } from 'src/tenant/dto/create-issue.dto';
+import { UpdateIssueDto } from '../tenant/dto/update-issue.dto';
 
 @Controller('landlord')
 export class LandlordController {
@@ -207,4 +221,60 @@ export class LandlordController {
       return this.landlordService.getLandlordReviews(landlordId);
     }
 
+/////////////////////issue update by landlord
+    @Patch('issues/:landlordId/:issueId')
+@UsePipes(new ValidationPipe())
+updateIssue(
+  @Param('landlordId', ParseIntPipe) landlordId: number,
+  @Param('issueId', ParseIntPipe) issueId: number,
+  @Body() dto: UpdateIssueDto,
+) {
+  return this.landlordService.updateIssue(
+    landlordId,
+    issueId,
+    dto,
+  );
+}
+
+///////////landlord pay utility bills for landlord
+
+
+@Post('transaction/:landlordId')
+createTransactionForUtilityBill(
+  @Param('landlordId', ParseIntPipe) landlordId: number,
+  @Body() createTransactionDto: CreateTransactionDto,
+): Promise<TransactionEntity> {
+  return this.landlordService.createTransactionForUtilityBill(
+    landlordId,
+    createTransactionDto,
+  );
+}
+
+@Patch('utility-bill/pay/:landlordId/:transactionId')
+payUtilityBill(
+  @Param('landlordId', ParseIntPipe) landlordId: number,
+  @Param('transactionId', ParseIntPipe) transactionId: number,
+) {
+  return this.landlordService.payUtilityBill(
+    landlordId,
+    transactionId,
+  );
+}
+
+/////////////get all transactions of tenant under landlord
+
+@Get('tenant/transactions/:landlordId/:tenantId')
+getTenantTransactions(
+  @Param('landlordId', ParseIntPipe) landlordId: number,
+  @Param('tenantId', ParseIntPipe) tenantId: number,
+) {
+  return this.landlordService.getTenantTransactions(
+    landlordId,
+    tenantId,
+  );
+
+
+
+
+}
 }

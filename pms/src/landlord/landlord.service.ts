@@ -87,24 +87,30 @@ async registerLandlord(landlordDto: LandlordDto): Promise<LandlordEntity> {
 
        //////// update only password
 
-    async updateLandlordPassword(id: number, password_hash: string,newpassword:string): Promise<LandlordEntity> {
-        if (password_hash === newpassword) {
-            throw new UnauthorizedException('New password cannot be the same as the current password');
-        }
+    async updateLandlordPassword(
+  id: number,
+  currentPassword: string,
+  newpassword: string,
+): Promise<LandlordEntity> {
+  const landlord = await this.landlordRepository.findOne({ where: { id } });
 
-        const landlord = await this.landlordRepository.findOne({ where: { id } });
+  if (!landlord) {
+    throw new UnauthorizedException('Landlord not found');
+  }
 
-        if (!landlord) {
-            throw new UnauthorizedException('Landlord not found');
-        }
+  const isMatch = await bcrypt.compare(currentPassword, landlord.password_hash);
+  if (!isMatch) {
+    throw new UnauthorizedException('Current password is incorrect');
+  }
 
-        if (landlord.password_hash !== password_hash) {
-            throw new UnauthorizedException('Current password is incorrect');
-        }
+  const isSame = await bcrypt.compare(newpassword, landlord.password_hash);
+  if (isSame) {
+    throw new UnauthorizedException('New password cannot be the same as the current password');
+  }
 
-        landlord.password_hash = newpassword;
-        return this.landlordRepository.save(landlord);
-    }
+  landlord.password_hash = await bcrypt.hash(newpassword, 10);
+  return this.landlordRepository.save(landlord);
+}
 
 
     //////  property

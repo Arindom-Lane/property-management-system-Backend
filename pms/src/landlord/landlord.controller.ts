@@ -1,4 +1,4 @@
-import { Controller, Post,Body, Get, Param, Put, Patch } from '@nestjs/common';
+import { Controller, Post,Body, Get, Param, Put, Patch,Query } from '@nestjs/common';
 import { LandlordService } from './landlord.service';
 import { LandlordEntity } from './entities/landlord.entity';
 import { LandlordDto } from './dto/landlord.dto';
@@ -7,24 +7,27 @@ import { PropertyEntity } from './entities/property.entity';
 import { Status } from './entities/property.entity.js';
 import { ListingStatus } from './entities/property.entity.js';
 import { TenantEntity } from '../tenant/entities/tenant.entity.js';
-import { WorkOrder } from 'src/staff/entities/work_order.entity';
+import { WorkOrder } from '../staff/entities/work_order.entity';
+import { TransactionEntity } from './entities/transaction.entity';
+import { CreateTransactionDto } from '../staff/dto/CreateTransaction.dto';
+import { CreateIssueDto } from 'src/tenant/dto/create-issue.dto';
 
 @Controller('landlord')
 export class LandlordController {
   constructor(private readonly landlordService: LandlordService) {}
 
 
-  ///Authenticaation
+//   ///Authenticaation
 
-  @Post('register')
-     registerLandlord(@Body() landlordDto: LandlordDto): Promise<LandlordEntity> {
-        return this.landlordService.registerLandlord(landlordDto);
-    }
+//   @Post('register')
+//      registerLandlord(@Body() landlordDto: LandlordDto): Promise<LandlordEntity> {
+//         return this.landlordService.registerLandlord(landlordDto);
+//     }
 
-    @Post('login')
-  loginLandLord(@Body('name') name: string,@Body('password_hash') password_hash: string,): Promise<{ message: string }> {
-    return this.landlordService.loginLandlord(name, password_hash);
-  }
+//     @Post('login')
+//   loginLandLord(@Body('name') name: string,@Body('password_hash') password_hash: string,): Promise<{ message: string }> {
+//     return this.landlordService.loginLandlord(name, password_hash);
+//   }
 
 
 
@@ -99,6 +102,7 @@ export class LandlordController {
     }
 
     //////////// approve tenant
+    
 
     @Patch('tenant/approve/:landlordid/:tenantid')
     approveTenant(@Param('landlordid') landlordid:number, @Param('tenantid') tenantid:number):Promise<TenantEntity | null> {
@@ -110,6 +114,14 @@ export class LandlordController {
     @Patch('tenant/reject/:landlordid/:tenantid')
     rejectTenant(@Param('landlordid') landlordid:number, @Param('tenantid') tenantid:number):Promise<TenantEntity | null> {
         return this.landlordService.rejectTenant(landlordid, tenantid);
+    }
+
+
+    ///////////kick approved tenant
+
+    @Patch('tenant/kick/:landlordid/:tenantid')
+    kickTenant(@Param('landlordid') landlordid:number, @Param('tenantid') tenantid:number):Promise<TenantEntity | null> {
+        return this.landlordService.kickTenant(landlordid, tenantid);
     }
 
 
@@ -133,18 +145,66 @@ export class LandlordController {
 
     //////////////// view landlord transactions
 
+   
+
+
+
     @Get('transactions/:landlordId')
     getLandlordTransactions(@Param('landlordId') landlordId: number): Promise<any> {
         return this.landlordService.getLandlordTransactions(landlordId);
     }
 
+    /////////////landlord make bills payment in transaction 
 
-    @Get('dashboard/summery')
-    getLandlordDashboardSummery( landlordId: number): Promise<any> {
-        return this.landlordService.getLandlordDashboardSummery(landlordId);
+    @Post('transactions/:landlordId')
+    createTransaction(@Param('landlordId') landlordId: number, @Body() createTransactionDto: CreateTransactionDto): Promise<TransactionEntity> {
+        return this.landlordService.createTransaction(landlordId, createTransactionDto);
     }
 
 
+    @Get('dashboard/summery')
+    getLandlordDashboardSummery(
+      @Query('landlordId') landlordId: number,
+    ): Promise<any> {
+      return this.landlordService.getLandlordDashboardSummery(landlordId);
+    }
+
+
+    //////////issue from tenants and fix issues
+
+    @Get('issues/:landlordId')
+    getLandlordIssuesofTenants(@Param('landlordId') landlordId: number): Promise<any> {
+      return this.landlordService.getLandlordIssuesofTenants(landlordId);
+    }
+
+
+    ///////////////issue create
+    @Post('issues/:landlordId')
+    createIssuebyLandlord(@Param('landlordId') landlordId: number, @Body() CreateIssueDto: CreateIssueDto): Promise<any> {
+      return this.landlordService.createIssuebyLandlord(landlordId, CreateIssueDto);
+    }
+
     
+
+
+    /////assign property
+
+    @Patch('tenant/assign-property/:landlordId/:tenantId')
+    assignPropertyToTenant(
+        @Param('landlordId') landlordId: number,
+        @Param('tenantId') tenantId: number,
+        @Body('property_id') propertyId: number,
+    ): Promise<TenantEntity | null> {
+        return this.landlordService.assignPropertyToTenant(landlordId, tenantId, propertyId);
+    }
+
+  
+
+    ///////review
+
+    @Get('reviews/:landlordId')
+    getLandlordReviews(@Param('landlordId') landlordId: number): Promise<any> {
+      return this.landlordService.getLandlordReviews(landlordId);
+    }
 
 }

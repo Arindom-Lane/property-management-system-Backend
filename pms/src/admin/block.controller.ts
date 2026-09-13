@@ -16,7 +16,7 @@ export class BlockController {
     @UsePipes(new ValidationPipe())
     createBlock( @Request() req, @Body() createBlockDto: CreateBlockDto, ) {
     
-        return this.blockService.createBlock( req.user.id, createBlockDto, );
+        return this.blockService.createBlock( req.user.sub, createBlockDto, );
     }
 
 
@@ -45,7 +45,7 @@ export class BlockController {
     }
 
 
-    //admin/block/id (Update Block-PATCH)
+    //admin/update/id (Update Block-PATCH)
     @Patch('update/:id')
     @UsePipes(new ValidationPipe())
     updateBlock( @Param('id', ParseIntPipe) id: number, @Body() updateBlockDto: UpdateBlockDto, ) {
@@ -54,7 +54,7 @@ export class BlockController {
     }
 
 
-  //admin/block/id (Delete Block-DELETE)
+  //admin/block/delete/id (Delete Block-DELETE)
     @Delete('delete/:id')
     deleteBlock( @Param('id', ParseIntPipe) id: number,) {
     

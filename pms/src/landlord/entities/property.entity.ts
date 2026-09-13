@@ -7,13 +7,13 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { LandlordEntity } from 'src/landlord/entities/landlord.entity';
-import { BuildingEntity } from 'src/admin/entities/building.entity';
-import { TenantEntity } from 'src/tenant/entities/tenant.entity';
+import { LandlordEntity } from '../../landlord/entities/landlord.entity';
+import { BuildingEntity } from '../../admin/entities/building.entity';
+import { TenantEntity } from '../../tenant/entities/tenant.entity';
 import { TransactionEntity } from './transaction.entity';
-import { WorkOrder } from '../../staff/entities/work_order.entity';       // <-- Import WorkOrder
-import { IssueEntity } from 'src/tenant/entities/issue.entity'; // <-- Import IssueEntity (adjust path if needed)
-import {BlockEntity} from '../../admin/entities/block.entity'
+import { WorkOrder } from '../../staff/entities/work_order.entity';   
+import { IssueEntity } from '../../tenant/entities/issue.entity'; 
+import {BlockEntity} from '../../admin/entities/block.entity.js'
 
 export enum ListingStatus {
   not_listed = 'not_listed',
@@ -90,7 +90,7 @@ export class PropertyEntity {
   @OneToMany(() => IssueEntity, (issue) => issue.property)
   issues: IssueEntity[];
 
-  // 3. ManyToOne: Property -> Block
-  @ManyToOne(() => BlockEntity, (block) => block.properties)
-  block: BlockEntity;
+  // // 3. ManyToOne: Property -> Block
+  // @ManyToOne(() => BlockEntity, (block) => block.properties)
+  // block: BlockEntity;
 }

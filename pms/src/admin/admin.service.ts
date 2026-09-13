@@ -23,6 +23,7 @@ import { UpdateStaffDto } from './dto/updateStaff.dto';
 import { PropertyEntity } from '../landlord/entities/property.entity';
 import { CreatePropertyDto } from './dto/property.dto';
 import { UpdatePropertyDto } from './dto/updateProperty.dto';
+import { MailService } from 'src/unified-auth-mailer/src/mail/mail.service';
 
 
 @Injectable()
@@ -50,6 +51,7 @@ export class AdminService {
     private readonly buildingRepository: Repository<BuildingEntity>,
 
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
 
@@ -306,6 +308,12 @@ export class AdminService {
 
   await this.landlordRepository.save(landlord);
 
+  await this.mailService.sendAccountCreatedMail(
+  landlord.email,
+  landlord.name,
+  'landlord',
+);
+
   return {
     message: 'Landlord created successfully',
     landlord: {
@@ -455,6 +463,12 @@ export class AdminService {
     });
 
     await this.tenantRepository.save(tenant);
+
+    await this.mailService.sendAccountCreatedMail(
+  tenant.email,
+  tenant.name,
+  'tenant',
+);
 
     return {
         message: 'Tenant created successfully',
@@ -631,6 +645,12 @@ export class AdminService {
     });
 
     await this.staffRepository.save(staff);
+
+    await this.mailService.sendAccountCreatedMail(
+  staff.email,
+  staff.name,
+  'staff',
+);
 
     return {
         message: 'Staff created successfully',

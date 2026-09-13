@@ -21,12 +21,13 @@ import { ComplaintService } from './complaint.service';
 import { ComplaintController } from './complaint.controller';
 import { PusherService } from './pusher.service';
 import {AuthModule } from '../auth/auth.module'
+import { MailModule } from '../unified-auth-mailer/src/mail/mail.module';
 
 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AdminEntity,BlockEntity,BuildingEntity, LandlordEntity, TenantEntity, StaffEntity, PropertyEntity, AnnouncementEntity, ComplaintEntity,]),AuthModule],
-  providers: [AdminService, BlockService, BuildingService, AnnouncementService, ComplaintService, PusherService,],
-  controllers: [AdminController,  BlockController, BuildingController, AnnouncementController, ComplaintController],
+  imports: [TypeOrmModule.forFeature([AdminEntity,BlockEntity,BuildingEntity, LandlordEntity, TenantEntity, StaffEntity, PropertyEntity,]),AuthModule,MailModule],
+  providers: [AdminService, BlockService, BuildingService,],
+  controllers: [AdminController,  BlockController, BuildingController],
 })
 export class AdminModule {}

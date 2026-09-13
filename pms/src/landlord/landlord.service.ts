@@ -441,25 +441,44 @@ async registerLandlord(landlordDto: LandlordDto): Promise<LandlordEntity> {
 
    
 
-    async getLandlordTransactions (landlordId: number): Promise<TransactionEntity[] | null> {
-      const landlord = await this.landlordRepository.findOne({
-        where: { id: landlordId },
-      });
-      if (!landlord) {
-        throw new UnauthorizedException('Landlord not found');
-      }
+    async getLandlordTransactions(
+  landlordId: number,
+): Promise<TransactionEntity[]> {
+  const landlord =
+    await this.landlordRepository.findOne({
+      where: {
+        id: landlordId,
+      },
+    });
 
-      const transactions = await this.landlordRepository.findOne({
-        where: { id: landlordId },
-        relations: { transactions: true },
-      });
+  if (!landlord) {
+    throw new UnauthorizedException(
+      'Landlord not found',
+    );
+  }
 
-      if (!transactions) {
-        throw new UnauthorizedException('No transactions found for this landlord');
-      }
+  const transactions =
+    await this.transactionRepository.find({
+      where: {
+        landlord: {
+          id: landlordId,
+        },
+      },
 
-      return transactions.transactions;
-    }
+      relations: {
+        landlord: true,
+        property_id: true,
+        tenant_id: true,
+        work_order_id: true,
+      },
+
+      order: {
+        created_at: 'DESC',
+      },
+    });
+
+  return transactions;
+}
 
 
     getLandlordDashboardSummery(landlordId: number): Promise<any> {
@@ -690,26 +709,33 @@ async createWorkOrderTransaction(
   landlordId: number,
   workOrderId: number,
 ): Promise<TransactionEntity> {
-  // 1. Check landlord
-  const landlord = await this.landlordRepository.findOne({
-    where: { id: landlordId },
-  });
+  const landlord =
+    await this.landlordRepository.findOne({
+      where: {
+        id: landlordId,
+      },
+    });
 
   if (!landlord) {
-    throw new UnauthorizedException('Landlord not found');
+    throw new UnauthorizedException(
+      'Landlord not found',
+    );
   }
 
-  // 2. Find the work order
-  const workOrder = await this.workOrderRepository.findOne({
-    where: {
-      id: workOrderId,
-      landlord: { id: landlordId },
-    },
-    relations: {
-      landlord: true,
-      property: true,
-    },
-  });
+  const workOrder =
+    await this.workOrderRepository.findOne({
+      where: {
+        id: workOrderId,
+        landlord: {
+          id: landlordId,
+        },
+      },
+
+      relations: {
+        landlord: true,
+        property: true,
+      },
+    });
 
   if (!workOrder) {
     throw new UnauthorizedException(
@@ -717,35 +743,53 @@ async createWorkOrderTransaction(
     );
   }
 
-  // 3. Calculate the work order cost
-  const laborCost = Number(workOrder.labor_cost ?? 0);
-  const materialsCost = Number(workOrder.materials_cost ?? 0);
-  const additionalCost = Number(workOrder.additional_cost ?? 0);
+  const laborCost = Number(
+    workOrder.labor_cost ?? 0,
+  );
+
+  const materialsCost = Number(
+    workOrder.materials_cost ?? 0,
+  );
+
+  const additionalCost = Number(
+    workOrder.additional_cost ?? 0,
+  );
 
   const totalAmount =
     laborCost +
     materialsCost +
     additionalCost;
 
-  // 4. Do not create a transaction if there is no cost
   if (totalAmount <= 0) {
     throw new UnauthorizedException(
       'This work order has no cost',
     );
   }
 
-  // 5. Check whether a transaction already exists
+  /*
+   * Prevent creating another transaction
+   * for the same work order.
+   */
+
   const existingTransaction =
     await this.transactionRepository.findOne({
       where: {
-        landlord: { id: landlordId },
-        work_order_id: { id: workOrderId },
-        type: Trnsaction_type.work_order_cost,
+        landlord: {
+          id: landlordId,
+        },
+
+        work_order_id: {
+          id: workOrderId,
+        },
+
+        type:
+          Trnsaction_type.work_order_cost,
       },
+
       relations: {
-        work_order_id: true,
-        property_id: true,
         landlord: true,
+        property_id: true,
+        work_order_id: true,
       },
     });
 
@@ -753,21 +797,65 @@ async createWorkOrderTransaction(
     return existingTransaction;
   }
 
-  // 6. Create a new transaction
+  /*
+   * Create the transaction.
+   */
+
   const transaction =
     this.transactionRepository.create({
-      type: Trnsaction_type.work_order_cost,
+      type:
+        Trnsaction_type.work_order_cost,
+
       amount: totalAmount,
+
       landlord: landlord,
-      work_order_id: workOrder,
-      property_id: workOrder.property,
-      payer_type: payer_type.landlord,
-      status: status.pending,
-      created_by_type: created_by_type.landlord,
+
+      property_id:
+        workOrder.property,
+
+      work_order_id:
+        workOrder,
+
+      payer_type:
+        payer_type.landlord,
+
+      status:
+        status.pending,
+
+      created_by_type:
+        created_by_type.landlord,
     });
 
-  // 7. Save transaction
-  return await this.transactionRepository.save(transaction);
+  const savedTransaction =
+    await this.transactionRepository.save(
+      transaction,
+    );
+
+  /*
+   * Load the relations again so the frontend
+   * immediately receives work_order_id.
+   */
+
+  const finalTransaction =
+    await this.transactionRepository.findOne({
+      where: {
+        id: savedTransaction.id,
+      },
+
+      relations: {
+        landlord: true,
+        property_id: true,
+        work_order_id: true,
+      },
+    });
+
+  if (!finalTransaction) {
+    throw new UnauthorizedException(
+      'Transaction was saved but could not be loaded',
+    );
+  }
+
+  return finalTransaction;
 }
   }
 

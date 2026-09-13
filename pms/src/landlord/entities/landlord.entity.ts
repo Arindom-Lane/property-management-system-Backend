@@ -12,6 +12,7 @@ import { PropertyEntity } from './property.entity';
 import { TransactionEntity } from './transaction.entity';
 import { TenantEntity } from '../../tenant/entities/tenant.entity';
 import { WorkOrder } from '../../staff/entities/work_order.entity';
+import { IssueEntity } from '../../tenant/entities/issue.entity';
 
 export enum LandlordStatus {
   active = 'active',
@@ -56,6 +57,9 @@ export class LandlordEntity {
 
   @OneToMany(() => WorkOrder, (workOrder) => workOrder.landlord)
   workOrders: WorkOrder[];
+
+  @OneToMany(() => IssueEntity, (issue) => issue.landlord)
+  issues: IssueEntity[];
 
   @CreateDateColumn()
   created_at: Date;

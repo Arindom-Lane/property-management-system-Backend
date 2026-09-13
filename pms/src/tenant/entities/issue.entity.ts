@@ -9,6 +9,7 @@ import {
 
 import { TenantEntity } from './tenant.entity';
 import { PropertyEntity } from '../../landlord/entities/property.entity';
+import { LandlordEntity } from '../../landlord/entities/landlord.entity';
 
 export enum IssueStatus {
   OPEN = 'OPEN',
@@ -27,6 +28,10 @@ export class IssueEntity {
   })
   @JoinColumn({ name: 'tenant_id' })
   tenant: TenantEntity;
+
+  @ManyToOne(() => LandlordEntity, { nullable: true, eager: true })
+  @JoinColumn({ name: 'landlord_id' })
+  landlord: LandlordEntity;
 
   @ManyToOne(() => PropertyEntity, { nullable: true, eager: true })
   @JoinColumn({ name: 'property_id' })
@@ -51,4 +56,6 @@ export class IssueEntity {
 
   @CreateDateColumn()
   created_at: Date;
+
+
 }

@@ -15,6 +15,7 @@ import { created_by_type, TransactionEntity } from './entities/transaction.entit
 import { CreateTransactionDto } from 'src/staff/dto/CreateTransaction.dto';
 import { IssueEntity } from '../tenant/entities/issue.entity';
 import * as bcrypt from 'bcrypt';
+import { CreateIssueDto } from 'src/tenant/dto/create-issue.dto';
 
 @Injectable()
 export class LandlordService {
@@ -447,20 +448,27 @@ async registerLandlord(landlordDto: LandlordDto): Promise<LandlordEntity> {
 //////////issue get 
 
     async getLandlordIssuesofTenants(landlordId: number): Promise<any> {
-      return this.landlordRepository.query(
-        `
-        SELECT i.* 
-        FROM issue i
-        JOIN tenant t ON i."tenant_id" = t.id
-        WHERE t.approved_by = $1
-        `,
-        [landlordId],
-      );
+      const landlord = await this.landlordRepository.findOne({
+        where: { id: landlordId },
+      });
+      if (!landlord) {
+        throw new UnauthorizedException('Landlord not found');
+      }
+
+      const issues = await this.issueRepository.find({
+        where: { landlord: { id: landlordId } },
+      });
+
+      if (!issues) {
+        throw new UnauthorizedException('No issues found for this landlord');
+      }
+
+      return issues;
     }
 
     /////////////////issue create
 
-    async createIssuebyLandlord(landlordId: number, CreateIssueDto: any): Promise<any> {
+    async createIssuebyLandlord(landlordId: number, CreateIssueDto: CreateIssueDto): Promise<any> {
       const landlord = await this.landlordRepository.findOne({
         where: { id: landlordId },
       });
@@ -468,10 +476,20 @@ async registerLandlord(landlordDto: LandlordDto): Promise<LandlordEntity> {
       if (!landlord) {
         throw new UnauthorizedException('Landlord not found');
       }
+
+      const property = await this.propertyRepository.findOne({
+        where: { id: CreateIssueDto.property, landlord: { id: landlordId } },
+      });
+
+      if (!property) {
+        throw new UnauthorizedException('Property not found or does not belong to this landlord');
+      }
       
       const issue = this.issueRepository.create({
-        ...CreateIssueDto,
+        description: CreateIssueDto.description,
+        image_url: CreateIssueDto.image_url,
         landlord: landlord,
+        property: property,
       });
 
       return this.issueRepository.save(issue);

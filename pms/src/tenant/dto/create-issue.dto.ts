@@ -8,4 +8,7 @@ export class CreateIssueDto {
   @IsOptional()
   @IsString()
   image_url?: string;
+
+  @IsNotEmpty()
+  property: number;
 }

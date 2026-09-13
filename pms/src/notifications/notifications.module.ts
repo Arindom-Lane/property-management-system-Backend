@@ -10,3 +10,18 @@ import { AuthModule } from '../auth/auth.module';
   exports: [PusherService],
 })
 export class NotificationsModule {}
+
+
+// WorkOrder #15
+//       ↓
+// worker = Rahim
+//       ↓
+// status = ASSIGNED
+//       ↓
+// save PostgreSQL
+//       ↓
+// Pusher trigger
+//       ↓
+// private-tenant-7
+//       ↓
+// work-order-assigned

@@ -1442,6 +1442,11 @@ export class StaffService {
     let property = issue.property;
 
     if (!property) {
+      if (!dto.property_id) {
+        throw new BadRequestException(
+          'Property is required to create Work Order',
+        );
+      }
       property = await this.findProperty(dto.property_id);
     }
 

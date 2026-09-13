@@ -16,7 +16,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-
+import { StaffOnlyGuard } from './auth/staff.guard';
 import { StaffService } from './staff.service';
 
 import { staffDto } from './dto/staff.dto';
@@ -65,25 +65,25 @@ export class StaffController {
   }
 
   @Get('viewAllStaff')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   viewAllStaff() {
     return this.staffService.viewAllStaff();
   }
 
   @Delete('/:staffId')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   deleteStaff(@Param('staffId', ParseIntPipe) id: number) {
     return this.staffService.deleteStaff(id);
   }
 
   @Get('findStaff/:id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   findStaff(@Param('id', ParseIntPipe) id: number) {
     return this.staffService.findStaff(id);
   }
 
   @Patch('profile')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   @UsePipes(new ValidationPipe())
   updateProfile(
     @Req() request: { user: JwtPayload },
@@ -101,13 +101,13 @@ export class StaffController {
   // ==========================================
 
   @Get('dashboard/stats')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   getDashboardStats(@Query('staffId', ParseIntPipe) staffId: number) {
     return this.staffService.getDashboardStats(staffId);
   }
 
   @Get('dashboard/workload')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   getWorkloadOverview(@Query('staffId', ParseIntPipe) staffId: number) {
     return this.staffService.getWorkloadOverview(staffId);
   }
@@ -117,7 +117,7 @@ export class StaffController {
   // ==========================================
 
   @Post('/:staffId/workers')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   @UsePipes(new ValidationPipe())
   createWorker(
     @Body() dto: CreateWorkerDto,
@@ -127,31 +127,31 @@ export class StaffController {
   }
 
   @Get('workers')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   findAllWorkers(@Query() filterDto: FilterWorkerDto) {
     return this.staffService.findAllWorkers(filterDto);
   }
 
   @Get('workers/:id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   findWorkerById(@Param('id', ParseIntPipe) id: number) {
     return this.staffService.findWorker(id);
   }
 
   @Get('workers/:id/schedule')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   getWorkerSchedule(@Param('id', ParseIntPipe) id: number) {
     return this.staffService.getWorkerSchedule(id);
   }
 
   @Get('workers/:id/performance')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   getWorkerPerformance(@Param('id', ParseIntPipe) id: number) {
     return this.staffService.getWorkerPerformance(id);
   }
 
   @Patch('workers/:id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   @UsePipes(new ValidationPipe())
   updateWorker(
     @Param('id', ParseIntPipe) id: number,
@@ -161,13 +161,13 @@ export class StaffController {
   }
 
   @Delete('workers/:id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   deleteWorker(@Param('id', ParseIntPipe) id: number) {
     return this.staffService.deleteWorker(id);
   }
 
   @Patch('workers/:id/toggle-status')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   toggleWorkerStatus(@Param('id', ParseIntPipe) id: number) {
     return this.staffService.toggleWorkerStatus(id);
   }
@@ -177,19 +177,19 @@ export class StaffController {
   // ==========================================
 
   @Get('work-orders')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   findAllWorkOrders() {
     return this.staffService.findAllWorkOrders();
   }
 
   @Get('work-orders/:id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   findWorkOrderById(@Param('id', ParseIntPipe) id: number) {
     return this.staffService.findWOrkOrder(id);
   }
 
   @Post('work-orders')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   @UsePipes(new ValidationPipe())
   createWorkOrder(
     @Query('staffId', ParseIntPipe) staffId: number,
@@ -199,7 +199,7 @@ export class StaffController {
   }
 
   @Patch('work-orders/:id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   @UsePipes(new ValidationPipe())
   updateWorkOrder(
     @Param('id', ParseIntPipe) id: number,
@@ -209,7 +209,7 @@ export class StaffController {
   }
 
   @Patch('work-orders/:id/dispatch')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   @UsePipes(new ValidationPipe())
   dispatchWorker(
     @Param('id', ParseIntPipe) id: number,
@@ -219,13 +219,13 @@ export class StaffController {
   }
 
   @Patch('work-orders/:id/remove-worker')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   removeWorkerFromOrder(@Param('id', ParseIntPipe) id: number) {
     return this.staffService.removeWorkerFromOrder(id);
   }
 
   @Patch('work-orders/:id/complete')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   @UsePipes(new ValidationPipe())
   completeWorkOrder(
     @Param('id', ParseIntPipe) id: number,
@@ -235,19 +235,19 @@ export class StaffController {
   }
 
   @Patch('work-orders/:id/confirm-tenant')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   tenantConfirmWorkOrder(@Param('id', ParseIntPipe) id: number) {
     return this.staffService.tenantConfirmWorkOrder(id);
   }
 
   @Patch('work-orders/:id/reopen')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   reopenWorkOrder(@Param('id', ParseIntPipe) id: number) {
     return this.staffService.reopenWorkOrder(id);
   }
 
   @Delete('work-orders/:id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   deleteOrder(@Param('id', ParseIntPipe) id: number) {
     return this.staffService.deleteOrder(id);
   }
@@ -257,18 +257,18 @@ export class StaffController {
   // ==========================================
 
   @Get('issues')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   findAllIssues (@Query('tenantId', new ParseIntPipe({ optional: true })) tenantId: number) {
     return this.staffService.findAllIssues(tenantId);
   }
   @Get('issues/:id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   findIssueById(@Param('id', ParseIntPipe) id: number) {
     return this.staffService.findIssue(id);
   }
 
   @Patch('issues/:id/status')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   @UsePipes(new ValidationPipe())
   updateIssueStatus(
     @Param('id', ParseIntPipe) id: number,
@@ -278,7 +278,7 @@ export class StaffController {
   }
 
   @Post('issues/:id/convert-to-work-order')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   @UsePipes(new ValidationPipe())
   convertIssueToWorkOrder(
     @Param('id', ParseIntPipe) id: number,
@@ -294,7 +294,7 @@ export class StaffController {
   // ==========================================
 
   @Get('properties')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   getAllProperties(
     @Query('landlordId') landlordId?: number,
     @Query('buildingId') buildingId?: number,
@@ -303,43 +303,43 @@ export class StaffController {
   }
 
   @Get('properties/:id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   getPropertyDetails(@Param('id', ParseIntPipe) id: number) {
     return this.staffService.findProperty(id);
   }
 
   @Get('buildings')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   getAllBuildings(@Query() query: any) {
     return this.staffService.getAllBuildings(query);
   }
 
   @Get('blocks')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   getAllBlocks(@Query() query: any) {
     return this.staffService.getAllBlocks(query);
   }
 
   @Get('landlords')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   getAllLandLoards() {
     return this.staffService.getAllLandLoards();
   }
 
   @Get('tenants')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   getAllTenants(@Query() query: any) {
     return this.staffService.getAllTenants(query);
   }
 
   @Get('tenants/:id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   getTenantDetails(@Param('id', ParseIntPipe) id: number) {
     return this.staffService.findTanent(id);
   }
 
   @Get('admins')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   getAllAdmins() {
     return this.staffService.getAllAdmins();
   }
@@ -349,13 +349,13 @@ export class StaffController {
   // ==========================================
 
   @Get('work-orders/:id/review')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   getReviewByOrder(@Param('id', ParseIntPipe) id: number) {
     return this.staffService.getReviewByOrder(id);
   }
 
   @Delete('deleteReview/:id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   deleteReview(@Param('id', ParseIntPipe) id: number) {
     return this.staffService.deleteReview(id);
   }
@@ -365,13 +365,13 @@ export class StaffController {
   // ==========================================
 
   @Get('reports/worker-performance')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   getWorkerPerformanceReport(@Query() query: any) {
     return this.staffService.getWorkerPerformanceReport(query);
   }
 
   @Get('reports/work-order-summary')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StaffOnlyGuard)
   getWorkOrderSummaryReport(@Query() filterDto: FilterWorkOrderDto) {
     return this.staffService.getWorkOrderSummaryReport(filterDto);
   }

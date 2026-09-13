@@ -184,6 +184,8 @@ export class LandlordController {
       return this.landlordService.createIssuebyLandlord(landlordId, CreateIssueDto);
     }
 
+    
+
 
     /////assign property
 

@@ -5,7 +5,6 @@ import {
   ForbiddenException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { PusherService } from '../notifications/pusher.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Not, Any } from 'typeorm';
 import { staffDto } from './dto/staff.dto';
@@ -89,8 +88,6 @@ export class StaffService {
 
     @InjectRepository(BuildingEntity)
     private readonly buildingRepo: Repository<BuildingEntity>,
-
-    private readonly pusherService: PusherService,
   ) {}
 
   async findAdmin(id: number) {
@@ -1161,26 +1158,6 @@ export class StaffService {
 
     await this.workerRepo.save(worker);
     await this.workOrderRepo.save(order);
-
-    const savedOrder = await this.workOrderRepo.save(order);
-
-    if (savedOrder.tenant) {
-      try {
-        await this.pusherService.sendToTenant(
-          savedOrder.tenant.id,
-          'work-order-assigned',
-          {
-            type: 'WORK_ORDER_ASSIGNED',
-            workOrderId: savedOrder.id,
-            workerName: worker.name,
-            status: savedOrder.status,
-            message: `Work order #${savedOrder.id} has been assigned to ${worker.name}.`,
-          },
-        );
-      } catch (error) {
-        console.error('Pusher notification failed:', error);
-      }
-    }
 
     return await this.findWOrkOrder(workOrderId);
   }

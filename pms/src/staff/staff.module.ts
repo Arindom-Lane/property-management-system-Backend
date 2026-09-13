@@ -15,7 +15,7 @@ import { TransactionEntity } from '../landlord/entities/transaction.entity'
 import { BlockEntity } from "../admin/entities/block.entity";
 import { BuildingEntity } from "../admin/entities/building.entity";
 import { AuthModule } from '../auth/auth.module';
-import { NotificationsModule } from '../notifications/notifications.module';
+
 
 
 @Module({
@@ -31,7 +31,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
   LandlordEntity,
   TenantEntity,
   BlockEntity,
-]),AuthModule,NotificationsModule],
+]),AuthModule],
   providers: [StaffService],
   controllers: [StaffController],
   exports: [StaffService]

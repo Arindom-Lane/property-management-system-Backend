@@ -542,3 +542,228 @@ URL: http://localhost:3000/admin/property/delete/1
 END OF PROPERTY MODULE
 
 -----------------------------------------------------
+
+VIII. ANNOUNCEMENT MODULE - POSTMAN
+
+Base URL: http://localhost:3000/admin/announcement
+
+Authorization
+All APIs require: Authorization: Bearer JWT_TOKEN
+
+1. Create Announcement
+
+Method: POST
+
+URL: http://localhost:3000/admin/announcement/create
+
+Headers:
+Authorization: Bearer JWT_TOKEN
+
+Body:
+{
+    "title":"Water Supply Maintenance",
+    "body":"Water supply will be interrupted on Friday from 10 AM to 2 PM in Block A."
+}
+
+Note:
+Title must be unique. Duplicate title will give 409 Conflict.
+
+2. Get All Announcements
+
+Method: GET
+
+URL: http://localhost:3000/admin/announcement/allannouncements
+
+Headers:
+Authorization: Bearer JWT_TOKEN
+
+3. Search Announcement
+
+Method: GET
+
+URL: Search By Title: http://localhost:3000/admin/announcement/search?keyword=Water
+
+     Search By Body: http://localhost:3000/admin/announcement/search?keyword=Friday
+
+Headers:
+Authorization: Bearer JWT_TOKEN
+
+4. Get Announcement By ID
+
+Method: GET
+
+URL: http://localhost:3000/admin/announcement/find/1
+
+Headers:
+Authorization: Bearer JWT_TOKEN
+
+5. Update Announcement
+
+Method: PATCH
+
+URL: http://localhost:3000/admin/announcement/update/1
+
+Headers:
+Authorization: Bearer JWT_TOKEN
+
+Body:
+{
+    "title":"Water Supply Maintenance Updated",
+    "body":"Water supply will be interrupted on Saturday from 10 AM to 2 PM in Block A."
+}
+
+Note:
+Both fields are optional. Send only the field you want to update.
+
+6. Delete Announcement
+
+Method: DELETE
+
+URL: http://localhost:3000/admin/announcement/delete/1
+
+Headers:
+Authorization: Bearer JWT_TOKEN
+
+END OF ANNOUNCEMENT MODULE
+
+-----------------------------------------------------
+
+IX. COMPLAINT MODULE - POSTMAN
+
+Base URL: http://localhost:3000/admin/complaint
+
+Authorization
+
+Submit Complaint: NO token needed (open to Landlord / Tenant / Staff)
+
+All other APIs require: Authorization: Bearer JWT_TOKEN
+
+1. Submit Complaint
+
+Method: POST
+
+URL: http://localhost:3000/admin/complaint/submit
+
+Headers:
+No Authorization needed
+
+Body:
+{
+    "filed_by_type":"TENANT",
+    "filed_by_id":1,
+    "against_type":"LANDLORD",
+    "against_id":1,
+    "description":"Landlord is not repairing the water pump for two weeks."
+}
+
+Note:
+filed_by_type values:
+- LANDLORD
+- TENANT
+- STAFF
+
+against_type values:
+- LANDLORD
+- TENANT
+- STAFF
+
+against_id is optional. If the complaint is general (not against a specific person), remove the against_id line.
+
+The filer (filed_by_id) and the target (against_id) must exist in the database, otherwise 404 Not Found.
+
+2. Get All Complaints
+
+Method: GET
+
+URL: http://localhost:3000/admin/complaint/allcomplaints
+
+Headers:
+Authorization: Bearer JWT_TOKEN
+
+3. Search Complaint
+
+Method: GET
+
+URL: Search By Description: http://localhost:3000/admin/complaint/search?keyword=water
+
+     Search By Filer Type: http://localhost:3000/admin/complaint/search?keyword=TENANT
+
+Headers:
+Authorization: Bearer JWT_TOKEN
+
+4. Get Complaints By Status
+
+Method: GET
+
+URL: http://localhost:3000/admin/complaint/status?status=PENDING
+
+Headers:
+Authorization: Bearer JWT_TOKEN
+
+Note:
+status values:
+- PENDING
+- IN_PROGRESS
+- RESOLVED
+- REJECTED
+
+5. Get Complaints By Filer Type
+
+Method: GET
+
+URL: http://localhost:3000/admin/complaint/filer?filed_by_type=TENANT
+
+Headers:
+Authorization: Bearer JWT_TOKEN
+
+Note:
+filed_by_type values:
+- LANDLORD
+- TENANT
+- STAFF
+
+6. Get Complaint By ID
+
+Method: GET
+
+URL: http://localhost:3000/admin/complaint/find/1
+
+Headers:
+Authorization: Bearer JWT_TOKEN
+
+7. Update Complaint (Admin Inspection)
+
+Method: PATCH
+
+URL: http://localhost:3000/admin/complaint/update/1
+
+Headers:
+Authorization: Bearer JWT_TOKEN
+
+Body:
+{
+    "status":"IN_PROGRESS",
+    "admin_note":"Notified the landlord, repair scheduled for Sunday."
+}
+
+Note:
+status values:
+- PENDING
+- IN_PROGRESS
+- RESOLVED
+- REJECTED
+
+admin_note is optional. The admin who updates the complaint is saved as reviewed_by automatically.
+
+8. Delete Complaint
+
+Method: DELETE
+
+URL: http://localhost:3000/admin/complaint/delete/1
+
+Headers:
+Authorization: Bearer JWT_TOKEN
+
+END OF COMPLAINT MODULE
+
+-----------------------------------------------------

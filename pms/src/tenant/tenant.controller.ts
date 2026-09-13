@@ -171,6 +171,18 @@ deleteTenantByEmail(
     return this.tenantService.updateIssue(issueId, dto);
   }
 
+  //resolve issue
+
+  @Patch(':tenantId/issues/:issueId/resolve')
+resolveIssue(
+  @Param('tenantId', ParseIntPipe) tenantId: number,
+  @Param('issueId', ParseIntPipe) issueId: number,
+) {
+  return this.tenantService.resolveIssue(
+    tenantId,
+    issueId,
+  );
+}
   // ==========================
   // Delete Issue
   // ==========================

@@ -11,7 +11,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
 import { TenantEntity } from './entities/tenant.entity';
-import { IssueEntity } from './entities/issue.entity';
+import { IssueEntity,IssueStatus } from './entities/issue.entity';
 
 import { PropertyEntity } from 'src/landlord/entities/property.entity';
 import { LandlordEntity } from 'src/landlord/entities/landlord.entity';
@@ -24,6 +24,7 @@ import { CreateIssueDto } from './dto/create-issue.dto';
 import { UpdateIssueDto } from './dto/update-issue.dto';
 
 import { TransactionEntity, Trnsaction_type,payer_type,status } from '../landlord/entities/transaction.entity';
+
 
 
 import { JwtService } from '@nestjs/jwt';
@@ -472,6 +473,42 @@ async updateIssue(
   }
 
   Object.assign(issue, dto);
+
+  return await this.issueRepository.save(issue);
+}
+
+//resolve issue
+
+async resolveIssue(
+  tenantId: number,
+  issueId: number,
+): Promise<IssueEntity> {
+
+  const issue = await this.issueRepository.findOne({
+    where: {
+      id: issueId,
+      tenant: {
+        id: tenantId,
+      },
+    },
+    relations: {
+      tenant: true,
+    },
+  });
+
+  if (!issue) {
+    throw new NotFoundException(
+      'Issue not found for this tenant.',
+    );
+  }
+
+  if (issue.status === IssueStatus.RESOLVED) {
+    throw new BadRequestException(
+      'Issue is already resolved.',
+    );
+  }
+
+  issue.status = IssueStatus.RESOLVED;
 
   return await this.issueRepository.save(issue);
 }

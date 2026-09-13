@@ -272,9 +272,18 @@ getTenantTransactions(
     landlordId,
     tenantId,
   );
+}
 
 
 
-
+@Post('work-order/transaction/:landlordId/:workOrderId')
+createWorkOrderTransaction(
+  @Param('landlordId', ParseIntPipe) landlordId: number,
+  @Param('workOrderId', ParseIntPipe) workOrderId: number,
+) {
+  return this.landlordService.createWorkOrderTransaction(
+    landlordId,
+    workOrderId,
+  );
 }
 }

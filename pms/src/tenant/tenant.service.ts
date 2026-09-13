@@ -615,4 +615,35 @@ async payWorkOrder(tenantId: number, workOrderId: number) {
 
   return this.transactionRepository.save(transaction);
 }
+//get tenant dashboard summery
+getTenantDashboardSummery(tenantId: number): Promise<any> {
+  return this.tenantRepository.query(
+    `
+    SELECT
+      (
+        SELECT COUNT(*)
+        FROM issue
+        WHERE tenant_id = $1
+          AND status != 'RESOLVED'
+      ) AS open_issues,
+
+      
+
+      (
+        SELECT COALESCE(SUM(amount), 0)
+        FROM transactions
+        WHERE "tenantIdId" = $1
+          AND status = 'pending'
+      ) AS total_due,
+
+      (
+        SELECT COALESCE(SUM(amount), 0)
+        FROM transactions
+        WHERE "tenantIdId" = $1
+          AND status = 'paid'
+      ) AS total_paid
+    `,
+    [tenantId],
+  );
+}
  }

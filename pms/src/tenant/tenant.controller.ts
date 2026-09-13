@@ -228,4 +228,12 @@ payWorkOrder(
 ) {
   return this.tenantService.payWorkOrder(tenantId, workOrderId);
 }
+//dashboaard
+
+@Get('dashboard/summery')
+getTenantDashboardSummery(
+  @Query('tenantId') tenantId: number,
+): Promise<any> {
+  return this.tenantService.getTenantDashboardSummery(tenantId);
+}
 }

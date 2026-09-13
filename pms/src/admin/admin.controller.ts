@@ -25,11 +25,11 @@ export class AdminController {
     //ADMIN MODULE...
 
     //admin/register (Admin Register)
-    @Post('register')
-    @UsePipes(new ValidationPipe())
-    register(@Body() createAdminDto: CreateAdminDto){
-        return this.adminService.register(createAdminDto)
-    }
+    // @Post('register')
+    // @UsePipes(new ValidationPipe())
+    // register(@Body() createAdminDto: CreateAdminDto){
+    //     return this.adminService.register(createAdminDto)
+    // }
 
     //admin/login (Admin Login)
     // @Post('login')
@@ -95,12 +95,12 @@ export class AdminController {
 
     //LANDLORD MODULE...
 
-    @Post('landlord/create')
+    @Post('landlord/create/:id')
     @UseGuards(AuthGuard)
     @UsePipes(new ValidationPipe())
-    createLandlord(@Request() req,@Body() createLandlordDto: CreateLandlordDto,) {
+    createLandlord(@Param('id', ParseIntPipe) id: number,@Body() createLandlordDto: CreateLandlordDto,) {
         
-        return this.adminService.createLandlord(req.user.id,createLandlordDto,);
+        return this.adminService.createLandlord(id,createLandlordDto,);
     }
 
     @Get('landlord/alllandlord')

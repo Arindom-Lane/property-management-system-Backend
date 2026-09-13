@@ -14,11 +14,12 @@ import { BlockService } from './block.service';
 import { BuildingController } from './building.controller';
 import { BuildingService } from './building.service';
 import {AuthModule } from '../auth/auth.module'
+import { MailModule } from '../unified-auth-mailer/src/mail/mail.module';
 
 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AdminEntity,BlockEntity,BuildingEntity, LandlordEntity, TenantEntity, StaffEntity, PropertyEntity,]),AuthModule],
+  imports: [TypeOrmModule.forFeature([AdminEntity,BlockEntity,BuildingEntity, LandlordEntity, TenantEntity, StaffEntity, PropertyEntity,]),AuthModule,MailModule],
   providers: [AdminService, BlockService, BuildingService,],
   controllers: [AdminController,  BlockController, BuildingController],
 })

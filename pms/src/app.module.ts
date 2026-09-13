@@ -6,11 +6,11 @@ import { LandlordModule } from './landlord/landlord.module';
 import { TenantModule } from './tenant/tenant.module';
 import { StaffModule } from './staff/staff.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
+import { NotificationsModule } from './notifications/notifications.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [AdminModule, LandlordModule, TenantModule, StaffModule, AuthModule, TypeOrmModule.forRoot({
+  imports: [AdminModule, LandlordModule, TenantModule, StaffModule,NotificationsModule, AuthModule, TypeOrmModule.forRoot({
     type: 'postgres',
     host: 'localhost',
     port: 5432,

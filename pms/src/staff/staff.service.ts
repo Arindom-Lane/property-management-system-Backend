@@ -5,6 +5,7 @@ import {
   ForbiddenException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { PusherService } from '../notifications/pusher.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Not, Any } from 'typeorm';
 import { staffDto } from './dto/staff.dto';
@@ -88,6 +89,8 @@ export class StaffService {
 
     @InjectRepository(BuildingEntity)
     private readonly buildingRepo: Repository<BuildingEntity>,
+
+    private readonly pusherService: PusherService,
   ) {}
 
   async findAdmin(id: number) {

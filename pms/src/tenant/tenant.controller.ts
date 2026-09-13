@@ -181,6 +181,39 @@ deleteTenantByEmail(
   ) {
     return this.tenantService.deleteIssue(issueId);
   }
+//get transactions
+@Get('transactions/:tenantId')
+getTenantTransactions(
+  @Param('tenantId') tenantId: number,
+) {
+  return this.tenantService.getTenantTransactions(tenantId);
+}
 
+//make payment of transaction
 
+@Patch('payment/:tenantId/:transactionId')
+payTransaction(
+  @Param('tenantId') tenantId: number,
+  @Param('transactionId') transactionId: number,
+) {
+  return this.tenantService.payTransaction(
+    tenantId,
+    transactionId,
+  );
+}
+//get payable work orders
+@Get('work-orders/payable/:tenantId')
+getPayableWorkOrders(
+  @Param('tenantId', ParseIntPipe) tenantId: number,
+) {
+  return this.tenantService.getPayableWorkOrders(tenantId);
+}
+//make payment of work order
+@Post('work-order/pay/:tenantId/:workOrderId')
+payWorkOrder(
+  @Param('tenantId', ParseIntPipe) tenantId: number,
+  @Param('workOrderId', ParseIntPipe) workOrderId: number,
+) {
+  return this.tenantService.payWorkOrder(tenantId, workOrderId);
+}
 }

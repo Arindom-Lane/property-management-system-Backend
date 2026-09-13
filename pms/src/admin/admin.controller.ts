@@ -50,7 +50,7 @@ export class AdminController {
     @UseGuards(AuthGuard)
     updateProfile(@Request() req,@Body() updateAdminDto: UpdateAdminDto,){
     
-        return this.adminService.updateProfile(req.user.id,updateAdminDto,);
+        return this.adminService.updateProfile(req.user.sub,updateAdminDto,);
     }
 
     //admin/changepass (Update password)
@@ -58,7 +58,7 @@ export class AdminController {
     @UseGuards(AuthGuard)
     changePassword(@Request() req,@Body() changePasswordDto: ChangePasswordDto,){
         
-        return this.adminService.changePassword(req.user.id,changePasswordDto,);
+        return this.adminService.changePassword(req.user.sub,changePasswordDto,);
     }
 
     //admin/ (Get All Admins)
@@ -100,7 +100,7 @@ export class AdminController {
     @UsePipes(new ValidationPipe())
     createLandlord(@Request() req,@Body() createLandlordDto: CreateLandlordDto,) {
         
-        return this.adminService.createLandlord(req.user.id,createLandlordDto,);
+        return this.adminService.createLandlord(req.user.sub,createLandlordDto,);
     }
 
     @Get('landlord/alllandlord')
@@ -192,7 +192,7 @@ export class AdminController {
     @Post('staff/create')
     @UseGuards(AuthGuard)
     @UsePipes(new ValidationPipe())createStaff(@Request() req,@Body() createStaffDto: CreateStaffDto,) {
-        return this.adminService.createStaff(req.user.id,createStaffDto,);
+        return this.adminService.createStaff(req.user.sub,createStaffDto,);
     }
 
     @Get('staff/allstaff')
@@ -241,7 +241,7 @@ export class AdminController {
     @UsePipes(new ValidationPipe())
     createProperty( @Request() req, @Body() createPropertyDto: CreatePropertyDto, ){
         
-        return this.adminService.createProperty(req.user.id,createPropertyDto, );
+        return this.adminService.createProperty(req.user.sub,createPropertyDto, );
     }
 
     @Get('property/allproperties')

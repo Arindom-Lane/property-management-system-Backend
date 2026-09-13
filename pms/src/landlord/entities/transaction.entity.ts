@@ -1,8 +1,8 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { LandlordEntity } from './landlord.entity';
 import { PropertyEntity } from './property.entity';
-import { TenantEntity } from 'src/tenant/entities/tenant.entity';
-import { WorkOrder } from 'src/staff/entities/work_order.entity';
+import { TenantEntity } from '../../tenant/entities/tenant.entity';
+import { WorkOrder } from '../../staff/entities/work_order.entity';
 
 export enum Trnsaction_type {
     rent = 'rent',

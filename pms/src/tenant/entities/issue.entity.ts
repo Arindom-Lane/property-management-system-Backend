@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 
 import { TenantEntity } from './tenant.entity';
-import { PropertyEntity } from 'src/landlord/entities/property.entity';
+import { PropertyEntity } from '../../landlord/entities/property.entity';
 
 export enum IssueStatus {
   OPEN = 'OPEN',

@@ -7,9 +7,9 @@ import { PropertyEntity } from './entities/property.entity';
 import { Status } from './entities/property.entity.js';
 import { ListingStatus } from './entities/property.entity.js';
 import { TenantEntity } from '../tenant/entities/tenant.entity.js';
-import { WorkOrder } from 'src/staff/entities/work_order.entity';
+import { WorkOrder } from '../staff/entities/work_order.entity';
 import { TransactionEntity } from './entities/transaction.entity';
-import { CreateTransactionDto } from 'src/staff/dto/CreateTransaction.dto';
+import { CreateTransactionDto } from '../staff/dto/CreateTransaction.dto';
 
 @Controller('landlord')
 export class LandlordController {

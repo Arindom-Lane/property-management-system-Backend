@@ -114,7 +114,7 @@ export class AdminService {
   // Profile
   async getProfile(user: any) {
     const admin = await this.adminRepository.findOne({
-      where: {id: user.id,},
+      where: {id: user.sub,},
     });
 
     if (!admin) {throw new NotFoundException('Admin not found');}

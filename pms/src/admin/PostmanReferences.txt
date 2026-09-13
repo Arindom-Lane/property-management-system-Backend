@@ -134,7 +134,7 @@ All APIs require: Authorization: Bearer JWT_TOKEN
 
 Method: POST
 
-URL: http://localhost:3000/admin/block
+URL: http://localhost:3000/admin/block/create
 
 Headers:
 Authorization: Bearer JWT_TOKEN
@@ -169,7 +169,7 @@ URL: http://localhost:3000/admin/block/1
 
 Method: PATCH
 
-URL: http://localhost:3000/admin/block/1
+URL: http://localhost:3000/admin/block/update/1
 
 Body:
 {

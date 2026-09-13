@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ComplaintEntity, ComplaintStatus, ComplaintAgainstType } from './entities/complaint.entity';
 import { AdminEntity } from './entities/admin.entity';
-import { LandlordEntity } from 'src/landlord/entities/landlord.entity';
-import { TenantEntity } from 'src/tenant/entities/tenant.entity';
-import { StaffEntity } from 'src/staff/entities/staff.entity';
+import { LandlordEntity } from '../landlord/entities/landlord.entity';
+import { TenantEntity } from '../tenant/entities/tenant.entity';
+import { StaffEntity } from '../staff/entities/staff.entity';
 import { CreateComplaintDto, FiledByType } from './dto/complaint.dto';
 import { UpdateComplaintStatusDto } from './dto/updateComplaint.dto';
 

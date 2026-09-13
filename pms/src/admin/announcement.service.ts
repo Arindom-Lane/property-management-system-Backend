@@ -1,4 +1,5 @@
 import { Injectable, ConflictException, NotFoundException, } from '@nestjs/common';
+import { PusherService } from './pusher.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { AnnouncementEntity } from './entities/announcement.entity';
@@ -14,6 +15,9 @@ export class AnnouncementService {
 
     @InjectRepository(AdminEntity)
     private readonly adminRepository: Repository<AdminEntity>,
+
+    // Real-time notifications (PusherJS bonus feature)
+    private readonly pusherService: PusherService,
   ) {}
 
   // Create Announcement
@@ -40,6 +44,17 @@ export class AnnouncementService {
     });
 
     const savedAnnouncement = await this.announcementRepository.save(newAnnouncement);
+
+    // PUSHERJS REAL-TIME NOTIFICATION (bonus feature):
+    // broadcast the new announcement to every connected client
+    // (landlord/staff/tenant dashboards) via the Pusher channel.
+    // Fire-and-forget: a Pusher failure never blocks creation.
+    void this.pusherService.notifyNewAnnouncement({
+      id: savedAnnouncement.id,
+      title: savedAnnouncement.title,
+      body: savedAnnouncement.body,
+      created_by: admin.name,
+    });
 
     return { message: 'Announcement created successfully',
       announcement: {

@@ -1,11 +1,11 @@
 import { Body, Controller, Post, Get, Patch, Delete, Query, Param, ParseIntPipe, Request, UseGuards, UsePipes, ValidationPipe, } from '@nestjs/common';
 import { AnnouncementService } from './announcement.service';
-import { JwtAuthGuard } from './auth/auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 import { CreateAnnouncementDto } from './dto/announcement.dto';
 import { UpdateAnnouncementDto } from './dto/updateAnnouncement.dto';
 
 @Controller('admin/announcement')
-@UseGuards(JwtAuthGuard)
+@UseGuards(AuthGuard)
 export class AnnouncementController {
   constructor(
     private readonly announcementService: AnnouncementService,
@@ -16,7 +16,7 @@ export class AnnouncementController {
     @UsePipes(new ValidationPipe())
     createAnnouncement( @Request() req, @Body() createAnnouncementDto: CreateAnnouncementDto, ) {
 
-        return this.announcementService.createAnnouncement( req.user.id, createAnnouncementDto, );
+        return this.announcementService.createAnnouncement( req.user.sub, createAnnouncementDto, );
     }
 
 

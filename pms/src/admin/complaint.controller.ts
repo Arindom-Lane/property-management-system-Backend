@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Get, Patch, Delete, Query, Param, ParseIntPipe, Request, UseGuards, UsePipes, ValidationPipe, } from '@nestjs/common';
 import { ComplaintService } from './complaint.service';
-import { JwtAuthGuard } from './auth/auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 import { CreateComplaintDto } from './dto/complaint.dto';
 import { UpdateComplaintStatusDto } from './dto/updateComplaint.dto';
 import { ComplaintStatus } from './entities/complaint.entity';
@@ -21,7 +21,7 @@ export class ComplaintController {
 
 
     //admin/complaint/allcomplaints (Get All Complaints)
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(AuthGuard)
     @Get('allcomplaints')
     getAllComplaints() {
 
@@ -30,7 +30,7 @@ export class ComplaintController {
 
 
     //admin/complaint/search?keyword=abc (Search Complaints)
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(AuthGuard)
     @Get('search')
     searchComplaints(
     @Query('keyword') keyword: string,) {
@@ -40,7 +40,7 @@ export class ComplaintController {
 
 
     //admin/complaint/status?status=PENDING (Get Complaints by status)
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(AuthGuard)
     @Get('status')
     getComplaintsByStatus(
     @Query('status') status: ComplaintStatus,) {
@@ -50,7 +50,7 @@ export class ComplaintController {
 
 
     //admin/complaint/filer?filed_by_type=TENANT (Get Complaints by filer type)
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(AuthGuard)
     @Get('filer')
     getComplaintsByFiler(
     @Query('filed_by_type') filedByType: string,) {
@@ -60,7 +60,7 @@ export class ComplaintController {
 
 
     //admin/complaint/find/:id (Get Complaint By ID)
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(AuthGuard)
     @Get('find/:id')
     getComplaint( @Param('id', ParseIntPipe) id: number, ) {
 
@@ -69,17 +69,17 @@ export class ComplaintController {
 
 
     //admin/complaint/update/:id (Admin inspect / update status-PATCH)
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(AuthGuard)
     @Patch('update/:id')
     @UsePipes(new ValidationPipe())
     updateComplaintStatus( @Request() req, @Param('id', ParseIntPipe) id: number, @Body() updateComplaintStatusDto: UpdateComplaintStatusDto, ) {
 
-        return this.complaintService.updateComplaintStatus( id, req.user.id, updateComplaintStatusDto, );
+        return this.complaintService.updateComplaintStatus( id, req.user.sub, updateComplaintStatusDto, );
     }
 
 
     //admin/complaint/delete/:id (Delete Complaint-DELETE)
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(AuthGuard)
     @Delete('delete/:id')
     deleteComplaint( @Param('id', ParseIntPipe) id: number,) {
 

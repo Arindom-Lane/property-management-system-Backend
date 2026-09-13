@@ -17,7 +17,7 @@ export class BuildingController {
     @UsePipes(new ValidationPipe())
     createBuilding( @Request() req, @Body() createBuildingDto: CreateBuildingDto, ) {
     
-        return this.buildingService.createBuilding( req.user.id, createBuildingDto, );
+        return this.buildingService.createBuilding( req.user.sub, createBuildingDto, );
     }
 
 

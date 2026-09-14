@@ -10,6 +10,7 @@ import { LandlordEntity } from '../landlord/entities/landlord.entity';
 import {AuthModule } from '../auth/auth.module'
 import { JwtModule } from '@nestjs/jwt';    
 
+import { WorkOrder } from 'src/staff/entities/work_order.entity';
 import { TransactionEntity } from '../landlord/entities/transaction.entity';
 
 @Module({
@@ -20,6 +21,7 @@ import { TransactionEntity } from '../landlord/entities/transaction.entity';
       PropertyEntity,
       LandlordEntity,
       TransactionEntity,
+      WorkOrder,
     ]),
     AuthModule,
   ],

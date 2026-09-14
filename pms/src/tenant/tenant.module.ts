@@ -9,6 +9,7 @@ import { PropertyEntity } from '../landlord/entities/property.entity';
 import { LandlordEntity } from '../landlord/entities/landlord.entity';
 import {AuthModule } from '../auth/auth.module'
 
+import { WorkOrder } from 'src/staff/entities/work_order.entity';
 import { TransactionEntity } from '../landlord/entities/transaction.entity';
 import { PusherService } from 'src/notification/pusher.service';
 
@@ -20,6 +21,7 @@ import { PusherService } from 'src/notification/pusher.service';
       PropertyEntity,
       LandlordEntity,
       TransactionEntity,
+      WorkOrder,
     ]),
     AuthModule,
   ],

@@ -27,6 +27,8 @@ import { TransactionEntity, Trnsaction_type,payer_type,status } from '../landlor
 import { PusherService } from 'src/notification/pusher.service';
 
 
+import { WorkOrder } from 'src/staff/entities/work_order.entity';
+
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -47,6 +49,8 @@ export class TenantService {
     @InjectRepository(TransactionEntity)
   private readonly transactionRepository: Repository<TransactionEntity>,
 
+  @InjectRepository(WorkOrder)
+  private readonly workOrderRepository: Repository<WorkOrder>,
     private readonly jwtService: JwtService,
     private readonly pusherService: PusherService,
 
@@ -539,6 +543,21 @@ async deleteIssue(
   if (!issue) {
     throw new NotFoundException(
       'Issue not found.',
+    );
+  }
+
+  const workOrder =
+    await this.workOrderRepository.findOne({
+      where: {
+        issue: {
+          id: issueId,
+        },
+      },
+    });
+
+  if (workOrder) {
+    throw new BadRequestException(
+      'This issue is under work.',
     );
   }
 
